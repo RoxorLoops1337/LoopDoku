@@ -51,17 +51,18 @@
     openAhead: 3,          // inside a pack, this many unsolved levels are open at once
   });
   const SKINS = (LD.SKINS = [
-    { id: 'comic', name: 'Comic Pop-Art', artist: 'Kapow Kenji', file: 'comic.html', cost: 0 },
+    { id: 'neon', name: 'Neon Club Night', artist: 'DJ Lumen', file: 'neon.html', cost: 0 },
     { id: 'idol', name: 'Anime Idol Stage', artist: 'Kira Cel', file: 'idol.html', cost: 0 },
-    { id: 'sticker', name: 'Stickerbomb', artist: 'Pia Peel', file: 'sticker.html', cost: 300 },
-    { id: 'paper', name: 'Paper Craft', artist: 'Scissors Sol', file: 'paper.html', cost: 450 },
-    { id: 'studio', name: 'Studio Gear', artist: 'Analog Ana', file: 'studio.html', cost: 600 },
-    { id: 'riso', name: 'Riso Gig Poster', artist: 'Xerox Rex', file: 'riso.html', cost: 800 },
-    { id: 'jelly', name: 'Jelly Candy', artist: 'Gummi Gus', file: 'jelly.html', cost: 1000 },
-    { id: 'watercolour', name: 'Watercolour Storybook', artist: 'Wren Wash', file: 'watercolour.html', cost: 1200 },
-    { id: 'pixel', name: '16-bit Arcade', artist: 'Bitcrush Benny', file: 'pixel.html', cost: 1500 },
-    { id: 'neon', name: 'Neon Club Night', artist: 'DJ Lumen', file: 'neon.html', cost: 1800 },
+    { id: 'comic', name: 'Comic Pop-Art', artist: 'Kapow Kenji', file: 'comic.html', cost: 300 },
+    { id: 'sticker', name: 'Stickerbomb', artist: 'Pia Peel', file: 'sticker.html', cost: 450 },
+    { id: 'paper', name: 'Paper Craft', artist: 'Scissors Sol', file: 'paper.html', cost: 600 },
+    { id: 'studio', name: 'Studio Gear', artist: 'Analog Ana', file: 'studio.html', cost: 800 },
+    { id: 'riso', name: 'Riso Gig Poster', artist: 'Xerox Rex', file: 'riso.html', cost: 1000 },
+    { id: 'jelly', name: 'Jelly Candy', artist: 'Gummi Gus', file: 'jelly.html', cost: 1200 },
+    { id: 'watercolour', name: 'Watercolour Storybook', artist: 'Wren Wash', file: 'watercolour.html', cost: 1500 },
+    { id: 'pixel', name: '16-bit Arcade', artist: 'Bitcrush Benny', file: 'pixel.html', cost: 1800 },
   ]);
+  const FREE = SKINS.filter((k) => !k.cost).map((k) => k.id);
   // gig names for levels: cities the duo play, and the kinds of gigs they do
   const CITIES = [
     ['Copenhagen', 'DK'], ['Aarhus', 'DK'], ['Odense', 'DK'], ['Aalborg', 'DK'], ['Esbjerg', 'DK'], ['Roskilde', 'DK'], ['Vejle', 'DK'],
@@ -93,12 +94,12 @@
   // SAVE
   // ---------------------------------------------------------------------------------------------------------------
   const KEY = 'loopdoku_save_v1';
-  const fresh = () => ({ v: 1, points: 0, earned: 0, wins: 0, losses: 0, solved: {}, current: null, skin: 'comic', unlocked: ['comic', 'idol'],
+  const fresh = () => ({ v: 1, points: 0, earned: 0, wins: 0, losses: 0, solved: {}, current: null, skin: 'neon', unlocked: FREE.slice(),
     supportLast: 0, daily: {}, settings: { sound: true, music: true, assist: false } });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (_) { /* no storage: play without saving */ }
   S.settings = Object.assign(fresh().settings, S.settings || {});
-  for (const id of ['comic', 'idol']) if (!S.unlocked.includes(id)) S.unlocked.push(id);
+  for (const id of FREE) if (!S.unlocked.includes(id)) S.unlocked.push(id);
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) { /* ignore */ } };
   const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 

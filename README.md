@@ -35,16 +35,16 @@ Ten artists pitched a look for the game. The owners picked two, and the other ei
 
 | Look | Artist | Cost |
 |---|---|---|
-| Comic Pop-Art | Kapow Kenji | free (default) |
+| Neon Club Night | DJ Lumen | free (opens the game) |
 | Anime Idol Stage | Kira Cel | free |
-| Stickerbomb | Pia Peel | 300 |
-| Paper Craft | Scissors Sol | 450 |
-| Studio Gear | Analog Ana | 600 |
-| Riso Gig Poster | Xerox Rex | 800 |
-| Jelly Candy | Gummi Gus | 1000 |
-| Watercolour Storybook | Wren Wash | 1200 |
-| 16-bit Arcade | Bitcrush Benny | 1500 |
-| Neon Club Night | DJ Lumen | 1800 |
+| Comic Pop-Art | Kapow Kenji | 300 |
+| Stickerbomb | Pia Peel | 450 |
+| Paper Craft | Scissors Sol | 600 |
+| Studio Gear | Analog Ana | 800 |
+| Riso Gig Poster | Xerox Rex | 1000 |
+| Jelly Candy | Gummi Gus | 1200 |
+| Watercolour Storybook | Wren Wash | 1500 |
+| 16-bit Arcade | Bitcrush Benny | 1800 |
 
 Points per gig: Easy 15, Normal 30, Hard 60, Expert 100, Extreme 200 and Nightmare 350. You get +50% for 3 stars and +20%
 for 2 stars. A replay pays 20%, and the Daily Jam pays double.

@@ -21,10 +21,10 @@ const shot = (name) => page.screenshot({ path: path.join(root, 'shots', `${skin}
 const check = (ok, msg) => { if (!ok) fails.push(msg); };
 const wait = (ms) => page.waitForTimeout(ms);
 const overflow = () => page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-const url = `http://localhost:${port}/${skin}.html`;
+const url = process.env.LD_BASE ? `${process.env.LD_BASE}/${skin}.html` : `http://localhost:${port}/${skin}.html`;
 
 await page.goto(url, { waitUntil: 'load' });
-await page.evaluate((sk) => { try { localStorage.clear(); localStorage.setItem('loopdoku_save_v1', JSON.stringify({ unlocked: ['comic', 'idol', sk], skin: sk })); } catch (_) { /* */ } }, skin);
+await page.evaluate((sk) => { try { localStorage.clear(); localStorage.setItem('loopdoku_save_v1', JSON.stringify({ unlocked: ['neon', 'idol', sk], skin: sk })); } catch (_) { /* */ } }, skin);
 await page.goto(url + '#title', { waitUntil: 'load' });
 await wait(2200);
 check(await page.evaluate(() => !!window.LDSKIN && typeof window.LDSKIN.start === 'function'), 'window.LDSKIN missing');

@@ -15,11 +15,11 @@
 <noscript>LoopDoku needs JavaScript to play.</noscript>
 <p id="m">Loading LoopDoku…</p>
 <script>
-// open the look the player used last (both free looks are always there)
+// open the look the player used last (Neon Club Night opens the game for new players)
 (function () {
   var files = { comic: 'comic.html', idol: 'idol.html', sticker: 'sticker.html', paper: 'paper.html', studio: 'studio.html', riso: 'riso.html',
     jelly: 'jelly.html', watercolour: 'watercolour.html', pixel: 'pixel.html', neon: 'neon.html' };
-  var skin = 'comic';
+  var skin = 'neon';
   try { var s = JSON.parse(localStorage.getItem('loopdoku_save_v1') || '{}'); if (s.skin && files[s.skin] && (s.unlocked || []).indexOf(s.skin) >= 0) skin = s.skin; } catch (e) { /* first visit */ }
   location.replace(files[skin] + (location.hash || '#title'));
 })();
