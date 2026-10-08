@@ -23,7 +23,13 @@ const PLAN = [
   { id: 'nightmare', name: 'Nightmare', count: 12, sizes: [10], top: 'D', minD: 3 },
 ];
 
-function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+// sfc32 seeded through splitmix32: independent streams per seed (the old additive generator made workers repeat each other)
+function rng(seed) {
+  let z = (seed ^ 0x9e3779b9) >>> 0;
+  const mix = () => { z = (z + 0x9e3779b9) >>> 0; let t = z; t = Math.imul(t ^ (t >>> 16), 0x85ebca6b); t = Math.imul(t ^ (t >>> 13), 0xc2b2ae35); return (t ^ (t >>> 16)) >>> 0; };
+  let a = mix(), b = mix(), c = mix(), d = mix();
+  return () => { const t = (((a + b) >>> 0) + d) >>> 0; d = (d + 1) >>> 0; a = b ^ (b >>> 9); b = (c + (c << 3)) >>> 0; c = (c << 21) | (c >>> 11); c = (c + t) >>> 0; return t / 4294967296; };
+}
 
 function makeTools(n, rnd) {
   const ri = (k) => Math.floor(rnd() * k);
@@ -248,7 +254,7 @@ if (!isMainThread) {
     if (seen.size >= want) { if (!live) process.exit(0); return; }
     live++;
     const n = tier.sizes[attempt % tier.sizes.length];
-    const w = new Worker(fileURLToPath(import.meta.url), { workerData: { tier, n, seed: 777 + PLAN.indexOf(tier) * 7777777 + (attempt++) * 104729, budgetMs: 120000 } });
+    const w = new Worker(fileURLToPath(import.meta.url), { workerData: { tier, n, seed: (Math.random() * 4294967296) >>> 0 ^ (PLAN.indexOf(tier) * 2654435761 + (attempt++) * 40503), budgetMs: 120000 } });
     w.on('message', (res) => { live--; if (res && !seen.has(res.rows.join('')) && seen.size < want) { seen.add(res.rows.join('')); fs.appendFileSync(file, JSON.stringify({ n: res.n, rows: res.rows, sol: res.sol, g: [res.grade.A, res.grade.B, res.grade.C, res.grade.D, res.grade.maxK, res.grade.E] }) + String.fromCharCode(10)); process.stderr.write('found ' + seen.size + '/' + want + ' n=' + res.n + String.fromCharCode(10)); } spawn(); });
     w.on('error', () => { live--; spawn(); });
   };
