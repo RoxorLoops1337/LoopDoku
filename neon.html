@@ -363,6 +363,51 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 .lose-stage .spark{position:absolute;left:50%;top:6px;width:44px;height:44px;margin-left:-22px}
 .lose-txt{margin:0;color:var(--mute);font-size:15px;line-height:1.4}
 .ov .panel .btn{height:48px}
+/* ---------- keep them playing ---------- */
+.xslot{width:100%;max-width:360px}
+.xslot:empty{display:none}
+.ldx{background:linear-gradient(180deg,rgba(32,19,56,.88),rgba(13,8,25,.92)) padding-box,linear-gradient(100deg,rgba(141,255,60,.8),rgba(180,120,255,.45) 50%,rgba(255,79,168,.8)) border-box!important;border:1.5px solid transparent!important;box-shadow:0 0 14px rgba(170,110,255,.25)!important;padding:9px 11px!important;gap:7px!important}
+.ldx-cheer{text-shadow:0 0 6px rgba(255,79,168,.8);font-size:16px!important}
+.ldx-pill{background:rgba(255,255,255,.06)!important;border:1px solid rgba(180,140,255,.45);color:#f4ecff!important}
+.ldx-pill.hot{background:rgba(255,79,168,.2)!important;border-color:var(--p);box-shadow:0 0 8px rgba(255,79,168,.6);text-shadow:0 0 5px var(--p)}
+.ldx-pill.gold{background:rgba(141,255,60,.15)!important;border-color:var(--g);box-shadow:0 0 8px rgba(141,255,60,.5);text-shadow:0 0 5px var(--g)}
+.ldx-goal i.on{color:var(--g);box-shadow:0 0 5px var(--g)}
+.ldx-bar{background:rgba(0,0,0,.45)!important;border:1px solid rgba(180,140,255,.4)!important}
+.ldx-bar b{background:linear-gradient(90deg,var(--g),var(--p))!important;box-shadow:0 0 8px rgba(255,79,168,.8)}
+.streakb{font:800 12px/1 var(--f-ui);padding:5px 8px;border-radius:999px;border:1.5px solid #ff8a2b;color:#fff3e0;background:rgba(40,14,0,.55);box-shadow:0 0 8px rgba(255,138,43,.7),inset 0 0 6px rgba(255,138,43,.35);text-shadow:0 0 6px #ff8a2b;white-space:nowrap;animation:hotflick 2.4s infinite}
+.streakb[hidden]{display:none}
+@keyframes hotflick{0%,92%,100%{opacity:1}94%{opacity:.4}96%{opacity:1}97%{opacity:.6}}
+.gig{max-width:100%;overflow:hidden}
+.gig small{max-width:100%;overflow:hidden}
+.gig small i{flex:none}
+.gig small span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+#scr-win{gap:6px;padding:8px 14px 12px}
+#scr-win .encore{font-size:clamp(36px,11vw,50px);margin-top:2px}
+#scr-win .wstars{height:50px}#scr-win .wstar{width:48px;height:48px}
+#scr-win .win-stage{min-height:70px;max-height:300px}
+#scr-win .win-rate{font-size:20px}
+.wstat{display:flex;justify-content:space-between;gap:8px;font:700 11px var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.wstat b{color:#eafcff;font-size:14px;letter-spacing:.02em;text-shadow:0 0 6px var(--cy);margin-left:3px}
+.win-btns{flex:none}
+.win-btns .btn{flex:1}
+.win-btns .nextb{flex:1.9;height:60px;font-size:19px;border-width:2.5px;background:linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,0) 55%),rgba(141,255,60,.4);animation:nextGlow 1s ease-in-out infinite}
+.win-btns .btn:not(.nextb){height:60px}
+@keyframes nextGlow{0%,100%{box-shadow:0 0 14px rgba(141,255,60,.7),inset 0 0 16px rgba(141,255,60,.35)}50%{box-shadow:0 0 30px rgba(141,255,60,1),0 0 60px rgba(141,255,60,.35),inset 0 0 24px rgba(141,255,60,.55)}}
+.win-btns .nextb.is-pressed{animation:none}
+#flour{position:fixed;left:0;right:0;top:34%;z-index:7;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:2px;opacity:0}
+#flour b{opacity:var(--o,1);font:400 clamp(38px,12vw,64px)/1 var(--f-disp);color:#fff8e0;text-shadow:0 0 3px #fff,0 0 12px var(--am),0 0 30px var(--am),0 0 60px #ff8a2b;white-space:nowrap}
+#flour small{font:400 clamp(24px,7vw,36px)/1 var(--f-script);color:#fff0f8;text-shadow:0 0 6px var(--p),0 0 16px var(--p)}
+#flour.go{animation:flourA 2.1s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes flourA{0%{opacity:0;transform:scale(2.4) rotate(-6deg)}12%{opacity:1;transform:scale(.92) rotate(2deg)}18%{transform:scale(1.06) rotate(-1deg)}24%{transform:scale(1) rotate(0)}30%{opacity:.4}32%{opacity:1}80%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.1) translateY(-30px)}}
+/* title: front door polish */
+#scr-title{gap:4px}
+#scr-title .duo-stage{min-height:120px}
+.title-btns .watch{height:64px}
+.title-btns .watch .playlbl span{font-size:18px;letter-spacing:.08em}
+.title-btns .watch .playlbl small{font-size:11px;letter-spacing:.06em;text-transform:none}
+#tExtras .ldx{margin-bottom:2px}
+.tpts{display:flex;gap:6px;align-items:center}
+.gig b{padding:2px 16px 4px;text-shadow:0 0 2px #fff,0 0 6px var(--p),0 0 12px rgba(255,79,168,.8)!important;line-height:1}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 </style>
 </head>
@@ -398,7 +443,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
       <div class="fig jasmin" id="tJas"></div>
     </div>
     <div class="title-btns">
-      <button class="btn pink solid big watch" data-act="play"><span data-ic="play"></span><em class="playlbl">Play<small id="tCont">Easy 1</small></em></button>
+      <div id="tExtras" class="xslot"></div>
+      <button class="btn pink solid big watch" data-act="play"><span data-ic="play"></span><em class="playlbl"><span id="tPlay">Continue · Easy 1</span><small id="tCont">Copenhagen · Harbour Stage</small></em></button>
       <div class="row"><button class="btn solid" data-act="tour"><span data-ic="map"></span>World Tour</button><button class="btn cyan" data-act="daily"><span data-ic="cal"></span>Daily Jam</button></div>
       <div class="row"><button class="btn amber" data-act="looks"><span data-ic="star"></span>Looks</button><button class="btn vi" data-act="outfits"><span data-ic="shirt"></span>Outfits</button></div>
       <div class="row"><button class="btn cyan" data-act="demo"><span data-ic="hint"></span>How to play</button><button class="btn ghost" data-act="settings"><span data-ic="settings"></span>Settings</button></div>
@@ -418,7 +464,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
         <div class="bust" id="hudR" data-e="idle"></div>
         <div class="hud-mid">
           <div class="lives" id="lives"></div>
-          <div class="hudrow"><div class="timer" id="timer">0:00</div><div class="ptschip" id="gPts">0 pts</div></div>
+          <div class="hudrow"><div class="timer" id="timer">0:00</div><div class="ptschip" id="gPts">0 pts</div><div class="streakb" id="gStreak" hidden>🔥2</div></div>
         </div>
         <div class="bust" id="hudJ" data-e="idle"></div>
       </div>
@@ -447,10 +493,11 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
     </div>
     <div class="wpts glass" id="wPts">
       <div class="wpts-top"><b class="neon-a" id="wGain">+0 pts</b><span class="wtot">Total <b id="wTotal">0</b></span></div>
+      <div class="wstat"><span>⏱ <b id="wTime">1:42</b></span><span>Mistakes <b id="wMis">0</b></span><span>Stars <b id="wStarsN">3/3</b></span></div>
       <div class="wchips" id="wChips"></div>
     </div>
-    <div class="stats glass"><div><b class="neon-c" id="wTime">1:42</b><small>Time</small></div><div><b class="neon-p" id="wMis">0</b><small>Mistakes</small></div><div><b class="neon-g" id="wStarsN">3/3</b><small>Stars</small></div></div>
-    <div class="win-btns"><button class="btn cyan" data-act="wtour"><span data-ic="map"></span>World Tour</button><button class="btn solid" id="bNext" data-act="next">Next gig<span data-ic="next"></span></button></div>
+    <div id="wExtras" class="xslot"></div>
+    <div class="win-btns"><button class="btn cyan" data-act="wtour" aria-label="World Tour"><span data-ic="map"></span>Tour</button><button class="btn solid nextb" id="bNext" data-act="next"><span id="bNextL">Next gig ▶</span></button></div>
   </section>
 
   <!-- OUTFITS -->
@@ -467,6 +514,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
       <div class="lose-sign neon-p">Power cut!</div>
       <div class="lose-stage" id="loseStage"></div>
       <p class="lose-txt">Three mics blown. The crowd is still chanting your name...</p>
+      <div id="lExtras" class="xslot"></div>
       <button class="btn pink solid big" data-act="retry"><span data-ic="restart"></span>Try again</button>
       <button class="btn cyan" data-act="tour"><span data-ic="map"></span>World Tour</button>
     </div>
@@ -477,6 +525,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 
 <canvas id="fx"></canvas>
 <div id="alarm"></div><div id="strobe"></div>
+<div id="flour" aria-hidden="true"></div>
 
 <div class="ov" id="ovPause"><div class="panel glass">
   <h2 class="neon-c">Paused</h2>
@@ -1463,8 +1512,15 @@ function onLose() {
   setExpr('both', 'wince', 3000, 'a-wince');
   setTicker('Power cut...', 'r');
   const g = game;
-  if (!g._demo) LD.meta.recordLoss();
-  setTimeout(() => { if (game === g && cur === 'game') { show('lose'); flickerOn($('.lose-sign'), 120); } }, 1300);
+  const rl = g._demo ? null : LD.meta.recordLoss();
+  updatePts();
+  setTimeout(() => {
+    if (game !== g || cur !== 'game') return;
+    const x = $('#lExtras'); x.innerHTML = '';
+    try { x.appendChild(LD.ui.loseExtras(rl || {})); } catch (e) { console.warn(e); }
+    $('.lose-txt').textContent = rl && rl.streakLost >= 2 ? 'The power cut ended a ' + rl.streakLost + '-gig streak. Plug back in!' : 'Three mics blown. The crowd is still chanting your name...';
+    show('lose'); flickerOn($('.lose-sign'), 120);
+  }, 1300);
 }
 function buildLose() {
   $('#loseStage').innerHTML = svgArt(roxorFigure('wince'), '0 0 140 190').replace('<svg', '<svg class="lr"') + svgArt(jasminFigure('wince'), '0 0 140 190').replace('<svg', '<svg class="lj"') +
@@ -1494,10 +1550,15 @@ function updateHUD() {
 function updatePts(v) {
   const t = (v === undefined ? LD.meta.points() : v) + ' pts';
   $('#gPts').textContent = t; $('#tPts').textContent = t;
+  const st = (LD.meta.state && LD.meta.state.streak) || 0, b = $('#gStreak');
+  b.hidden = st < 2 || (game && game._demo); b.textContent = '🔥' + st;
 }
 function updateTitle() {
-  const id = LD.meta.currentId(), p = LD.meta.level(id);
-  $('#tCont').textContent = levelLabel(p) + ' · ' + p.city;
+  const id = LD.meta.currentId(), p = LD.meta.level(id), fresh = !(LD.meta.state.wins > 0);
+  $('#tPlay').textContent = (fresh ? 'Start · ' : 'Continue · ') + levelLabel(p);
+  $('#tCont').textContent = p.city + ' · ' + p.venue + ' · ' + p.n + '×' + p.n;
+  const x = $('#tExtras'); x.innerHTML = '';
+  try { x.appendChild(LD.ui.titleExtras()); } catch (e) { console.warn(e); }
   updatePts();
 }
 function renderLives(anim) {
@@ -1999,7 +2060,13 @@ function showWin(st, r) {
   const chips = $('#wChips'), gain = $('#wGain'), tot = $('#wTotal');
   chips.innerHTML = '';
   $('#bNext').style.display = !r || r.nextId ? '' : 'none';
-  $('#bNext').firstChild.textContent = r ? 'Next gig' : 'Play now';
+  $('#bNextL').textContent = !r ? 'Play now ▶' : r.streak >= 2 ? 'One more! Next gig ▶' : 'Next gig ▶';
+  const wx = $('#wExtras'); wx.innerHTML = '';
+  if (r) { try { wx.appendChild(LD.ui.winExtras(r)); } catch (e) { console.warn(e); } }
+  if (r) {
+    const fl = r.packUnlocked ? ['NEW PACK!', (r.packUnlocked.name || r.packUnlocked) + ' is open'] : r.streak >= 3 ? [r.streak + ' IN A ROW!', 'the crowd is on fire'] : r.goal && r.goal.hit ? ['DAILY SET!', 'bonus +' + r.goal.bonus] : null;
+    if (fl) winSlams.push(setTimeout(() => { if (cur === 'win') flourish(fl[0], fl[1]); }, RM() ? 200 : 2700));
+  }
   if (r) {
     const list = [];
     if (r.firstClear) list.push(['First clear +' + r.base, 'g']); else list.push(['Replay ×0.2', 'c']);
@@ -2063,6 +2130,22 @@ function showWin(st, r) {
   });
   confetti(VW * 0.5, VH * 0.2, 60, { v0: 200, v1: 560, l0: 2.2, l1: 3.6 });
   BG.wild = Math.max(BG.wild, 0.8);
+}
+function flourish(big, small) {
+  const el = $('#flour');
+  el.innerHTML = '<b>' + big + '</b><small>' + small + '</small>';
+  el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
+  setTimeout(() => el.classList.remove('go'), 2200);
+  flickerOn(el.querySelector('b'), 0, '--o');
+  BG.wild = 1; BG.boost = 1; BG.sweepT += 3;
+  if (!RM()) { const s2 = $('#strobe'); s2.classList.remove('go'); void s2.offsetWidth; s2.classList.add('go'); setTimeout(() => s2.classList.remove('go'), 620); }
+  const y = VH * 0.38;
+  [[0.15, -1.1], [0.85, Math.PI + 1.1], [0.5, -Math.PI / 2]].forEach(([fxp, ang], k) => setTimeout(() => {
+    confetti(VW * fxp, y + 40, 40, { a: ang, v0: 260, v1: 640, l0: 2, l1: 3.2 });
+    stars(VW * fxp, y, 10, k === 1 ? NC.p : k ? NC.amber : NC.g, { v: 320, s: 16 });
+    ring(VW * fxp, y, 10, 120, k === 1 ? NC.p : NC.g, 520, 6);
+  }, k * 160));
+  const A = LD.audio; if (A.ctx) { A.win(); AX.zap(2); }
 }
 function winTick() { BG.wild = Math.max(BG.wild, 0.35); }
 

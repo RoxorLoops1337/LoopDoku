@@ -11,12 +11,15 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const PLAN = [
-  // id, name, count, sizes, needs (highest technique), extra filter
-  { id: 'easy', name: 'Easy', count: 25, sizes: [5, 5, 6], top: 'B', maxB: 3 },
-  { id: 'normal', name: 'Normal', count: 25, sizes: [6, 7, 7], top: 'B', minB: 3 },
-  { id: 'hard', name: 'Hard', count: 25, sizes: [7, 8, 8], top: 'C', minC: 1 },
-  { id: 'expert', name: 'Expert', count: 25, sizes: [8, 9, 9], top: 'C', minC: 3, minK: 2 },
-  { id: 'extreme', name: 'Extreme', count: 20, sizes: [9, 10, 10], top: 'D', minD: 2 },
+  // id, name, count, sizes, needs (highest technique), extra filter. Packs play in this order.
+  { id: 'easy', name: 'Easy', count: 40, sizes: [5, 5, 6], top: 'B', maxB: 3 },
+  { id: 'normal', name: 'Normal', count: 40, sizes: [6, 7, 7], top: 'B', minB: 3 },
+  { id: 'chill', name: 'Chill XL', count: 30, sizes: [8, 9, 10], top: 'B', maxB: 8 },
+  { id: 'hard', name: 'Hard', count: 40, sizes: [7, 8, 8], top: 'C', minC: 1 },
+  { id: 'expert', name: 'Expert', count: 40, sizes: [8, 9, 9], top: 'C', minC: 3, minK: 2 },
+  { id: 'terror', name: 'Terror', count: 30, sizes: [7, 8, 8], top: 'D', minD: 2 },
+  { id: 'extreme', name: 'Extreme', count: 30, sizes: [9, 10, 10], top: 'D', minD: 2 },
+  { id: 'melt', name: 'Meltdown', count: 20, sizes: [8, 8, 9], top: 'D', minD: 4 },
   { id: 'nightmare', name: 'Nightmare', count: 12, sizes: [10], top: 'D', minD: 3 },
 ];
 
@@ -167,9 +170,25 @@ function solver(n, reg) {
     }
     return false;
   }
-  function grade() {
+  // E: a what-if whose own reasoning may use what-ifs (two levels deep): only for the Brain Melt tier
+  function propagateD(st) {
+    for (;;) {
+      if (!propagate(st, true)) return false;
+      if (stepD(st)) continue;
+      return true;
+    }
+  }
+  function stepE(st) {
+    for (let i = 0; i < N; i++) {
+      if (st[i] !== 0) continue;
+      const t = st.slice(); place(t, i);
+      if (!propagateD(t)) { st[i] = 1; return true; }
+    }
+    return false;
+  }
+  function grade(useE) {
     const st = new Uint8Array(N);
-    const g = { A: 0, B: 0, C: 0, D: 0, maxK: 0, solved: false };
+    const g = { A: 0, B: 0, C: 0, D: 0, E: 0, maxK: 0, solved: false };
     for (;;) {
       if (dead(st)) return g;
       if (stepA(st)) { g.A++; continue; }
@@ -177,6 +196,7 @@ function solver(n, reg) {
       const k = stepC(st, 4);
       if (k) { g.C++; g.maxK = Math.max(g.maxK, k); continue; }
       if (stepD(st)) { g.D++; continue; }
+      if (useE && stepE(st)) { g.E++; continue; }
       break;
     }
     g.solved = st.filter((v) => v === 2).length === n;
@@ -187,14 +207,16 @@ function solver(n, reg) {
 
 function fits(g, t) {
   if (!g.solved) return false;
-  const top = g.D ? 'D' : g.C ? 'C' : g.B ? 'B' : 'A';
-  const order = 'ABCD';
+  const top = g.E ? 'E' : g.D ? 'D' : g.C ? 'C' : g.B ? 'B' : 'A';
+  const order = 'ABCDE';
   if (order.indexOf(top) !== order.indexOf(t.top) && !(t.top === 'B' && top === 'A' && t.maxB !== undefined)) return false;
   if (t.maxB !== undefined && g.B > t.maxB) return false;
   if (t.minB !== undefined && g.B < t.minB) return false;
   if (t.minC !== undefined && g.C < t.minC) return false;
   if (t.minK !== undefined && g.maxK < t.minK) return false;
   if (t.minD !== undefined && g.D < t.minD) return false;
+  if (t.minE !== undefined && g.E < t.minE) return false;
+  if (t.minN !== undefined && g.B + g.C + g.D < t.minN) return false;
   return true;
 }
 
@@ -203,7 +225,7 @@ function search(tier, n, seed, budgetMs) {
   while (Date.now() - t0 < budgetMs) {
     const sol = T.solution(), reg = T.regions(sol);
     if (!reg || countSolutions(n, reg, 2) !== 1) continue;
-    const g = solver(n, reg).grade();
+    const g = solver(n, reg).grade(tier.top === 'E');
     if (!fits(g, tier)) continue;
     const map = new Map(); for (const k of reg) if (!map.has(k)) map.set(k, map.size);
     const rows = []; for (let r = 0; r < n; r++) rows.push(reg.slice(r * n, r * n + n).map((k) => 'ABCDEFGHIJ'[map.get(k)]).join(''));
@@ -221,13 +243,13 @@ if (!isMainThread) {
   const tier = PLAN.find((t) => t.id === a[0]), want = +a[1] || 20, file = a[2] || tier.id + '.jsonl';
   const seen = new Set(fs.existsSync(file) ? fs.readFileSync(file, 'utf8').split(/\r?\n/).filter(Boolean).map((l) => JSON.parse(l).rows.join('')) : []);
   let attempt = Date.now() % 100000, live = 0;
-  const cpus = Math.max(2, os.cpus().length - 4);
+  const cpus = +process.env.RACE_WORKERS || Math.max(2, os.cpus().length - 4);
   const spawn = () => {
     if (seen.size >= want) { if (!live) process.exit(0); return; }
     live++;
     const n = tier.sizes[attempt % tier.sizes.length];
-    const w = new Worker(fileURLToPath(import.meta.url), { workerData: { tier, n, seed: 777 + (attempt++) * 104729, budgetMs: 120000 } });
-    w.on('message', (res) => { live--; if (res && !seen.has(res.rows.join('')) && seen.size < want) { seen.add(res.rows.join('')); fs.appendFileSync(file, JSON.stringify({ n: res.n, rows: res.rows, sol: res.sol, g: [res.grade.A, res.grade.B, res.grade.C, res.grade.D, res.grade.maxK] }) + String.fromCharCode(10)); process.stderr.write('found ' + seen.size + '/' + want + ' n=' + res.n + String.fromCharCode(10)); } spawn(); });
+    const w = new Worker(fileURLToPath(import.meta.url), { workerData: { tier, n, seed: 777 + PLAN.indexOf(tier) * 7777777 + (attempt++) * 104729, budgetMs: 120000 } });
+    w.on('message', (res) => { live--; if (res && !seen.has(res.rows.join('')) && seen.size < want) { seen.add(res.rows.join('')); fs.appendFileSync(file, JSON.stringify({ n: res.n, rows: res.rows, sol: res.sol, g: [res.grade.A, res.grade.B, res.grade.C, res.grade.D, res.grade.maxK, res.grade.E] }) + String.fromCharCode(10)); process.stderr.write('found ' + seen.size + '/' + want + ' n=' + res.n + String.fromCharCode(10)); } spawn(); });
     w.on('error', () => { live--; spawn(); });
   };
   for (let c = 0; c < cpus; c++) spawn();

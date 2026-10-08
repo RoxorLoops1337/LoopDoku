@@ -72,7 +72,7 @@ button{font-family:inherit}
 .g-top{flex:none;display:flex;align-items:center;gap:7px;height:52px;position:relative;z-index:5}
 .gig{flex:1;min-width:0;height:46px;filter:drop-shadow(0 2px 1.5px rgba(40,20,5,.35))}
 .gig .tapebar{height:100%;padding:3px 12px 0 14px;display:flex;flex-direction:column;justify-content:center;transform:rotate(-1.3deg)}
-.gig b{font:400 20px/1.05 var(--fd);letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gig b{font:400 20px/1.05 var(--fd);display:block;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gig span{font:14px/1.15 var(--fh);color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .timer{flex:none;height:40px;min-width:64px;filter:drop-shadow(0 2px 1.5px rgba(40,20,5,.4));transform:rotate(2deg)}
 .timer div{height:100%;padding:0 9px 0 19px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 9px 50%,#7a5530 0 2.6px,transparent 3.2px),var(--grain) 0 0/150px,var(--paper);clip-path:polygon(11px 0,100% 3%,98% 100%,11px 100%,0 50%);font:24px/1 var(--fs);color:var(--ink);font-variant-numeric:tabular-nums}
@@ -153,7 +153,7 @@ button{font-family:inherit}
 #scr-win{align-items:center;gap:6px}
 .bunting{flex:none;width:100%;height:34px;position:relative}
 .bunting svg{width:100%;height:100%;display:block;overflow:visible}
-.w-stagebox{flex:1;min-height:200px;width:100%;position:relative;perspective:700px}
+.w-stagebox{flex:1;min-height:110px;width:100%;position:relative;perspective:700px}
 .w-book{position:absolute;left:3%;right:3%;bottom:0;height:16%;display:flex;gap:2px;transform:perspective(500px) rotateX(38deg);transform-origin:50% 100%}
 .w-book i{flex:1;background:var(--grain) 0 0/160px,#c98d4c;border-radius:6px 2px 2px 10px;box-shadow:0 4px 0 #7c4f22,0 10px 16px -4px rgba(40,20,5,.5)}
 .w-book i:last-child{border-radius:2px 6px 10px 2px}
@@ -161,15 +161,15 @@ button{font-family:inherit}
 .w-book i:first-child::after{box-shadow:inset -14px 0 12px -10px rgba(60,30,10,.4)}.w-book i:last-child::after{box-shadow:inset 14px 0 12px -10px rgba(60,30,10,.4)}
 .w-pop{position:absolute;left:0;right:0;top:0;bottom:9%;transform-origin:50% 100%}
 #winCv{position:absolute;inset:0;width:100%;height:100%}
-.w-stars{flex:none;display:flex;gap:10px;justify-content:center;height:62px;align-items:center}
-.w-stars i{width:58px;height:58px;display:block;opacity:0}
+.w-stars{flex:none;display:flex;gap:10px;justify-content:center;height:52px;align-items:center}
+.w-stars i{width:48px;height:48px;display:block;opacity:0}
 .w-stars i svg{width:100%;height:100%;overflow:visible}
 .w-stats{flex:none;display:flex;gap:8px;justify-content:center;width:100%}
 .w-stats .sheetp{flex:1;max-width:120px;padding:7px 6px 6px;text-align:center}
 .w-stats .sheetp:nth-child(1){transform:rotate(-2deg)}.w-stats .sheetp:nth-child(3){transform:rotate(2deg)}
 .w-stats small{display:block;font:14px/1 var(--fh);color:var(--ink2)}
 .w-stats b{display:block;font:26px/1.1 var(--fs);color:var(--ink)}
-.w-btns{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;padding:6px 4px 4px}
+.w-btns{flex:none;display:grid;grid-template-columns:1fr 1.7fr;align-items:end;gap:10px;width:100%;padding:6px 4px 4px}
 .w-btns .tab{height:60px}
 
 /* ---------- OUTFITS ---------- */
@@ -196,13 +196,26 @@ button{font-family:inherit}
 /* ---------- META bits ---------- */
 .ptstag{margin-top:6px;filter:drop-shadow(0 2px 1.5px rgba(40,20,5,.35));transform:rotate(1.5deg)}
 .ptstag div{padding:4px 14px 3px;font:400 18px/1 var(--fd);color:#fff;background:var(--grain) 0 0/120px,#78bd35;border-radius:3px 6px 4px 5px;letter-spacing:.4px}
-.w-pts{flex:none;display:flex;justify-content:center;width:100%}
-.ptsbox{padding:6px 16px 7px;text-align:center;transform:rotate(-1.5deg);min-width:210px}
-.ptsbox b{display:block;font:400 32px/1 var(--fd);color:#c93f78;letter-spacing:.5px}
+.w-pts{flex:none;display:flex;flex-direction:column;align-items:center;width:100%}
+.ptsbox{padding:4px 14px 5px;text-align:center;transform:rotate(-1.5deg);min-width:210px}
+.ptsbox b{display:block;font:400 28px/1 var(--fd);color:#c93f78;letter-spacing:.5px}
 .ptsbox .bd{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:4px 0 3px}
 .ptsbox .bd span{font:13px/1 var(--fh);padding:3px 7px 2px;background:var(--grain) 0 0/120px,#efe0b2;border-radius:2px;transform:rotate(var(--r,0deg))}
 .ptsbox small{display:block;font:15px/1 var(--fh);color:var(--ink2)}
 .ldui-sheet{background-image:var(--grain)!important;background-size:200px!important}
+.ldx{background-image:var(--grain)!important;background-size:200px!important;box-shadow:0 2px 0 #d8c7a2,0 8px 14px -6px rgba(45,22,5,.45)!important;position:relative}
+.ldx::before{content:"";position:absolute;left:50%;top:-7px;width:54px;height:15px;transform:translateX(-50%) rotate(-3deg);background:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 4px,transparent 4px 8px),#a9e070;opacity:.9;clip-path:polygon(0 12%,6% 0,94% 8%,100% 0,97% 50%,100% 100%,5% 92%,0 100%,3% 50%)}
+.ldx-pill.hot,.ldx-pill.gold{box-shadow:0 1.5px 0 rgba(0,0,0,.18)}
+#tX{flex:none;width:100%;padding:0 4px}
+#tX .ldx{transform:rotate(-.6deg)}
+#wX{width:min(100%,360px);margin-top:6px}
+#wX .ldx{transform:rotate(.6deg);padding:8px 10px!important;gap:6px!important}
+#loseX{width:100%;margin-top:10px;text-align:left}
+.tab .sub{display:block;font:15px/1 var(--fh);opacity:.92;margin-top:2px;white-space:nowrap}
+.streak{position:absolute;right:-12px;top:-12px;z-index:3;min-width:40px;height:40px;padding:0 6px;display:none;align-items:center;justify-content:center;font:400 16px/1 var(--fd);color:#fff;background:var(--grain) 0 0/90px,#ff8a3d;clip-path:polygon(50% 0,61% 22%,85% 10%,78% 36%,100% 46%,79% 60%,90% 86%,63% 79%,50% 100%,37% 79%,10% 86%,21% 60%,0 46%,22% 36%,15% 10%,39% 22%);text-shadow:0 1.5px 0 rgba(90,30,0,.5)}
+.streak.on{display:flex}
+.w-btns .tab#w-next{height:66px}
+#w-next b{font-size:26px}
 .ldui-btn,.ldui-title{letter-spacing:.3px}
 </style></style>
 </head>
@@ -221,9 +234,10 @@ button{font-family:inherit}
     <div class="ptstag"><div id="t-pts">0 pts</div></div>
   </div>
   <div id="duoBox"><canvas id="duoCv"></canvas></div>
+  <div id="tX"></div>
   <div class="t-btns">
     <div class="r2">
-      <button class="tab green" id="b-play"><span class="base"></span><span class="face" data-ic="play"><b>Play</b></span></button>
+      <button class="tab green" id="b-play"><span class="base"></span><span class="face" data-ic="play"><span><b id="t-playL">Play</b><span class="sub" id="t-next"></span></span></span></button>
       <button class="tab pink" id="b-how"><span class="base"></span><span class="face" data-ic="scissors"><b>How to play</b></span></button>
     </div>
     <div class="r3">
@@ -248,7 +262,7 @@ button{font-family:inherit}
   <div class="g-hud">
     <canvas class="pup L" id="pupR"></canvas>
     <canvas class="pup R" id="pupJ"></canvas>
-    <div class="marquee card brads"><h4>LOOP STATION</h4><svg id="loopSvg" viewBox="-60 -24 120 48"></svg><div class="lc" id="g-layers">0 pts</div></div>
+    <div class="marquee card brads"><span class="streak" id="g-streak">🔥2</span><h4>LOOP STATION</h4><svg id="loopSvg" viewBox="-60 -24 120 48"></svg><div class="lc" id="g-layers">0 pts</div></div>
     <div class="hud-panel card brads" id="pads"></div>
     <div class="bubble" id="say"><span class="washi"></span><span id="sayT"></span></div>
   </div>
@@ -263,7 +277,7 @@ button{font-family:inherit}
   </div>
   <div class="ov" id="loseOv">
     <div style="display:flex;flex-direction:column;align-items:center;gap:22px;width:100%">
-      <div class="sign card brads" style="--cf:#f3dcae"><div class="cut" id="loseH"></div><canvas id="loseCv" style="width:200px;height:120px"></canvas><div style="font:18px/1.2 var(--fh)">Out of mics! The crowd still wants a show...</div></div>
+      <div class="sign card brads" style="--cf:#f3dcae"><div class="cut" id="loseH"></div><canvas id="loseCv" style="width:200px;height:120px"></canvas><div style="font:18px/1.2 var(--fh)">Out of mics! The crowd still wants a show...</div><div id="loseX"></div></div>
       <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:10px;width:min(92%,340px)">
         <button class="tab pink" id="b-retry" style="height:64px"><span class="base"></span><span class="face" data-ic="undo"><b style="font-size:23px">Try again</b></span></button>
         <button class="tab cream" id="b-lose-tour" style="height:64px"><span class="base"></span><span class="face" data-ic="map"><span class="lbl" style="font-size:18px">World Tour</span></span></button>
@@ -282,10 +296,10 @@ button{font-family:inherit}
     <div class="sheetp"><small>Mistakes</small><b id="w-mis">0</b></div>
     <div class="sheetp"><small>Gig</small><b id="w-gig" style="font-size:20px;line-height:1.3">Copenhagen</b></div>
   </div>
-  <div class="w-pts" id="wPts"><div class="sheetp ptsbox"><b id="w-plus">+0 pts</b><div class="bd" id="w-bd"></div><small id="w-total">total 0 pts</small></div></div>
+  <div class="w-pts" id="wPts"><div class="sheetp ptsbox"><b id="w-plus">+0 pts</b><div class="bd" id="w-bd"></div><small id="w-total">total 0 pts</small></div><div id="wX"></div></div>
   <div class="w-btns">
     <button class="tab cream" id="w-tour"><span class="base"></span><span class="face" data-ic="map"><b style="color:var(--ink)">World Tour</b></span></button>
-    <button class="tab green" id="w-next"><span class="base"></span><span class="face"><b id="w-nextL">Next gig</b><span data-ic2="play"></span></span></button>
+    <button class="tab green" id="w-next"><span class="base"></span><span class="face"><b id="w-nextL">Next gig ▶</b></span></button>
   </div>
 </section>
 
@@ -1571,8 +1585,10 @@ function loopDot(info) {
 }
 function updateGigLabel() {
   const p = game.p;
-  $('#g-city').textContent = DEMOGAME ? 'How to play' : (p.packName || p.diff || '') + (p.num ? ' ' + p.num : '') + ' · ' + p.city;
-  $('#g-venue').textContent = (DEMOGAME ? p.city + ' · ' : '') + p.venue + ' · ' + p.n + '×' + p.n;
+  const head = DEMOGAME ? 'How to play' : (p.packName || p.diff || '') + (p.num ? ' ' + p.num : '');
+  const hb = $('#g-city'); hb.textContent = head; hb.style.fontSize = head.length > 15 ? '16px' : head.length > 12 ? '18px' : '';
+  $('#g-venue').textContent = p.city + ' · ' + p.venue + ' · ' + p.n + '×' + p.n;
+  const st = DEMOGAME ? 0 : (LD.meta.state.streak || 0), sb = $('#g-streak'); sb.textContent = '\u{1F525}' + st; sb.classList.toggle('on', st >= 2);
   updPts();
 }
 let lastTimeTxt = '';
@@ -1680,7 +1696,8 @@ function onWin(e) {
 function onLose() {
   BD.lose = { t0: now() };
   react('roxor', 'sad', 1e9); react('jasmin', 'sad', 1e9);
-  if (!DEMOGAME) { try { LD.meta.recordLoss(); } catch (err) { /* */ } }
+  const lx = $('#loseX'); lx.innerHTML = '';
+  if (!DEMOGAME) { try { const rl = LD.meta.recordLoss(); lx.appendChild(LD.ui.loseExtras(rl)); } catch (err) { console.warn(err); } }
   if (DEMO) { DEMO.stop(); DEMO = null; FX.finger = null; }
   setTimeout(() => { if (CUR === 'game' && game && game.over && !game.won) { const o = $('#loseOv'); o.classList.add('on'); screenIn(o); } }, 900);
 }
@@ -1704,6 +1721,13 @@ function startGig(id) {
   closeSheet();
   newGame(id || LD.meta.currentId());
   showScreen('game'); setHash('game');
+}
+function titleBits() {
+  try {
+    const x = $('#tX'); x.innerHTML = ''; x.appendChild(LD.ui.titleExtras());
+    const L = LD.meta.level(LD.meta.currentId()), solved = LD.meta.state.solved && Object.keys(LD.meta.state.solved).length;
+    $('#t-playL').textContent = solved ? 'Continue' : 'Play'; $('#t-next').textContent = L ? (L.packName || '') + ' ' + (L.num || '') : '';
+  } catch (e) { console.warn(e); }
 }
 function openTour() { LD.ui.levels({ onPlay: (id) => startGig(id) }); }
 function startDemo() {
@@ -1770,7 +1794,7 @@ function showScreen(s) {
   $('#sheetOv').classList.remove('on'); PAUSED = false;
   if (s !== 'game') $('#loseOv').classList.remove('on');
   if (s === 'game') { if (!game) newGame(); layoutBoard(true); }
-  if (s === 'title') { LOGO.t0 = now(); updPts(); requestAnimationFrame(() => buildLogo()); }
+  if (s === 'title') { LOGO.t0 = now(); updPts(); titleBits(); requestAnimationFrame(() => buildLogo()); }
   if (s === 'win') showWin();
   if (s !== 'win') FX.list = FX.list.filter((p) => p.type === 'conf' || p.type === 'streamer');
 }
@@ -1871,7 +1895,10 @@ function showWin() {
   const r = w.r, nb = $('#w-next');
   $('#wPts').style.display = r ? '' : 'none';
   if (w.demo) { nb.style.display = ''; $('#w-nextL').textContent = "Let's play!"; }
-  else { nb.style.display = r && r.nextId ? '' : 'none'; $('#w-nextL').textContent = 'Next gig'; }
+  else { nb.style.display = r && r.nextId ? '' : 'none'; $('#w-nextL').textContent = r && r.streak >= 2 ? 'One more! \u25B6' : 'Next gig \u25B6'; }
+  const wx = $('#wX'); wx.innerHTML = ''; if (r) { try { wx.appendChild(LD.ui.winExtras(r)); } catch (e) { console.warn(e); } }
+  if (r && (r.streak >= 3 || r.packUnlocked || (r.goal && r.goal.hit))) setTimeout(() => flourish(r), 3000);
+  tween(1400, (p) => { const k = Math.sin(p * Math.PI * 4) * (1 - p); nb.style.transform = p >= 1 ? '' : 'rotate(' + (k * 2.5).toFixed(2) + 'deg) scale(' + (1 + Math.abs(k) * 0.05).toFixed(3) + ')'; }, { el: nb, delay: 2900 });
   if (r) {
     const parts = [];
     if (r.firstClear) parts.push('first clear +' + r.base); else parts.push('replay +' + r.base);
@@ -1895,6 +1922,15 @@ function showWin() {
   if (!RM()) { confetti(60, true); setTimeout(() => { confetti(40, true); noteBurst(14); }, 1300); }
   if (AOK()) setTimeout(() => SND.fwip(), 50);
   for (const a of WINV.actors) a.react = { kind: 'win', t0: now(), dur: 2600 };
+}
+function flourish(r) {
+  if (CUR !== 'win') return;
+  const txt = r.packUnlocked ? 'NEW PACK UNLOCKED!' : r.streak >= 3 ? r.streak + ' IN A ROW!' : 'DAILY SET DONE!';
+  const W = FX.w, H = FX.h;
+  fxAdd({ type: 'word', spr: wordSprite(txt, r.packUnlocked ? '#b4f070' : r.streak >= 3 ? '#ffb27a' : '#ffe27a', 30), x: W / 2, y: H * 0.36, vy: -22, life: 2.2, a: -0.05 });
+  for (let k = 0; k < 2; k++) setTimeout(() => ring(W / 2, H * 0.36, k ? '#ff7fb2' : '#78bd35', 20, Math.min(W, 420) * 0.55, 0.7, 10), k * 160);
+  if (!RM()) { noteBurst(24); confetti(50, false); for (const side of [-1, 1]) for (let k = 0; k < 10; k++) fxAdd({ type: 'streamer', x: side < 0 ? 0 : W, y: H * 0.7, vx: -side * (260 + Math.random() * 260), vy: -500 - Math.random() * 300, g: 420, drag: 0.8, va: (Math.random() - 0.5) * 6, ph: Math.random() * 6, col: ['#78bd35', '#ff7fb2', '#ffd84d', '#8fcbf0'][k % 4], life: 2.6 }); }
+  if (AOK()) { const A = LD.audio; A.kick(1); A.clap(0.8); A.chord([72, 76, 79], 0.6, 'ah'); A.sparkle(); }
 }
 function buildBunting() {
   const cols = ['#78bd35', '#ff7fb2', '#ffd84d', '#8fcbf0', '#bfa9ef', '#ffa766'];

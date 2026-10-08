@@ -92,3 +92,21 @@ window.LDSKIN = {
 - Do at least two look-and-fix rounds. Report in under 200 words: what changed, how your arrows look and feel, the
   screenshot paths, and known issues.
 - Only edit your own skin file (plus new files you need under `tools/` or `thumbs/` named after your skin).
+
+## 7. Keep them playing (added: encouragement)
+The meta layer now tracks win streaks, a day streak, a daily set (3 wins a day) and the next look to unlock, and picks a
+cheer line from the duo. `recordWin` returns them (see the header of `loopdoku-meta.js`); its `r.points` already
+includes the streak, day and daily-set bonuses.
+- **Win screen**: append `LD.ui.winExtras(r)` (a themed card: cheer, 🔥 streak, 📅 day streak, daily set dots, a locked
+  pack teaser, an animated progress bar to the next look). Place it under your points breakdown so it reads as part of
+  your design. **Next gig must stay visible without scrolling at 390x844** (tighten the layout if needed) and be the
+  boldest button; give it energy ("One more! ▶" / "Next gig ▶").
+- **Lose screen**: `const rl = LD.meta.recordLoss()` now returns `{streakLost, cheer, nextLook}`. Append
+  `LD.ui.loseExtras(rl)`.
+- **Title screen**: show `LD.ui.titleExtras()` (rebuild it each time the title opens). Make Play say what is next, e.g.
+  "Continue · Hard 12" (`LD.meta.level(LD.meta.currentId())`).
+- **HUD**: when `LD.meta.state.streak >= 2`, show a small 🔥N streak badge in your style.
+- **Juice**: when `r.streak >= 3`, `r.packUnlocked` or `r.goal.hit`, add an extra celebration flourish in your style.
+- There are now up to nine packs (Easy, Normal, Chill XL, Hard, Expert, Terror, Extreme, Meltdown, Nightmare). The
+  shared World Tour handles them; check that your HUD fits long pack names like "Nightmare 12" and "Meltdown 16".
+- `tools/skin_check.mjs` now also requires a `.ldx` card on the title, win and lose screens.

@@ -328,6 +328,30 @@ svg{overflow:visible}
 .lose-duo>div{width:170px;height:170px}
 .lose-flyer{position:relative;background:#fffaf0;padding:12px 16px;font:13px var(--f-sten);transform:rotate(-2deg);box-shadow:3px 3px 0 rgba(38,25,27,.5);max-width:320px}
 .backtp{margin-bottom:8px}
+/* keep them playing: encouragement cards, streak badge, tighter win screen */
+.ldx{box-shadow:3px 4px 0 rgba(38,25,27,.55);transform:rotate(-.6deg);background-image:var(--grain)!important;background-size:220px 220px!important;width:100%;max-width:370px;flex:none}
+.ldx-pill.hot{box-shadow:2px 2px 0 #26191b}
+#s-title .ldx{margin:2px 0}
+.gstreak{display:none;white-space:nowrap;font:11px/1 var(--f-mono);color:var(--red);border:2px solid var(--red);padding:4px 5px 2px;transform:rotate(-6deg);margin-top:3px;background:rgba(244,236,219,.9)}
+.gstreak.on{display:inline-block}
+#s-win{justify-content:space-between;gap:4px;padding-top:calc(var(--sat) + 6px);padding-bottom:10px}
+.soldout .so{font-size:28px;padding:7px 12px 3px;border-width:5px}
+.w-gig b{font-size:20px}
+.w-gig{font-size:13px}
+.stars{height:60px;gap:12px}.stars svg{width:54px;height:54px}
+.w-duo{aspect-ratio:3.2;max-width:330px}
+.stub div{padding:4px 12px 3px}.stub b{font-size:17px}
+.wpts .big{font-size:26px}
+.wpts .brk{margin-top:4px}.wpts .tot{margin-top:3px;font-size:12px}
+#s-win .ldx{padding:10px 12px;gap:7px}
+#s-win .ldx-cheer{font-size:15px}
+.w-btns .tk.next{flex:1.45;font-size:19px;min-height:58px}
+#bWTour{font-size:13px;white-space:nowrap}
+.w-btns .tk{white-space:nowrap}
+.w-btns .tk.next::after{background-color:var(--green)}
+.flourish{position:absolute;left:50%;top:44%;z-index:15;font-size:30px;pointer-events:none;opacity:0;white-space:nowrap}
+.duo{min-height:140px}
+@media (max-height:860px){ .t-foot{display:none} }
 .t-btns{gap:10px}
 </style>
 </head>
@@ -354,6 +378,7 @@ svg{overflow:visible}
       <div class="t-live"><span class="live">LIVE!</span><span class="sub">a RoxorLoops &amp; Jasmin puzzle</span></div>
       <svg id="logo" viewBox="0 0 400 200" aria-label="LOOPDOKU"></svg>
       <div class="duo" id="titleDuo"><div class="disc"></div><div class="b bR"></div><div class="b bJ"></div><div class="ptsstamp" id="tPts">★ 0 PTS</div></div>
+      <div id="tExtras" style="width:100%;max-width:370px;display:flex;justify-content:center;flex:none"></div>
       <div class="t-btns">
         <button class="tk green" id="bPlay"><span></span></button>
         <button class="tk" id="bTour"><span></span></button>
@@ -381,7 +406,7 @@ svg{overflow:visible}
       </div>
       <div class="hud-mid" id="hudMid">
         <div class="hud-bust" id="bustR"><span class="bubble"></span></div>
-        <div class="mid-c"><div class="lives" id="lives"></div><div class="livelab" id="liveLab">3 MICS LEFT</div><div class="gpts" id="gPts">★ 0 PTS</div></div>
+        <div class="mid-c"><div class="lives" id="lives"></div><div class="livelab" id="liveLab">3 MICS LEFT</div><div class="gpts" id="gPts">★ 0 PTS</div><div class="gstreak" id="gStreak"></div></div>
         <div class="hud-bust" id="bustJ"><span class="bubble"></span></div>
       </div>
       <div class="loopst" id="loopSt"><span class="lab">LOOP STN</span><div class="pads" id="pads"></div></div>
@@ -421,7 +446,9 @@ svg{overflow:visible}
       <div class="w-duo" id="winDuo"><div class="b bR"></div><div class="b bJ"></div></div>
       <div class="stub" id="wStub"></div>
       <div class="wpts" id="wPts"><div class="big" id="wPtsBig">+0 PTS</div><div class="brk" id="wBrk"></div><div class="tot" id="wTot"></div></div>
-      <div class="w-btns"><button class="tk" id="bWTour"><span>World Tour</span></button><button class="tk green" id="bNext"><span>Next gig</span></button></div>
+      <div id="wExtras" style="width:100%;display:flex;justify-content:center"></div>
+      <div class="w-btns"><button class="tk paper" id="bWTour"><span>World Tour</span></button><button class="tk green next" id="bNext"><span>Next gig ▶</span></button></div>
+      <div class="flourish" id="wFlourish"></div>
     </section>
 
     <!-- LOSE -->
@@ -430,6 +457,7 @@ svg{overflow:visible}
       <div class="lose-sub">All three mics dropped. The crowd wants a rematch!</div>
       <div class="lose-duo" id="loseDuo"></div>
       <div class="lose-flyer"><span class="tape" style="left:38%;top:-9px"></span>RAIN CHECK &middot; SAME GIG, SAME CROWD &middot; NEW SET</div>
+      <div id="lExtras" style="width:100%;display:flex;justify-content:center"></div>
       <div class="w-btns"><button class="tk paper" id="bLTour"><span>World Tour</span></button><button class="tk" id="bRetry"><span>Try again</span></button></div>
     </section>
 
@@ -1620,7 +1648,7 @@ function build(id, o) {
   G.lastTapCell = G.lastDragCell = -1;
 }
 function startGig(id) { LD.audio.unlock(); build(id || null); show('game'); }
-function updPts() { const t = '★ ' + LD.meta.points() + ' PTS'; $('#gPts').textContent = t; $('#tPts').textContent = t; }
+function updPts() { const t = '★ ' + LD.meta.points() + ' PTS'; $('#gPts').textContent = t; $('#tPts').textContent = t; const s = LD.meta.state.streak || 0, gs = $('#gStreak'); gs.textContent = '🔥' + s + ' STREAK'; gs.classList.toggle('on', s >= 2); }
 function hudReset() {
   const p = G.game.p;
   $('#gNo').textContent = G.isDemo ? 'HOW TO PLAY' : ((p.packName || 'Gig') + (p.num ? ' ' + p.num : '')).toUpperCase();
@@ -1635,7 +1663,7 @@ function hudReset() {
   updButtons();
 }
 function onLose() {
-  if (!G.isDemo) LD.meta.recordLoss();
+  G.lastLoss = G.isDemo ? null : LD.meta.recordLoss();
   later(1000, () => { if (G.screen === 'game') show('lose'); });
 }
 function openTour() { LD.ui.levels({ onPlay: (id) => startGig(id) }); }
@@ -1661,7 +1689,8 @@ function show(name) {
 function titleLabels() {
   let lab = '';
   try { const L = LD.meta.level(LD.meta.currentId()); if (L) lab = (L.packName || '') + (L.num ? ' ' + L.num : ''); } catch (_) { /* */ }
-  $('#bPlay span').innerHTML = icon('mic') + 'Play' + (lab ? '<small class="tklab">' + lab + '</small>' : '');
+  $('#bPlay span').innerHTML = icon('mic') + (lab ? 'Continue<small class="tklab">· ' + lab + '</small>' : 'Play');
+  const tx = $('#tExtras'); tx.innerHTML = ''; tx.appendChild(LD.ui.titleExtras());
   updPts();
 }
 function enterTitle() {
@@ -1694,8 +1723,10 @@ function enterWin() {
     tot.textContent = 'Total ★ ' + r.total + ' pts';
     big.textContent = '+0 PTS';
   } else { brk.innerHTML = '<span>Demo gig: no points</span>'; tot.textContent = 'Total ★ ' + LD.meta.points() + ' pts'; big.textContent = 'DEMO'; }
-  $('#bNext').style.display = r && !r.nextId ? 'none' : '';
-  $('#bNext span').textContent = r ? 'Next gig' : 'Play for real';
+  $('#bNext span').textContent = !r ? 'Play for real ▶' : r.nextId ? ((r.streak >= 2 ? 'One more! ' : 'Next gig ') + '▶') : 'Play again ▶';
+  const wx = $('#wExtras'); wx.innerHTML = ''; if (r) wx.appendChild(LD.ui.winExtras(r));
+  const fl = $('#wFlourish'); fl.style.opacity = 0;
+  const flTxt = r ? (r.packUnlocked ? 'NEW PACK!' : r.streak >= 3 ? 'ON FIRE x' + r.streak + '!' : r.goal && r.goal.hit ? 'DAILY SET!' : '') : '';
   const so = $('#soStamp');
   const countUp = () => {
     if (!r) return;
@@ -1723,6 +1754,12 @@ function enterWin() {
     }, 800 + k * 360);
   });
   setTimeout(() => { if (my === winGen) countUp(); }, 1250);
+  if (flTxt) setTimeout(() => {
+    if (my !== winGen) return;
+    fl.innerHTML = '<span class="ransom">' + ransom(flTxt, flTxt.length) + '</span>'; fl.style.opacity = 1;
+    anim(fl, [{ transform: 'translate(-50%,-50%) scale(3.4) rotate(-30deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(.9) rotate(-8deg)', opacity: 1, offset: 0.5 }, { transform: 'translate(-50%,-50%) scale(1.05) rotate(-6deg)', opacity: 1, offset: 0.62 }, { transform: 'translate(-50%,-50%) scale(1) rotate(-6deg)', opacity: 1, offset: 0.85 }, { transform: 'translate(-50%,-70%) scale(1) rotate(-6deg)', opacity: 0 }], { duration: 2600, easing: 'ease-out', fill: 'forwards' });
+    setTimeout(() => { if (my !== winGen) return; anim($('#s-win'), [{ transform: 'none' }, { transform: 'translate(6px,-5px) rotate(.8deg)' }, { transform: 'translate(-4px,4px)' }, { transform: 'none' }], { duration: 280 }); confetti(70); const b = fl.getBoundingClientRect(); sparks(b.left + b.width / 2, b.top + b.height / 2, 16, C.green, 320); snd(() => { A.kick(1); A.clap(0.7); A.chord([64, 68, 71], 0.5, 'ah'); }); }, 220);
+  }, 2400);
   ['.bR svg', '.bJ svg'].forEach((q, k) => { const sv = wd.querySelector(q); if (sv) anim(sv, [{ transform: 'translateY(0) rotate(0)' }, { transform: 'translateY(-10px) rotate(' + (k ? 3 : -3) + 'deg)' }, { transform: 'translateY(0) rotate(0)' }], { duration: 625, delay: k * 312, iterations: Infinity, easing: 'ease-in-out' }); });
 }
 function afterWin(go) {
@@ -1731,6 +1768,7 @@ function afterWin(go) {
 }
 function enterLose() {
   $('#loseTitle').innerHTML = ransom('GIG CANCELLED', 21);
+  const lx = $('#lExtras'); lx.innerHTML = ''; lx.appendChild(LD.ui.loseExtras(G.lastLoss || {}));
   $('#loseDuo').innerHTML = '<div>' + bust('roxor', { mood: 'hurt' }) + '</div><div>' + bust('jasmin', { mood: 'hurt' }) + '</div>';
   if (!motion()) return;
   anim($('#loseTitle'), [{ transform: 'scale(2.4) rotate(-14deg)', opacity: 0 }, { transform: 'scale(.92) rotate(-3deg)', opacity: 1, offset: 0.6 }, { transform: 'rotate(-3deg)', opacity: 1 }], { duration: 340, easing: 'ease-in', fill: 'forwards' });

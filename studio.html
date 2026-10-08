@@ -258,7 +258,7 @@ svg{display:block}
 .logo .inf{width:1.62em;height:.86em;margin:0 -.02em;filter:drop-shadow(0 5px 0 rgba(0,0,0,.35))}
 .t-sub{margin-top:8px;transform:rotate(-2deg);font:600 14px/1 var(--fl);letter-spacing:.02em;color:#2a2124;background:linear-gradient(#fff9ef,#efe2cb);padding:6px 12px 5px;border-radius:3px;box-shadow:0 3px 8px rgba(0,0,0,.45)}
 .t-sub em{font-style:normal;color:#4b9a1b}.t-sub i{font-style:normal;color:#d63f80}
-.t-hero{position:relative;flex:1;min-height:180px;margin-top:4px}
+.t-hero{position:relative;flex:1;min-height:110px;margin-top:4px}
 .grille{position:absolute;left:4%;right:4%;top:6%;bottom:2%;border-radius:22px;background:radial-gradient(circle,#000 1.2px,transparent 1.6px) 0 0/7px 7px,linear-gradient(#18171c,#121115);box-shadow:inset 0 0 0 1px #000,inset 0 2px 10px rgba(0,0,0,.8),0 1px 0 rgba(255,255,255,.06)}
 .spk{position:absolute;left:50%;top:46%;height:min(86%,330px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
   background:conic-gradient(from 30deg,#d9dce2,#7f838b,#f6f7f9,#8d9098,#e2e4e8,#6f737b,#d9dce2);box-shadow:0 0 0 2px #000,0 10px 30px rgba(0,0,0,.6),0 0 60px rgba(255,111,174,.25)}
@@ -318,10 +318,10 @@ svg{display:block}
 .loseduo div{height:100%;aspect-ratio:110/122}.loseduo svg{width:100%;height:100%}
 
 /* ---------- win ---------- */
-.w-top{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:12px}
+.w-top{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px}
 .w-top .dymo{position:relative;left:auto;top:auto;transform:rotate(-2deg);opacity:1}
 .w-gig{font:13px/1 var(--fd);color:#cfc7b8;letter-spacing:.05em;text-align:center}
-.cass{position:relative;flex:none;height:138px;margin:12px 6px 0;border-radius:14px;background:linear-gradient(180deg,#2a292f,#18171c);box-shadow:0 0 0 2px #000,0 8px 20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.12);padding:10px 12px}
+.cass{position:relative;flex:none;height:118px;margin:8px 6px 0;border-radius:14px;background:linear-gradient(180deg,#2a292f,#18171c);box-shadow:0 0 0 2px #000,0 8px 20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.12);padding:10px 12px}
 .cass .screw{position:absolute}.cass .s1{left:6px;top:6px}.cass .s2{right:6px;top:6px}.cass .s3{left:6px;bottom:6px}.cass .s4{right:6px;bottom:6px}
 .c-label{position:relative;height:100%;border-radius:8px;background:linear-gradient(180deg,#fff7ea,#f1e3c9);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
 .c-label::before{content:'';position:absolute;left:0;right:0;top:0;height:30px;background:linear-gradient(90deg,#7ed23a,#a9f060 40%,#ff9ccb 60%,#ff6fae)}
@@ -337,13 +337,13 @@ svg{display:block}
 .reel.R svg{animation-duration:1s}
 @keyframes spin{to{transform:rotate(360deg)}}
 .c-win .tape{position:absolute;left:58px;right:58px;bottom:8px;height:3px;background:#5a382a}
-.w-stars{flex:none;display:flex;justify-content:center;gap:14px;margin-top:16px;height:62px}
-.w-stars .st{width:62px;height:62px;position:relative}
+.w-stars{flex:none;display:flex;justify-content:center;gap:14px;margin-top:8px;height:52px}
+.w-stars .st{width:52px;height:52px;position:relative}
 .w-stars .st svg{width:100%;height:100%;overflow:visible}
 .w-stars .st .lamp{fill:#2b2a30;transition:fill .1s}
 .w-stars .st.lit .lamp{fill:url(#starG)}
 .w-stars .st.lit{filter:drop-shadow(0 0 12px rgba(255,190,60,.8))}
-.w-duo{position:relative;flex:1;min-height:120px;display:flex;justify-content:center;align-items:flex-end;margin-top:6px}
+.w-duo{position:relative;flex:1;min-height:60px;display:flex;justify-content:center;align-items:flex-end;margin-top:6px}
 .w-duo>div{height:100%;max-height:300px;aspect-ratio:128/214;position:relative;z-index:1}
 .w-duo #wRox{margin-right:-3%}.w-duo #wJas{margin-left:-3%}
 .w-duo .w-sun{position:absolute;left:50%;top:50%;height:min(100%,300px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;z-index:0;
@@ -356,7 +356,30 @@ svg{display:block}
 .w-stats>div{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
 .w-stats small{font:700 7.5px/1 var(--fu);letter-spacing:.2em;color:#8a8f99}
 .w-stats .sv{height:26px;filter:drop-shadow(0 0 4px rgba(255,140,0,.85))}.w-stats .sv svg{height:100%;width:auto}
-.w-btns{flex:none;display:flex;gap:10px;margin:10px 0 10px}.w-btns>*{flex:1}
+.w-btns{flex:none;display:flex;gap:8px;margin:8px 0 8px}.w-btns>.kbtn{flex:.8;padding:0 8px}
+.wnext{flex:1.7;height:58px;font-size:15px;letter-spacing:.12em;animation:nextGlow 1.25s ease-in-out infinite}
+.wnext .ic{width:22px;height:22px}
+@keyframes nextGlow{50%{box-shadow:0 0 0 1.5px rgba(0,0,0,.55),0 4px 0 rgba(0,0,0,.6),0 0 38px rgba(var(--c),.95),inset 0 -3px 4px rgba(0,0,0,.22),inset 0 1px 1px rgba(255,255,255,.8)}}
+/* encouragement cards (LD.ui extras) mounted as a printed module on the chassis */
+.ldx{display:flex;flex-direction:column;gap:7px;padding:9px 11px;border-radius:10px;background:#050608;color:#efe6d2;font-family:var(--fu);box-shadow:0 0 0 2px #000,0 0 0 4px #37363d;position:relative}
+.ldx::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
+.ldx-cheer{font:15px/1.2 var(--fd)!important;color:#fff6e4;text-shadow:0 0 6px rgba(255,230,190,.45)}
+.ldx-pill{font:700 10.5px/1 var(--fu)!important;letter-spacing:.06em;padding:5px 8px!important;background:#1f1e24!important;color:#efe6d2;box-shadow:inset 0 0 0 1px #3a3940}
+.ldx-pill.hot{background:#ff6fae!important;color:#2a0716!important;box-shadow:0 0 10px rgba(255,111,174,.6)}
+.ldx-pill.gold{background:#ffb02e!important;color:#2a1a05!important;box-shadow:0 0 10px rgba(255,176,46,.55)}
+.ldx-look{font-size:11.5px!important}
+.ldx-bar{background:#1f1e24!important;border:1px solid #000!important}
+.ldx-bar b{background:linear-gradient(90deg,#7ed23a,#b4f56a)!important;box-shadow:0 0 8px #7ed23a}
+.w-ldx{flex:none;margin-top:8px}.w-ldx .ldx{padding:7px 10px;gap:5px}.w-ldx .ldx-cheer{font-size:13px!important}
+.t-ldx{flex:none;margin-top:8px}.t-ldx .ldx{padding:7px 10px;gap:6px}
+.l-ldx{margin:-4px 0 12px}
+.o-l{display:flex;gap:5px;align-items:center;min-width:0}
+.o-top>span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+#oGig{flex:1;text-align:center;padding:0 4px}
+.o-streak{display:none;padding:1px 4px;border-radius:3px;background:#ff6fae;color:#2a0716;font:10px/1.1 var(--fd);box-shadow:0 0 8px rgba(255,111,174,.7)}
+.o-streak.on{display:inline-block;animation:ledp 1.2s ease-in-out infinite}
+.w-stamp{position:absolute;left:50%;top:38%;z-index:30;pointer-events:none;opacity:0;padding:10px 18px 8px;border-radius:4px;font:700 22px/1 var(--fm);letter-spacing:.14em;color:#2a1a05;white-space:nowrap;
+  background:linear-gradient(180deg,#ffd36a,#ffb02e);box-shadow:0 3px 0 #9a5c00,0 10px 30px rgba(0,0,0,.6),0 0 40px rgba(255,176,46,.7);text-shadow:0 1px 0 rgba(255,255,255,.5)}
 .w-stats .w-pts{flex:1.3}
 .w-break{flex:none;display:flex;flex-wrap:wrap;justify-content:center;gap:5px 10px;margin-top:8px;font:10.5px/1 var(--fm);letter-spacing:.06em;color:#bdb5a6}
 .w-break span{padding:4px 7px;border-radius:4px;background:#121115;box-shadow:inset 0 0 0 1px #2e2d33}
@@ -495,7 +518,8 @@ svg{display:block}
           <div class="spk" id="spk"><div class="surr"><div class="cone" id="cone"><div class="dcap"></div></div></div></div>
           <div class="t-duo"><div class="t-rox" id="tRox"></div><div class="t-jas" id="tJas"></div></div>
         </div>
-        <button class="juice" id="playBtn"><span class="j-led"></span><span class="j-col"><span>Play</span><small id="playSub">EASY 1</small></span><span class="j-eq"><i></i><i></i><i></i><i></i></span></button>
+        <div class="t-ldx" id="tExtras"></div>
+        <button class="juice" id="playBtn"><span class="j-led"></span><span class="j-col"><span id="playMain">Play</span><small id="playSub">EASY 1</small></span><span class="j-eq"><i></i><i></i><i></i><i></i></span></button>
         <div class="t-menu">
           <button class="pbtn" style="--c:255,178,30" data-go="tour"><span data-ic="map"></span>Tour</button>
           <button class="pbtn" style="--c:47,213,242" data-go="daily"><span data-ic="cal"></span>Daily</button>
@@ -512,7 +536,7 @@ svg{display:block}
         <header class="plate" data-plate="game"></header>
         <div class="disp">
           <div class="oled" id="oled">
-            <div class="o-top"><span class="o-live" id="oLive">&#9679; READY</span><span id="oGig">EASY 1</span><span id="oPts">0 PTS</span></div>
+            <div class="o-top"><span class="o-l"><span class="o-live" id="oLive">&#9679; READY</span><span class="o-streak" id="oStreak"></span></span><span id="oGig">EASY 1</span><span id="oPts">0 PTS</span></div>
             <div class="o-marq" id="oMarqBox"><span id="oMarq">COPENHAGEN // HARBOUR STAGE</span></div>
             <div class="o-mid"><div class="o-time" id="oTime"></div><div class="o-msg" id="oMsg">LOOP IT!</div></div>
             <div class="o-rox" id="oRox"></div><div class="o-jas" id="oJas"></div>
@@ -568,7 +592,9 @@ svg{display:block}
           <div class="w-pts"><small>POINTS</small><div class="sv" id="wPts"></div></div>
         </div>
         <div class="w-break" id="wBreak"></div>
-        <div class="w-btns"><button class="kbtn" id="wTour"><i class="led"></i>World Tour</button><button class="pbtn" style="--c:126,210,58" id="wNext">Next gig <span data-ic="next"></span></button></div>
+        <div class="w-ldx" id="wExtras"></div>
+        <div class="w-btns"><button class="kbtn" id="wTour"><i class="led"></i>Tour</button><button class="pbtn wnext" style="--c:126,210,58" id="wNext"><span id="wNextL">Next gig</span> <span data-ic="next"></span></button></div>
+        <div class="w-stamp" id="wStamp"></div>
       </section>
 
       <!-- ===================== LOSE ===================== -->
@@ -580,6 +606,7 @@ svg{display:block}
           <div class="loseduo"><div id="lRox"></div><div id="lJas"></div></div>
           <div class="lose-jacks"><span></span><span></span><span></span></div>
           <div class="ovs" id="loseLine">Three blown mics. The crowd still wants that encore!</div>
+          <div class="l-ldx" id="lExtras"></div>
           <div class="ovcol"><button class="pbtn" style="--c:255,111,174" id="lRetry"><span data-ic="retry"></span>Try again</button><button class="kbtn" id="lTour"><i class="led"></i>World Tour</button></div>
         </div></div>
       </section>
@@ -1538,7 +1565,7 @@ function onWin(e) {
   later(RM() ? 900 : fromDemo ? 1250 : 2300, () => { if (curScreen === 'game' && game.won) { winFast = fromDemo; show('win'); } });
 }
 function onLose() {
-  if (!game._demo) LD.meta.recordLoss();
+  lastLoss = game._demo ? null : LD.meta.recordLoss();
   if (instant) return;
   msgDef = 'SIGNAL LOST';
   later(800, () => {
@@ -1656,6 +1683,8 @@ function syncHud() {
   fs[2].disabled = !anyX || game.over;
   syncArrows();
   $('#oPts').textContent = (game._demo ? 'DEMO' : LD.meta.points() + ' PTS');
+  const sk = game._demo ? 0 : LD.meta.state.streak || 0, se = $('#oStreak');
+  se.classList.toggle('on', sk >= 2); se.textContent = sk >= 2 ? '🔥' + sk : '';
 }
 function syncGig() {
   const p = game.p;
@@ -1840,7 +1869,9 @@ function syncPoints() { const p = LD.meta.points(); $$('[data-pts]').forEach((e)
 function syncTitle() {
   syncPoints();
   const id = LD.meta.currentId(), p = LD.meta.level(id);
+  $('#playMain').textContent = LD.meta.state.wins ? 'Continue' : 'Play';
   $('#playSub').textContent = `${(p.packName || 'Gig')} ${p.num || ''} · ${p.city}`.toUpperCase();
+  const tx = $('#tExtras'); tx.innerHTML = ''; tx.appendChild(LD.ui.titleExtras());
 }
 function show(name) {
   if (!SCREENS.includes(name)) name = 'title';
@@ -1949,10 +1980,22 @@ function enterWin(d) {
   }, startAt));
   // buttons: Next gig only when there is one; the support screen (when due) opens before we move on
   const nb = $('#wNext');
-  nb.style.display = r && r.nextId ? '' : 'none';
+  $('#wNextL').textContent = !r ? 'Play for real' : r.streak >= 2 ? 'One more!' : r.nextId ? 'Next gig' : 'Tour';
+  const wx = $('#wExtras'); wx.innerHTML = ''; if (r) wx.appendChild(LD.ui.winExtras(r));
   let supportDue = !!(r && r.support);
   const go = (fn) => { if (supportDue) { supportDue = false; LD.ui.support({ onClose: fn }); } else fn(); };
-  nb.onclick = () => { A.ui(); go(() => startGig(r.nextId)); };
+  nb.onclick = () => { A.ui(); go(() => { if (r && r.nextId) startGig(r.nextId); else if (r) { show('title'); tour(); } else startGig(LD.meta.currentId()); }); };
+  // extra flourish: hot streak, a new pack or the daily set
+  const stampTxt = r && (r.packUnlocked ? 'NEW PACK UNLOCKED!' : r.goal && r.goal.hit ? 'DAILY SET DONE!' : r.streak >= 3 ? `HOT STREAK ×${r.streak}!` : '');
+  const stamp = $('#wStamp'); stamp.style.opacity = 0;
+  if (stampTxt) winTimers.push(setTimeout(() => {
+    stamp.textContent = stampTxt;
+    const kf = RM() ? [{ transform: 'translate(-50%,-50%) rotate(-6deg)', opacity: 1 }, { transform: 'translate(-50%,-50%) rotate(-6deg)', opacity: 1 }]
+      : [{ transform: 'translate(-50%,-50%) scale(3) rotate(-25deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(.9) rotate(-4deg)', opacity: 1, offset: 0.3 }, { transform: 'translate(-50%,-50%) scale(1.06) rotate(-7deg)', opacity: 1, offset: 0.4 }, { transform: 'translate(-50%,-50%) scale(1) rotate(-6deg)', opacity: 1, offset: 0.85 }, { transform: 'translate(-50%,-80%) scale(.9) rotate(-6deg)', opacity: 0 }];
+    stamp.animate(kf, { duration: 2200, easing: 'ease-out' });
+    if (!RM()) { const rc = $('#chassis').getBoundingClientRect(); for (let q = 0; q < 3; q++) setTimeout(() => { burst(tfx, rc.left + rc.width * rnd(0.2, 0.8), rc.top + rc.height * rnd(0.25, 0.5), { n: 26, type: 'star', c: ['#ffd36a', '#fff', '#ff6fae', '#7ed23a'], sp: [140, 360], life: [0.5, 0.9], s: [3, 6.5], g: 300, drag: 2 }); }, q * 180); confetti(tfx, rc.left + rc.width / 2, rc.bottom - 60, 90, 0); $('#scr-win').animate([{ transform: 'translate(4px,2px)' }, { transform: 'translate(-4px,-2px)' }, { transform: 'none' }], { duration: 180 }); }
+    if (actx()) { A.win(); A.scratch(0.4); }
+  }, winFast ? 900 : 1500));
   $('#wTour').onclick = () => { A.ui(); go(() => { show('title'); tour(); }); };
   // stars slam in
   const st = $$('#wStars .st');
@@ -1976,7 +2019,9 @@ function enterWin(d) {
 
 // ------------------------------------------------------------------------------------------------ lose: mic drop
 const LOSE_LINES = ['Three blown mics. The crowd still wants that encore!', 'Feedback city. Even the sound guy winced.', 'The loop pedal needs a lie-down. Go again!', 'Roxor dropped the beat. Jasmin dropped the mic.'];
+let lastLoss = null;
 function enterLose() {
+  const lx = $('#lExtras'); lx.innerHTML = ''; lx.appendChild(LD.ui.loseExtras(lastLoss || {}));
   $('#lRox').innerHTML = bust('roxor', 'hurt', OUTFIT.roxor); $('#lJas').innerHTML = bust('jasmin', 'hurt', OUTFIT.jasmin);
   $('#loseLine').textContent = pickR(LOSE_LINES);
   if (!RM()) {

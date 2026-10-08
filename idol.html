@@ -223,6 +223,23 @@ svg.ic{width:22px;height:22px;flex:0 0 auto}
 .wtot{margin-top:8px;text-align:center;font:400 14px/1 var(--disp);color:var(--ink)}
 .row2.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .row2.g2 .gem{padding:0 10px;font-size:15px;min-height:46px}
+.ldx{margin-top:8px;padding:9px 11px;gap:7px;border:2px solid #e3d6ff!important;box-shadow:none!important;background:linear-gradient(#fff,#f8f1ff)!important}
+.ldx-cheer{font-size:14.5px!important;color:#c93f78}
+#scr-win .ldx,#lose .ldx{text-align:left}
+#tX{width:100%;max-width:380px;flex:0 0 auto}#tX .ldx{margin-top:0}
+.wstage{min-height:70px!important}
+.encore{height:66px!important}
+.wstar{width:50px!important;height:50px!important}.wstar.mid{width:64px!important;height:64px!important}
+.wcard{padding:8px 12px 10px!important}
+.wbtns .gem.next{flex:1.5;max-width:220px;min-height:58px;font-size:20px;animation:nextP 1.25s ease-in-out infinite}
+@keyframes nextP{50%{filter:brightness(1.12);box-shadow:0 0 0 2.5px var(--ink),0 5px 0 0 var(--lip),0 5px 0 2.5px var(--ink),0 0 26px rgba(255,127,178,.9)}}
+.wbtns .gem.green{flex:1;font-size:15px}
+#loseCv{height:110px!important}
+.streak{position:absolute;left:50%;top:-10px;transform:translateX(-50%);padding:3px 8px;border-radius:99px;background:linear-gradient(#ffb36b,#ff4f6d);color:#fff;font:900 11px/1 var(--ui);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink);white-space:nowrap;animation:fcPulse 1s ease-in-out infinite;display:none}
+.streak.on{display:block}
+.hudrow{position:relative}
+.gig-k{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tbtns .gem.big .sub{font:900 12px/1 var(--ui);opacity:.95;margin-left:4px;text-shadow:0 1px 0 var(--lip)}
 /* ---------- headers for list screens ---------- */
 .shead{display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 12px 6px;flex:0 0 auto;gap:8px}
 .shead .rib{flex:0 1 auto}
@@ -312,7 +329,8 @@ svg.ic{width:22px;height:22px;flex:0 0 auto}
       <div class="rib white subrib"><svg class="tl" viewBox="0 0 26 32"><path d="M1 2h24v28H1l7-14z"/></svg><svg class="tr" viewBox="0 0 26 32"><path d="M25 2H1v28h24l-7-14z"/></svg><div class="rb"><div class="rtxt">a <i class="gx">RoxorLoops</i> &amp; <i class="px">Jasmin</i> puzzle</div></div></div>
       <div class="tstage" id="tStageBox"><canvas id="tStage"></canvas><div class="pill g tpts"><svg class="ic"><use href="#i-star"/></svg><span class="ptsv">0</span>&nbsp;pts</div></div>
       <div class="tbtns">
-        <button class="gem big" data-act="play"><svg class="ic"><use href="#i-play"/></svg>Play</button>
+        <div id="tX"></div>
+        <button class="gem big" data-act="play"><svg class="ic"><use href="#i-play"/></svg>Play<span class="sub" id="playSub"></span></button>
         <div class="trow two">
           <button class="gem green" data-act="tour"><svg class="ic"><use href="#i-map"/></svg>World Tour</button>
           <button class="gem gold" data-act="daily"><svg class="ic"><use href="#i-cal"/></svg>Daily Jam</button>
@@ -338,7 +356,7 @@ svg.ic{width:22px;height:22px;flex:0 0 auto}
       </header>
       <div class="hudrow">
         <div class="pill"><svg class="ic"><use href="#i-clock"/></svg><span id="time">00:00</span></div>
-        <div class="lives" id="lives"></div>
+        <div class="lives" id="lives"></div><span class="streak" id="streak">🔥2</span>
         <div class="pill g"><svg class="ic"><use href="#i-star"/></svg><span class="ptsv" id="pts">0</span></div>
       </div>
       <div class="stagehud" id="hudBox"><canvas id="hud"></canvas></div>
@@ -359,7 +377,7 @@ svg.ic{width:22px;height:22px;flex:0 0 auto}
       <div class="over" id="lose"><div class="card">
         <div class="rib"><svg class="tl" viewBox="0 0 26 32"><path d="M1 2h24v28H1l7-14z"/></svg><svg class="tr" viewBox="0 0 26 32"><path d="M25 2H1v28h24l-7-14z"/></svg><div class="rb"><div class="rtxt">MIC DROP...</div></div></div>
         <canvas id="loseCv"></canvas>
-        <h2>Out of mics!</h2><p>The crowd still loves you.<br>Take a breath and loop it again!</p>
+        <h2>Out of mics!</h2><div id="lX" style="width:100%"></div>
         <button class="gem big wide" data-act="retry"><svg class="ic"><use href="#i-restart"/></svg>Try again</button>
         <button class="gem lav wide" data-act="tour"><svg class="ic"><use href="#i-map"/></svg>World Tour</button>
       </div></div>
@@ -379,9 +397,9 @@ svg.ic{width:22px;height:22px;flex:0 0 auto}
         <div class="wgig" id="wGig"><small>Easy 1 cleared</small>Copenhagen · Harbour Stage</div>
         <div class="stats"><div><b id="wTime">01:42</b><span>Time</span></div><div><b id="wMis">0</b><span>Mistakes</span></div><div class="wp"><b id="wPts">+0</b><span>Points</span></div></div>
         <div class="wbrk" id="wBrk"></div>
-        <div class="wtot" id="wTot">Total ★ 0 pts</div>
+        <div class="wtot" id="wTot">Total ★ 0 pts</div><div id="wX"></div>
       </div>
-      <div class="wbtns"><button class="gem green" data-act="wtour"><svg class="ic"><use href="#i-map"/></svg>World Tour</button><button class="gem" data-act="next" id="nextBtn">Next gig<svg class="ic"><use href="#i-play"/></svg></button></div>
+      <div class="wbtns"><button class="gem green" data-act="wtour"><svg class="ic"><use href="#i-map"/></svg>Tour</button><button class="gem next" data-act="next" id="nextBtn"><span id="nextT">One more!</span><svg class="ic"><use href="#i-play"/></svg></button></div>
       <button class="linkbtn" data-act="encore">Encore! Play it again</button>
     </section>
 
@@ -809,7 +827,8 @@ function startGig(id) {
   show('game');
   layoutGame(true);
 }
-function updatePts() { const v = LD.meta.points(); $$('.ptsv').forEach((el) => { el.textContent = v; }); }
+function updateStreak() { const n = LD.meta.state.streak || 0, b = $('#streak'); b.textContent = '🔥' + n; b.classList.toggle('on', n >= 2 && !isDemo); }
+function updatePts() { updateStreak(); const v = LD.meta.points(); $$('.ptsv').forEach((el) => { el.textContent = v; }); }
 function wire(gm) {
   const ok = (fn) => (e) => { if (gm === game) fn(e); };
   gm.on('mark', ok(onMark)); gm.on('place', ok(onPlace)); gm.on('mistake', ok(onMistake)); gm.on('blocked', ok(onBlocked));
@@ -983,7 +1002,8 @@ function onWin(e) {
   setTimeout(() => { if (game && game.won && scr === 'game') { wandOff(); show('win', { stats: lastWin }); } }, 3000);
 }
 function onLose() {
-  if (!isDemo) LD.meta.recordLoss();
+  const rl = isDemo ? { cheer: 'The crowd still loves you. Loop it again!' } : LD.meta.recordLoss();
+  const lx = $('#lX'); lx.innerHTML = ''; lx.appendChild(LD.ui.loseExtras(rl)); updateStreak();
   if (instant) return;
   CROWD.sad = now() + 99999;
   setTimeout(() => { if (scr === 'game') { $('#lose').classList.add('on'); LOSE.t0 = now(); } }, 900);
@@ -1471,7 +1491,9 @@ function enterWin(st) {
   }
   $('#wBrk').innerHTML = chips.map(([t, c]) => '<span class="' + c + '">' + t + '</span>').join('');
   $('#wPts').textContent = '+0'; $('#wTot').textContent = 'Total ★ ' + (total - pts) + ' pts';
-  $('#nextBtn').style.display = r && r.nextId ? '' : 'none';
+  $('#nextT').textContent = r && r.nextId ? (r.streak >= 2 ? 'One more!' : 'Next gig') : (st.demo ? 'Play now' : 'World Tour');
+  const wx = $('#wX'); wx.innerHTML = ''; if (r) wx.appendChild(LD.ui.winExtras(r));
+  if (r && (r.streak >= 3 || r.packUnlocked || (r.goal && r.goal.hit))) WIN.timers.push(setTimeout(() => flourish(r), 1500));
   WIN.timers && WIN.timers.forEach(clearTimeout);
   WIN.timers = [];
   const t0 = 550, dur = 1000;
@@ -1506,6 +1528,16 @@ function enterWin(st) {
   const rc = WIN.cv.getBoundingClientRect();
   setTimeout(() => { confetti(rc.left + 8, rc.bottom, 1, 50, 0); confetti(rc.right - 8, rc.bottom, -1, 50, 0); }, 120);
   setTimeout(() => { confetti(rc.left + 8, rc.bottom, 1, 34, 0); confetti(rc.right - 8, rc.bottom, -1, 34, 0); }, 1750);
+}
+// streak / new pack / daily set: an idol-show fanfare (gold stars rain, a big call, the duo cheer)
+function flourish(r) {
+  const txt = r.packUnlocked ? 'NEW STAGE OPEN!' : r.streak >= 3 ? r.streak + ' IN A ROW!' : 'DAILY SET!';
+  const W = innerWidth, sc = $('#scr-win').getBoundingClientRect(), cx = sc.left + sc.width / 2;
+  const lb = labelSpr(txt, 30, '#fff6b0', '#ff5ea2');
+  addP({ type: 'label', img: lb, x: cx, y: sc.top + sc.height * 0.38, life: 1.8, rise: 30, sc: Math.min(1, (sc.width - 20) / lb.w), fo: 0.75 });
+  for (let k = 0; k < 26; k++) addP({ type: 'spr', img: k % 3 ? starSpr(k % 2 ? '#ffd84d' : '#ff9fcb') : sparkSpr('#ffffff'), x: sc.left + rnd() * sc.width, y: sc.top - 20, vx: (rnd() - 0.5) * 60, vy: 120 + rnd() * 160, g: 260, sz: 16 + rnd() * 14, life: 1.8, rot: rnd() * 6, vr: (rnd() - 0.5) * 6, delay: k * 40, fo: 0.7 });
+  addP({ type: 'ring', x: cx, y: sc.top + sc.height * 0.38, r0: 30, r1: Math.min(W, sc.width) * 0.6, w: 8, col: '#ffd84d', life: 0.7 });
+  S.win(); void W;
 }
 // leaving the win screen: the support screen first when it is due (never mid-puzzle)
 function leaveWin(go) {
@@ -1617,7 +1649,7 @@ function show(name, opt) {
   if (name === 'title') layoutTitle();
   if (name === 'game') { if (!game) setupGame(LD.meta.newGame(), false); layoutGame(true); }
   if (name === 'win') enterWin(opt && opt.stats);
-  if (name === 'title') updatePts();
+  if (name === 'title') { updatePts(); const tx = $('#tX'); tx.innerHTML = ''; tx.appendChild(LD.ui.titleExtras()); const L = LD.meta.level(LD.meta.currentId()); $('#playSub').textContent = L ? ' · ' + (L.packName === 'Daily Jam' ? 'Daily Jam' : L.packName + ' ' + L.num) : ''; layoutTitle(); }
   if (name === 'outfits') buildOutfits();
 }
 function layoutTitle() {
@@ -1653,7 +1685,7 @@ const ACT = {
   restart() { $('#sheet').classList.remove('on'); if (isDemo) startDemo(); else startGig(game.p.id); },
   retry() { if (isDemo) startDemo(); else startGig(game.p.id); },
   encore() { const st = WIN.st; leaveWin(() => (st && st.demo ? startDemo() : startGig(st ? st.id : undefined))); },
-  next() { const r = WIN.r; leaveWin(() => startGig(r && r.nextId ? r.nextId : undefined)); },
+  next() { const r = WIN.r, st = WIN.st; leaveWin(() => (r && r.nextId ? startGig(r.nextId) : st && st.demo ? startGig() : (show('title'), openTour()))); },
   wtour() { leaveWin(() => { show('title'); openTour(); }); },
 };
 function stopDemo() { if (demo) { demo.stop(); demo = null; wandOff(); } }

@@ -227,7 +227,7 @@ svg{display:block}
 @keyframes logoIn{0%{transform:scale(.2) rotate(-8deg);opacity:0}60%{transform:scale(1.08,.94);opacity:1}100%{transform:none}}
 .sub{position:relative;z-index:3;margin-top:-6px;font-size:17px;color:#fff;font-weight:700;letter-spacing:.4px;text-shadow:0 2px 0 var(--ink)}
 .sub b{color:var(--rox-g)}.sub em{font-style:normal;color:var(--jas-l)}
-.tduo{position:relative;width:100%;flex:1 1 auto;min-height:150px;display:flex;justify-content:center;align-items:flex-end}
+.tduo{position:relative;width:100%;flex:1 1 auto;min-height:90px;display:flex;justify-content:center;align-items:flex-end}
 .tduo .disc{position:absolute;left:50%;bottom:4%;height:min(94%,300px);aspect-ratio:1;transform:translateX(-50%);border-radius:50%;
   background:radial-gradient(60% 50% at 38% 30%,#ffc2dc 0%,#ff7fb2 45%,#e04a8a 100%);box-shadow:0 0 0 5px #fff,0 0 0 9px #6d0f3e,0 14px 30px rgba(60,0,40,.45),inset 0 -10px 0 rgba(0,0,0,.12)}
 .tduo .disc::after{content:'';position:absolute;left:16%;top:9%;width:36%;height:16%;border-radius:50%;background:rgba(255,255,255,.55);transform:rotate(-22deg)}
@@ -243,6 +243,7 @@ svg{display:block}
 .tsettings{position:absolute;right:14px;top:calc(10px + var(--safe-t));z-index:4}
 .tpts{position:absolute;left:14px;top:calc(12px + var(--safe-t));z-index:4;height:38px;font-size:17px}
 .tbtns .badge{font-size:12px;right:-4px;top:-10px}
+#tPlay{font-size:23px;white-space:nowrap}#tPlay .pl{overflow:hidden;text-overflow:ellipsis;max-width:260px}
 .mrow{display:flex;gap:10px}.mrow .btn{flex:1 1 0;white-space:nowrap;padding-left:8px;padding-right:8px;font-size:16px}
 .wpts{margin-top:8px;display:flex;flex-direction:column;align-items:center;gap:4px}
 .wgain{font-size:40px;line-height:1}
@@ -256,6 +257,24 @@ svg{display:block}
 .lh{margin:4px 0 0;font-size:46px;font-weight:400}.lp{margin:0;font-size:16px;color:#ffe6f3;max-width:30ch}
 .lduo{flex:1 1 auto;min-height:120px;display:flex;justify-content:center;align-items:flex-end;width:100%}
 .lduo .tf{height:100%;max-height:260px;aspect-ratio:200/300}
+.ldx{box-shadow:0 5px 0 var(--ink),0 10px 18px rgba(20,0,40,.35)!important;text-align:left;width:100%;max-width:370px}
+.ldx-cheer{color:var(--ink)}
+.wx{width:100%;max-width:370px;margin-top:6px;flex:0 0 auto}
+.tx{position:relative;z-index:3;width:100%;max-width:370px;margin-top:6px;flex:0 0 auto}
+.tx .ldx{padding:8px 10px!important;gap:6px!important}
+.lx{width:100%;max-width:370px;flex:0 0 auto}
+.strk{font-family:var(--fh);font-size:15px;padding:0 10px;background:linear-gradient(180deg,#ff9a5a,#ff4f6e);color:#fff;text-shadow:0 1px 0 #7a1030;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 0 0 3px #7a1030,0 5px 0 #7a1030;animation:juicePulse 1s ease-in-out infinite}
+.statrow .pill{flex:0 0 auto}
+#scr-win{overflow:hidden}
+#scr-win .winbanner .t1{font-size:42px!important}
+#scr-win .stars{height:84px;margin-top:2px}
+#scr-win .stars .st{width:70px;height:70px}#scr-win .stars .st:nth-child(2){width:86px;height:86px;margin-bottom:8px}
+#scr-win .wstats{margin-top:6px}#scr-win .wstats .pill{padding:3px 12px 4px}
+#scr-win .wgain{font-size:34px}
+#scr-win .wduo{min-height:0}
+.wbtns{flex:0 0 auto}.wbtns #wTour{flex:0 0 auto;font-size:16px;min-height:52px}
+.wbtns #wNext{flex:1 1 auto;font-size:27px;min-height:64px}
+.wbtns .badge{right:-6px;top:-14px}
 .lbtns{display:flex;flex-direction:column;gap:8px;width:100%;margin-bottom:8px}
 
 /* ---------- WIN ---------- */
@@ -945,6 +964,7 @@ const Game = {
         <div class="statrow">
           <div class="pill lives" id="lives"></div>
           <div class="pill timer" id="timer">${icon('timer')}<span>0:00</span></div>
+          <div class="pill strk" id="strkPill" style="display:none">🔥<span>2</span></div>
           <div class="pill diffp" id="ptsPill">★ <span>0</span></div>
         </div>
         <div class="duo">
@@ -1040,7 +1060,7 @@ const Game = {
     this.buildArrows();
     this.layout();
   },
-  refreshPts() { const s = $('#ptsPill span'); if (s) s.textContent = LD.meta.points(); },
+  refreshPts() { const s = $('#ptsPill span'); if (s) s.textContent = LD.meta.points(); const k = LD.meta.state.streak || 0, b = $('#strkPill'); if (b) { b.style.display = k >= 2 && !this.isDemo ? '' : 'none'; b.lastChild.textContent = k; } },
 
   layout() {
     const g = this.g; if (!g || !this.zone) return;
@@ -1372,10 +1392,10 @@ const Game = {
     this.needsFresh = true;
     if (this.instant) return;
     const g = this.g, id = g.p.id;
-    if (!this.isDemo) LD.meta.recordLoss();
+    const rl = this.isDemo ? null : LD.meta.recordLoss();
     setTimeout(() => this.setHeroes('wince', 'wince'), 300);
     $$('.tile', this.board).forEach((t, k) => t.animate([{ filter: 'none' }, { filter: 'grayscale(.8) brightness(.7)' }], { duration: 600, delay: 300 + k * 6, fill: 'forwards' }));
-    setTimeout(() => { if (curScreen === 'game' && this.g === g) show('lose', { id, demo: this.isDemo }); }, 1300);
+    setTimeout(() => { if (curScreen === 'game' && this.g === g) show('lose', { id, demo: this.isDemo, rl }); }, 1300);
   },
 
   /* ---------------- HUD: duo, beat, timer, say bubble, demo finger ---------------- */
@@ -1481,9 +1501,10 @@ function buildTitle() {
     <button class="btn sm icon grape tsettings" id="tGear" aria-label="Settings">${icon('settings')}</button>
     ${logoSvg()}
     <div class="sub">a <b>RoxorLoops</b> &amp; <em>Jasmin</em> puzzle</div>
+    <div class="tx" id="tX"></div>
     <div class="tduo"><div class="disc"></div><div class="tf r">${roxor({ mood: 'idle' })}</div><div class="tf j">${jasmin({ mood: 'idle' })}</div></div>
     <div class="tbtns">
-      <button class="btn big juicebtn" id="tPlay">${icon('play')}<span>Play</span><span class="badge" id="tLvl">Easy 1</span></button>
+      <button class="btn big juicebtn" id="tPlay">${icon('play')}<span class="pl" id="tLvl">Play</span></button>
       <div class="row"><button class="btn sky" id="tTour">${icon('map')}<span>World Tour</span></button><button class="btn pink" id="tDaily">${icon('star')}<span>Daily Jam</span></button></div>
       <div class="row"><button class="btn gold" id="tLooks">${icon('shirt')}<span>Looks</span></button><button class="btn grape" id="tOutfits">${icon('mic')}<span>Outfits</span></button></div>
       <div class="row"><button class="btn grape" id="tHow">${icon('hint')}<span>How to play</span></button><button class="btn pink" id="tSupport">${icon('star')}<span>Support us</span></button></div>
@@ -1511,7 +1532,8 @@ function buildTitle() {
 function refreshTitle() {
   const s = $('#tPts span'); if (s) s.textContent = LD.meta.points();
   const L = LD.meta.level && LD.meta.level(LD.meta.currentId());
-  const t = $('#tLvl'); if (t) t.textContent = L ? `${L.packName} ${L.num}` : 'Go!';
+  const t = $('#tLvl'); if (t) t.textContent = L ? `Continue · ${L.packName} ${L.num}` : 'Play';
+  const x = $('#tX'); if (x) { x.innerHTML = ''; x.appendChild(LD.ui.titleExtras()); }
 }
 
 /* =====================================================================================================
@@ -1533,15 +1555,17 @@ const Win = {
         <div class="wchips" id="wChips"></div>
         <div class="wtotal">Total <b id="wTotal">0</b> pts</div>
       </div>
+      <div class="wx" id="wX"></div>
       <div class="wduo"><div class="tduo" style="position:absolute;inset:0;min-height:0"><div class="disc" style="bottom:2%;height:86%"></div></div><div class="tf r" style="position:relative;z-index:2;margin-right:-22px" id="wR"></div><div class="tf j" style="position:relative;z-index:2;margin-left:-22px" id="wJ"></div></div>
-      <div class="wbtns"><button class="btn grape" id="wTour">${icon('map')}<span>World Tour</span></button><button class="btn big" id="wNext"><span>Next gig</span>${icon('play')}</button></div>`;
+      <div class="wbtns"><button class="btn grape" id="wTour">${icon('map')}<span>World Tour</span></button><button class="btn big" id="wNext"><span class="nl">Next gig ▶</span><span class="badge" id="wOne">One more!</span></button></div>`;
     $$('#scr-win .wbtns svg').forEach((s) => { s.style.width = '22px'; s.style.height = '22px'; });
     $('#wR').innerHTML = roxor({ mood: 'happy', arms: 'up' });
     $('#wJ').innerHTML = jasmin({ mood: 'happy', arms: 'up' });
     // support screen first (when due), then continue where the player wanted to go
     const leave = (go) => { au.ui(); const r = this.r; if (r && r.support) { this.r = Object.assign({}, r, { support: false }); LD.ui.support({ onClose: go }); } else go(); };
+    $('#wTour').innerHTML = icon('map') + '<span>Tour</span>';
     $('#wTour').onclick = () => leave(() => { show('title'); openTour(); });
-    $('#wNext').onclick = () => leave(() => { if (this.demo) startGig(LD.meta.currentId()); else if (this.r && this.r.nextId) startGig(this.r.nextId); });
+    $('#wNext').onclick = () => leave(() => { if (this.demo) startGig(LD.meta.currentId()); else startGig((this.r && this.r.nextId) || LD.meta.currentId()); });
   },
   enter(o) {
     const st = o.stars || 3, ms = o.ms || 0, p = o.p || (Game.g && Game.g.p) || {};
@@ -1552,8 +1576,21 @@ const Win = {
     const r = this.r;
     $('#wPts').style.display = r ? '' : 'none';
     const next = $('#wNext');
-    next.style.display = this.demo || (r && r.nextId) ? '' : 'none';
-    next.querySelector('span').textContent = this.demo ? 'Play now' : 'Next gig';
+    next.querySelector('.nl').textContent = this.demo ? 'Play now ▶' : 'Next gig ▶';
+    $('#wOne').style.display = r && r.streak >= 2 ? '' : 'none';
+    $('#wOne').textContent = r && r.streak >= 3 ? `🔥 ${r.streak} in a row!` : 'One more!';
+    const wx = $('#wX'); wx.innerHTML = ''; if (r) wx.appendChild(LD.ui.winExtras(r));
+    if (r && (r.streak >= 3 || r.packUnlocked || (r.goal && r.goal.hit))) {
+      const txt = r.packUnlocked ? 'New pack!' : r.goal && r.goal.hit ? 'Daily set!' : `${r.streak} in a row!`;
+      this.tm.push(setTimeout(() => {
+        banner(txt, 'pink', innerHeight * .42);
+        const sb = stageBox(), cx = sb.left + sb.width / 2;
+        FX.fountain(cx, innerHeight, 40, 60);
+        for (let k = 0; k < 3; k++) FX.ring(cx, innerHeight * .42, 20, 160 + k * 60, ['#ff8cc6', '#b8f25a', '#ffd84a'][k], 8, .7, k * .12);
+        FX.burst(cx, innerHeight * .42, { n: 24, kind: 'star', colors: ['#ffd23a', '#ff8cc6', '#b8f25a', '#62cdfb'], v0: 200, v1: 420, g: 400, s0: 5, s1: 9, l0: .7, l1: 1.1 });
+        au.sparkle(); au.clap(0.8);
+      }, 2200));
+    }
     this.tm.forEach(clearTimeout); this.tm = [];
     if (r) {
       const chips = [];
@@ -1606,6 +1643,7 @@ const Lose = {
         <div class="lmics">${micSvg(true)}${micSvg(true)}${micSvg(true)}</div>
         <h1 class="lh"><span class="ct pink" data-t="Mic dropped!">Mic dropped!</span></h1>
         <p class="lp">All three mics are toast. Even legends need a soundcheck.</p>
+        <div class="lx" id="lX"></div>
         <div class="lduo"><div class="tf r" id="lR"></div><div class="tf j" id="lJ"></div></div>
         <div class="lbtns"><button class="btn big" id="lRetry">${icon('restart')}<span>Try again</span></button><button class="btn sky" id="lTour">${icon('map')}<span>World Tour</span></button></div>
       </div>`;
@@ -1615,6 +1653,7 @@ const Lose = {
   },
   enter(o) {
     this.id = o.id; this.demo = !!o.demo;
+    const lx = $('#lX'); lx.innerHTML = ''; lx.appendChild(LD.ui.loseExtras(o.rl || {}));
     const mics = $$('#scr-lose .lmics svg');
     mics.forEach((m, k) => m.animate([{ transform: 'translateY(-120px) rotate(-40deg)', opacity: 0 }, { transform: 'translateY(10px) rotate(12deg) scale(1.2,.8)', opacity: 1, offset: .6 }, { transform: 'none', opacity: 1 }], { duration: 520, delay: 150 + k * 160, fill: 'backwards', easing: 'ease-out' }));
     $$('#scr-lose .tf').forEach((t, k) => t.animate([{ transform: 'none' }, { transform: 'translateY(6px) scale(1.05,.92) rotate(-3deg)' }], { duration: 700, delay: k * 120, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out' }));

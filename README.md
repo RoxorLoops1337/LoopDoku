@@ -21,14 +21,19 @@ Every performer you place adds a layer to the Loop Station, a live beatbox loop.
 ## Levels
 | Pack | Boards | Gigs | What it takes |
 |---|---|---|---|
-| Easy | 5x5, 6x6 | 25 | singles and simple blocks |
-| Normal | 6x6, 7x7 | 25 | more blocking squares |
-| Hard | 7x7, 8x8 | 25 | "squeezes": zones that own a row or column |
-| Expert | 8x8, 9x9 | 25 | double squeezes |
-| Extreme | 9x9, 10x10 | 20 | what-if reasoning (a guess that leads to a dead end) |
-| Nightmare | 10x10 | up to 12 | four or more deep what-ifs per board |
+| Easy | 5x5, 6x6 | 40 | singles and simple blocks |
+| Normal | 6x6, 7x7 | 40 | more blocking squares |
+| Chill XL | 8x8 to 10x10 | 30 | big boards, easy logic: a relaxing long play |
+| Hard | 7x7, 8x8 | 40 | "squeezes": zones that own a row or column |
+| Expert | 8x8, 9x9 | 40 | double squeezes |
+| Terror | 7x7, 8x8 | 30 | small boards that need what-if reasoning |
+| Extreme | 9x9, 10x10 | 30 | what-if reasoning on big boards |
+| Meltdown | 8x8, 9x9 | 20 | four or more what-ifs on a small board: extremely hard, still no guessing |
+| Nightmare | 10x10 | 12 | three or more deep what-ifs on the biggest board |
 
-Packs open as you go (for example 3 Easy gigs open Normal). There is also a **Daily Jam** for double points.
+Packs open as you go (for example 3 Easy gigs open Normal and Chill XL; 8 Hard gigs open Terror). There is also a **Daily Jam** for double points.
+
+**Keep playing:** wins in a row add up to +50%, the first win of each day pays more the longer your day streak, three wins a day complete the daily set (+50), and the win screen always shows how close the next look and the next pack are.
 
 ## Looks (skins)
 Ten artists pitched a look for the game. The owners picked two, and the other eight unlock with the points you earn.
@@ -46,7 +51,7 @@ Ten artists pitched a look for the game. The owners picked two, and the other ei
 | Watercolour Storybook | Wren Wash | 1500 |
 | 16-bit Arcade | Bitcrush Benny | 1800 |
 
-Points per gig: Easy 15, Normal 30, Hard 60, Expert 100, Extreme 200 and Nightmare 350. You get +50% for 3 stars and +20%
+Points per gig: Easy 15, Normal 30, Chill XL 40, Hard 60, Expert 100, Terror 150, Extreme 200, Meltdown 300 and Nightmare 350. You get +50% for 3 stars and +20%
 for 2 stars. A replay pays 20%, and the Daily Jam pays double.
 
 ## For the owners: links and settings
@@ -78,9 +83,7 @@ node tools/build.mjs        # rebuild loopdoku-core.js, -levels.js, -meta.js fro
 node tools/test_core.mjs    # rules, every level's uniqueness, points, unlocks, support timing
 node tools/check_all.mjs    # the above plus a phone-emulated playthrough of every look
 ```
-Regenerate levels: `node tools/gen_levels.mjs --skip extreme,nightmare > tools/levels-main.json`, then
-`node tools/gen_levels.mjs --race extreme 20 tools/extreme.jsonl` and
-`node tools/gen_levels.mjs --race nightmare 12 tools/nightmare.jsonl`, then `node tools/merge_levels.mjs` and
-`node tools/build.mjs`.
+Levels live in `tools/packs/<pack>.jsonl` (one puzzle per line; the order sets the level numbers, so only append). Find more with
+`node tools/gen_levels.mjs --race <pack> <total> tools/packs/<pack>.jsonl`, then `node tools/merge_levels.mjs` and `node tools/build.mjs`.
 
 Made for and with RoxorLoops & Jasmin, "100% organic music with the human voice". https://roxorloopsandjasmin.com

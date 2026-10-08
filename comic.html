@@ -191,19 +191,19 @@ button{font:inherit;color:inherit}
 #s-win{align-items:center;overflow:hidden;padding:0 0 8px}
 #wRays{position:absolute;inset:-30%;background:repeating-conic-gradient(from 0deg at 50% 50%,#ffe234 0 6deg,#fff 6deg 12deg)}
 #wDots{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,transparent 35%,rgba(255,111,174,.5) 70%),radial-gradient(circle,rgba(201,63,120,.45) 2.6px,transparent 3px);background-size:auto,12px 12px}
-#wPanel{position:relative;margin-top:calc(env(safe-area-inset-top) + 14px);width:92%;height:38%;min-height:230px;perspective:700px;z-index:2}
+#wPanel{position:relative;margin-top:calc(env(safe-area-inset-top) + 10px);width:88%;height:29%;min-height:180px;perspective:700px;z-index:2}
 #wPanel .pf{position:absolute;inset:0;border:5px solid var(--ink);background:#ff5ea8;overflow:hidden;transform:rotateY(-9deg) rotateX(5deg) rotate(-2deg);box-shadow:8px 8px 0 var(--ink)}
 #wPanel .pf::before{content:'';position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg at 50% 60%,#ff8dc1 0 8deg,#ff4f9d 8deg 16deg)}
 #wPanel .pf::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(20,16,20,.25) 2px,transparent 2.4px);background-size:10px 10px}
 #wDuo{position:absolute;left:0;right:0;bottom:-6%;height:96%;z-index:2;display:flex;justify-content:center}
 #wDuo svg{height:100%;width:auto;overflow:visible}
-#encore{position:relative;z-index:4;margin-top:-34px;font:70px/1 var(--fLuck);color:var(--yel);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;transform:rotate(-6deg);
+#encore{position:relative;z-index:4;margin-top:-30px;font:58px/1 var(--fLuck);color:var(--yel);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;transform:rotate(-6deg);
  text-shadow:1px 1px 0 var(--ink),2px 2px 0 var(--ink),3px 3px 0 var(--ink),4px 4px 0 var(--ink),5px 5px 0 var(--ink),6px 6px 0 var(--pnkD),7px 7px 0 var(--pnkD),8px 8px 0 var(--ink)}
 #stars{position:relative;z-index:4;display:flex;gap:6px;margin-top:4px}
-#stars .st{width:74px;height:74px}
+#stars .st{width:56px;height:56px}
 #stars .st svg{width:100%;height:100%;overflow:visible}
-#wStats{position:relative;z-index:4;display:flex;gap:10px;margin-top:8px}
-#wStats .cap{font-size:20px;padding:5px 10px 3px}
+#wStats{position:relative;z-index:4;display:flex;gap:10px;margin-top:4px}
+#wStats .cap{font-size:17px;padding:4px 9px 2px}
 #wStats .cap:nth-child(2){background:#fff;transform:rotate(2deg)}
 #wStats .cap:first-child{transform:rotate(-2deg)}
 #wGig{position:relative;z-index:4;margin-top:8px;font:15px/1.1 var(--fBody);text-align:center;background:#fff;border:3px solid var(--ink);padding:4px 10px;box-shadow:3px 3px 0 var(--ink)}
@@ -243,21 +243,40 @@ button{font:inherit;color:inherit}
 .tBtns .btn.sup{min-height:40px;font-size:15px;background:var(--pnkL)}
 .ptsb{position:absolute;top:calc(env(safe-area-inset-top) + 10px);right:10px;z-index:5;display:flex;align-items:center;gap:4px;background:#fff;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);padding:4px 9px 2px;font:20px/1 var(--fBang);letter-spacing:1px;transform:rotate(3deg)}
 .ptsb svg{width:18px;height:18px}
-#wPts{position:relative;z-index:4;margin-top:8px;text-align:center;background:#fff;border:3.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:6px 12px 6px;transform:rotate(-1deg);min-width:240px}
-#wPts .big{font:38px/1 var(--fLuck);color:var(--grn);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:3px 3px 0 var(--ink)}
+#wPts{position:relative;z-index:4;margin-top:7px;text-align:center;background:#fff;border:3.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:6px 12px 6px;transform:rotate(-1deg);min-width:240px}
+#wPts .big{font:30px/1 var(--fLuck);color:var(--grn);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:3px 3px 0 var(--ink)}
 #wPts .brk{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:5px 0 3px}
 #wPts .brk span{font:13px/1 var(--fBang);letter-spacing:.8px;border:2px solid var(--ink);padding:3px 6px 2px;background:var(--yel)}
 #wPts .brk span.p{background:var(--pnkL)}#wPts .brk span.g{background:var(--grnL)}#wPts .brk span.c{background:#d9f6ff}
 #wPts .tot{font:16px/1 var(--fBang);letter-spacing:1px;color:#5d5160}
-#s-lose{align-items:center;overflow:hidden;gap:12px;justify-content:center}
+#s-lose{align-items:center;overflow:hidden;gap:8px;justify-content:center}
 #lRays{position:absolute;inset:-30%;background:repeating-conic-gradient(from 0deg at 50% 50%,#3a2a44 0 6deg,#2a1f2e 6deg 12deg)}
 #lRays::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.08) 2.2px,transparent 2.6px);background-size:11px 11px}
-.lPanel{position:relative;z-index:2;width:88%;height:38%;min-height:220px;background:#9fb8c8;transform:rotate(-2deg);overflow:hidden;background-image:radial-gradient(circle,rgba(20,16,20,.18) 2px,transparent 2.4px);background-size:10px 10px}
+.lPanel{position:relative;z-index:2;width:84%;height:30%;min-height:190px;background:#9fb8c8;transform:rotate(-2deg);overflow:hidden;background-image:radial-gradient(circle,rgba(20,16,20,.18) 2px,transparent 2.4px);background-size:10px 10px}
 #loseArt{position:absolute;inset:6px 0 0}#loseArt svg{width:100%;height:100%;overflow:visible}
 .kaput{position:absolute;right:8px;top:8px;font:34px/1 var(--fBang);color:var(--yel);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:3px 3px 0 var(--ink);transform:rotate(10deg)}
-.lH{position:relative;z-index:2;margin:6px 0 0;font:46px/1 var(--fLuck);color:#fff;-webkit-text-stroke:2.5px var(--ink);paint-order:stroke fill;text-shadow:4px 4px 0 var(--red);transform:rotate(-4deg);text-align:center}
+.lH{position:relative;z-index:2;margin:4px 0 0;font:40px/1 var(--fLuck);color:#fff;-webkit-text-stroke:2.5px var(--ink);paint-order:stroke fill;text-shadow:4px 4px 0 var(--red);transform:rotate(-4deg);text-align:center}
 .lTxt{position:relative;z-index:2;max-width:86%;text-align:center;font-size:17px;transform:rotate(1deg)}
 #s-lose .wBtns{margin-top:10px}
+
+/* keep-them-playing extras */
+.ldx{position:relative;z-index:4;width:min(100%,370px);margin-top:8px;padding:9px 11px!important;box-shadow:4px 4px 0 var(--ink)!important;transform:rotate(.6deg);background-image:radial-gradient(circle,rgba(255,170,60,.16) 1.3px,transparent 1.6px)!important;background-size:8px 8px!important}
+.ldx-cheer{font-family:var(--fBang)!important;letter-spacing:.8px;font-size:18px!important}
+.ldx-pill{border:2px solid var(--ink);font-family:var(--fBang)!important;font-weight:400!important;letter-spacing:.7px;font-size:13.5px!important;box-shadow:2px 2px 0 var(--ink)}
+.ldx-bar{border:2px solid var(--ink)!important;height:12px!important;background-image:radial-gradient(circle,rgba(20,16,20,.14) 1.2px,transparent 1.5px)!important;background-size:5px 5px!important}
+.ldx-look{font-family:var(--fBody)}
+#tX{position:relative;z-index:2;width:100%;max-width:380px;display:flex;justify-content:center;padding:0 6px}
+#tX .ldx{margin:2px 0 8px;transform:rotate(-.8deg)}
+#strk{display:none;align-items:center;gap:2px;background:var(--red);color:#fff;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);padding:2px 8px 0 5px;font:20px/1 var(--fBang);letter-spacing:1px;transform:rotate(3deg);-webkit-text-stroke:.8px var(--ink);white-space:nowrap}
+#strk.on{display:flex}#strk svg{width:18px;height:20px;overflow:visible}
+#bNext{flex:1.5;font-size:22px!important;background:var(--pnk);flex-direction:column;gap:1px;padding:7px 10px 6px;animation:nextPulse 1.25s ease-in-out infinite}
+#bNext .t{color:#fff;-webkit-text-stroke:1.5px var(--ink);paint-order:stroke fill;text-shadow:2px 2px 0 var(--ink)}
+#bNext small{font:12px/1 var(--fBang);letter-spacing:1px;background:var(--yel);border:2px solid var(--ink);padding:2px 6px 1px;transform:rotate(-3deg)}
+#bNext:hover,#bNext:active{animation:none}
+@keyframes nextPulse{0%,100%{transform:scale(1) rotate(-1deg)}50%{transform:scale(1.05) rotate(1deg)}}
+.wBtns{width:100%;max-width:390px;padding:0 10px;justify-content:center}
+#bWinTour,#bLoseTour,#bRetry{flex:1;min-width:0!important;font-size:16px!important;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){#bNext{animation:none}}
 @media (prefers-reduced-motion:reduce){#bg::after{animation:none}.bobA{animation:none}}
 @media (max-height:740px){.logo .w{font-size:64px}.lineup{display:none!important}}
 </style></head>
@@ -273,6 +292,7 @@ button{font:inherit;color:inherit}
   <div class="logo" id="logo"></div>
   <div><span class="sub">a RoxorLoops &amp; Jasmin puzzle</span></div>
   <div id="tDuo"></div>
+  <div id="tX"></div>
   <div class="tBtns">
    <button class="btn wide" id="bPlay"><span class="t">PLAY!</span><small id="bPlaySub"></small></button>
    <button class="btn pri" id="bTour" data-i="map"><span class="t">WORLD TOUR</span></button>
@@ -294,7 +314,7 @@ button{font:inherit;color:inherit}
   <div class="hudrow">
    <div id="timer"><span id="tIco"></span><span id="tTxt">0:00</span></div>
    <div id="lives"></div>
-   <div id="ptsChip"></div>
+   <div id="strk" aria-label="Win streak"></div><div id="ptsChip"></div>
   </div>
   <div class="duo" id="duo">
    <div class="bust" id="bRox"><div class="bob"></div></div>
@@ -322,7 +342,8 @@ button{font:inherit;color:inherit}
   <div id="stars"></div>
   <div id="wStats"><div class="cap" id="wTime">TIME 1:47</div><div class="cap" id="wMis">MISTAKES 0</div></div>
   <div id="wPts"><div class="big"><span id="wPtsN">+0</span> PTS</div><div class="brk" id="wBrk"></div><div class="tot" id="wTot"></div></div>
-  <div class="wBtns"><button class="btn" id="bWinTour" data-i="map">WORLD TOUR</button><button class="btn pri" id="bNext" data-i="play"><span class="t">NEXT GIG</span></button></div>
+  <div id="wX" style="display:contents"></div>
+  <div class="wBtns"><button class="btn" id="bWinTour" data-i="map">WORLD TOUR</button><button class="btn" id="bNext"><span class="t">NEXT GIG ▶</span></button></div>
  </section>
  <!-- LOSE -->
  <section class="screen" id="s-lose">
@@ -330,6 +351,7 @@ button{font:inherit;color:inherit}
   <div class="lPanel panel"><div id="loseArt"></div><div class="kaput">KA-PUTT!</div></div>
   <h2 class="lH">MIC DROP... OOPS!</h2>
   <div class="cap lTxt">THREE SLIPS AND THE CROWD WENT QUIET. SHAKE IT OFF!</div>
+  <div id="lX" style="display:contents"></div>
   <div class="wBtns"><button class="btn" id="bLoseTour" data-i="map">WORLD TOUR</button><button class="btn pri" id="bRetry" data-i="undo"><span class="t">TRY AGAIN!</span></button></div>
  </section>
  <!-- OUTFITS -->
@@ -615,6 +637,7 @@ const ICONS = {
   map: () => pth('M3,7 L11,4 L21,8 L29,5 V25 L21,28 L11,24 L3,27 Z', '#d9f6ff', 2.8) + ln('M11,4 V24 M21,8 V28', INK, 2) + ln('M6,20 Q9,14 14,16 Q19,18 24,11', PNK, 2.4, ' stroke-dasharray="2.5 3"') + pth(starPath(24.5, 10.5, 4.5, 2), YEL, 1.6),
   looks: () => pth('M16,4 C8,4 3,10 3,16 C3,23 9,28 15,28 C18,28 18,25 16.5,23.5 C15,22 16,19.5 19,19.5 H23 C27,19.5 29,17 29,14 C29,8 23,4 16,4 Z', '#fff4dc', 2.8) + cir(10, 13, 2.8, GRN, 1.8) + cir(16, 9.5, 2.8, PNK, 1.8) + cir(22.5, 12, 2.8, YEL, 1.8) + cir(9.5, 20.5, 2.8, CYA, 1.8),
   heart: () => pth('M16,28 C8,22 3,17 3,11 C3,7 6,4 10,4 C13,4 15,6 16,8 C17,6 19,4 22,4 C26,4 29,7 29,11 C29,17 24,22 16,28 Z', PNK, 2.8) + ln('M8,10 Q9,7 12,7', '#fff', 2),
+  flame: () => pth('M16,30 C8,30 4,24 5,18 C6,13 10,11 10,6 C14,8 15,12 14,15 C17,13 18,8 17,3 C24,7 28,14 27,20 C26,26 22,30 16,30 Z', ORG, 2.6) + pth('M16,29 C12,29 10,26 11,23 C12,20 15,19 15,16 C19,19 21,22 20,25 C19,28 18,29 16,29 Z', YEL, 0),
   clock: () => cir(16, 17, 12, '#fff', 3) + ln('M16,10 V17 L21,20', INK, 2.8) + pth('M12,2 H20 V5.5 H12 Z', INK, 0),
 };
 const icon = (k) => `<svg viewBox="0 0 32 32" aria-hidden="true">${ICONS[k]()}</svg>`;
@@ -651,7 +674,7 @@ function infinitySvg() {
 const $ = (id) => document.getElementById(id);
 const app = $('app'), FX = $('fx'), CV = $('fxc'), CX = CV.getContext('2d');
 const RM = !!LD.reducedMotion;
-let game = null, input = null, gen = 0, QUIET = false, FROZEN = false, demoCtl = null, DEMO = false, winRec = null;
+let game = null, input = null, gen = 0, QUIET = false, FROZEN = false, demoCtl = null, DEMO = false, winRec = null, loseRec = null;
 let cells = [], regionList = [], strokeCells = [], beatN = 0, livesEls = [], padEls = [], lastLayers = 0;
 const sB = LD.shaker($('shake'), { px: 13, deg: 2.2, decay: 1.9 });
 const sH = LD.shaker($('duo'), { px: 7, deg: 1.4, decay: 2.2 });
@@ -1087,12 +1110,14 @@ function updatePads(silent) {
 function updateHUD() {
   const p = game.p;
   const lab = DEMO ? 'SHOWCASE' : ((p.packName || 'Gig') + (p.num != null ? ' ' + p.num : '')).toUpperCase();
-  $('gK').textContent = lab + ' \u00B7 MEANWHILE, IN ' + (p.city || 'TOWN').toUpperCase() + '...';
+  $('gK').textContent = lab + (lab.length > 10 ? ' \u00B7 IN ' : ' \u00B7 MEANWHILE, IN ') + (p.city || 'TOWN').toUpperCase() + '...';
+  updateStreak();
   $('gV').textContent = (p.venue || 'Secret Gig').toUpperCase() + ' \u00B7 ' + p.n + '\u00D7' + p.n;
   $('gCap').classList.remove('demo');
   updatePts();
   updateLives(); updatePads(true); tickTimer();
 }
+function updateStreak() { const s = DEMO ? 0 : (LD.meta.state.streak || 0), b = $('strk'); b.classList.toggle('on', s >= 2); b.innerHTML = icon('flame') + '<span>' + s + '</span>'; }
 function updatePts() { const t = icon('star') + '<span>' + LD.meta.points() + '</span>'; $('ptsChip').innerHTML = t; $('tPts').innerHTML = t; }
 function tickTimer() { if (!game) return; const s = Math.floor(game.elapsed() / 1000); $('tTxt').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 setInterval(tickTimer, 250);
@@ -1133,8 +1158,8 @@ function wire(g) {
   g.on('layer', () => updatePads(false));
   g.on('undo', (e) => { if (QUIET || !e.count) return; const r = relRect($('bUndo')); ono(pick(['REWIND!', 'ZIP!', 'WHOOP!']), r.cx, r.y - 4, { size: 20, color: CYA, dur: 600, dy: -16 }); });
   g.on('cursor', (e) => cells.forEach((c, k) => c.el.classList.toggle('cur', k === e.i)));
-  g.on('win', (e) => { winRec = DEMO ? null : LD.meta.recordWin(g.p.id, e); updatePts(); if (!QUIET) winBoard(e); });
-  g.on('lose', () => { if (!DEMO) LD.meta.recordLoss(); if (QUIET) return; later(showLose, 1100); });
+  g.on('win', (e) => { winRec = DEMO ? null : LD.meta.recordWin(g.p.id, e); updatePts(); updateStreak(); if (!QUIET) winBoard(e); });
+  g.on('lose', () => { loseRec = DEMO ? null : LD.meta.recordLoss(); updateStreak(); if (QUIET) return; later(showLose, 1100); });
 }
 function winBoard(e) {
   react('roxor', 'YEAH!!', 'joy', 2200); react('jasmin', 'ENCORE!', 'cheer', 2200);
@@ -1221,10 +1246,22 @@ function showWin(st, rec) {
 /* ---------- win: points ---------- */
 function showPoints(r) {
   const box = $('wPts');
-  if (!r) { box.style.display = 'none'; $('bNext').querySelector('.t').textContent = "LET'S PLAY!"; $('bNext').style.display = ''; return; }
+  if (!r) { box.style.display = 'none'; $('wX').innerHTML = ''; $('bNext').innerHTML = '<span class="t">LET\'S PLAY \u25B6</span>'; $('bNext').style.display = ''; return; }
   box.style.display = '';
-  $('bNext').querySelector('.t').textContent = 'NEXT GIG';
+  $('bNext').innerHTML = (r.streak >= 2 ? '<small>ONE MORE! \uD83D\uDD25' + r.streak + '</small>' : '') + '<span class="t">NEXT GIG \u25B6</span>';
   $('bNext').style.display = r.nextId ? '' : 'none';
+  const wx = $('wX'); wx.innerHTML = ''; wx.appendChild(LD.ui.winExtras(r));
+  const fl = [];
+  if (r.streak >= 3) fl.push(['ON FIRE! x' + r.streak, ORG]);
+  if (r.packUnlocked) fl.push(['NEW PACK!', CYA]);
+  if (r.goal && r.goal.hit) fl.push(['DAILY SET!', GRNL]);
+  fl.forEach(([txt, col], k) => winTimers.push(setTimeout(() => {
+    const q = relRect($('wX').firstElementChild || $('wPts'));
+    burst(q.cx, q.cy, 120, col, { n: 18, ri: 30, dur: 900, inner: '#fff' });
+    ono(txt, q.cx, q.cy, { size: 44, color: '#fff', sw: 3, dur: 1300, dy: -20, hold: 0.65, rot: -6 });
+    spray(q.cx, q.cy, 24, { c: [col, YEL, PNK, '#fff'], r0: 4, r1: 8, sp0: 160, sp1: 360, m0: 0.6, m1: 1, p: { t: 'star', g: 500 } });
+    if (LD.audio.ctx) { LD.audio.sparkle(); LD.audio.clap(0.6); }
+  }, 1600 + k * 750)));
   const chips = [];
   chips.push(r.firstClear ? `<span class="g">FIRST CLEAR +${r.base}</span>` : `<span class="c">REPLAY +${r.points - (r.daily ? r.points / 2 : 0)}</span>`);
   if (r.starBonus && r.firstClear) chips.push(`<span>★ BONUS +${r.starBonus}</span>`);
@@ -1249,6 +1286,7 @@ function afterWin(go) {
 function showLose() {
   settle(FX); parts = []; CX.setTransform(1, 0, 0, 1, 0, 0); CX.clearRect(0, 0, CV.width, CV.height);
   $('loseArt').innerHTML = `<svg viewBox="-150 -115 300 300"><g transform="translate(-62 0) rotate(-6)">${roxFig({ pose: 'hurt', expr: 'wince' })}</g><g transform="translate(66 4) rotate(5)">${jasFig({ pose: 'hurt', expr: 'wince' })}</g><g transform="translate(-6 128) rotate(-30)">${mic(0, 0, 0, GRN)}</g><g font-family="Bangers,Impact" font-size="24" fill="#fff" stroke="${INK}" stroke-width="3" paint-order="stroke"><text x="-140" y="-80" transform="rotate(-10 -140 -80)">CRIIICKETS...</text></g></svg>`;
+  const lx = $('lX'); lx.innerHTML = ''; lx.appendChild(LD.ui.loseExtras(loseRec));
   showScreen('lose');
   if (RM) return;
   document.querySelector('.lPanel').animate([{ transform: 'scale(.3) rotate(-14deg)', opacity: 0 }, { transform: 'scale(1.06) rotate(1deg)', opacity: 1, offset: 0.6 }, { transform: 'rotate(-2deg)' }], { duration: 420, easing: 'ease-out' });
@@ -1344,7 +1382,8 @@ function route() {
 }
 function refreshTitle() {
   updatePts();
-  try { const L = LD.meta.level(LD.meta.currentId()); $('bPlaySub').textContent = ((L.packName || '') + (L.num != null ? ' ' + L.num : '') + ' · ' + (L.city || '')).toUpperCase(); } catch (_) { $('bPlaySub').textContent = ''; }
+  try { const L = LD.meta.level(LD.meta.currentId()); $('bPlaySub').textContent = ('CONTINUE · ' + (L.packName || '') + (L.num != null ? ' ' + L.num : '')).toUpperCase(); } catch (_) { $('bPlaySub').textContent = ''; }
+  const tx = $('tX'); tx.innerHTML = ''; try { tx.appendChild(LD.ui.titleExtras()); } catch (_) { /* meta without extras */ }
 }
 /* ---------- init ---------- */
 function rectBurst(el) {

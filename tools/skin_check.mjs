@@ -30,6 +30,7 @@ await wait(2200);
 check(await page.evaluate(() => !!window.LDSKIN && typeof window.LDSKIN.start === 'function'), 'window.LDSKIN missing');
 check(await page.evaluate(() => !!(window.LD && LD.meta && LD.ui)), 'LD.meta / LD.ui not loaded');
 await shot('title');
+check(await page.evaluate(() => !!document.querySelector('.ldx')), 'title: no LD.ui.titleExtras() card');
 check((await overflow()) <= 0, 'title: horizontal overflow');
 
 // ---- a 10x10 gig with the arrows ----
@@ -76,6 +77,8 @@ for (let t = 0; t < 30 && !won; t++) { await wait(300); won = await page.evaluat
 check(won, 'win screen did not appear after solving the 10x10 gig');
 await wait(1500);
 await shot('win');
+check(await page.evaluate(() => !!document.querySelector('.ldx')), 'win: no LD.ui.winExtras(r) card');
+{ const nb = await page.evaluate(() => { const b = [...document.querySelectorAll('button, a, [role="button"]')].find((el) => /next|one more/i.test(el.textContent || '') && el.getBoundingClientRect().width > 0); if (!b) return null; const r = b.getBoundingClientRect(); return r.bottom <= innerHeight && r.top >= 0; }); check(nb === true, 'win: the Next gig button is not fully visible without scrolling'); }
 const after = await page.evaluate(() => LD.meta.points());
 check(after > before, 'points did not go up after a win (recordWin not called?)');
 check(await page.evaluate((id) => !!LD.meta.state.solved[id], big), 'the win was not saved');
@@ -95,7 +98,7 @@ check(won, 'win screen did not appear after the 5x5 gig');
 await wait(1500);
 const nextBtn = await page.evaluate(() => {
   const els = [...document.querySelectorAll('button, a, [role="button"]')].filter((el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && r.bottom > 0 && r.top < innerHeight; });
-  const b = els.find((el) => /next/i.test(el.textContent || el.getAttribute('aria-label') || ''));
+  const b = els.find((el) => /next|one more/i.test(el.textContent || el.getAttribute('aria-label') || ''));
   if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
 });
 check(!!nextBtn, 'no visible "Next" button on the win screen');
@@ -122,6 +125,7 @@ for (let t = 0; t < 25 && !lost; t++) { await wait(300); lost = await page.evalu
 check(lost, 'lose screen did not appear after three mistakes');
 await wait(1200);
 await shot('lose');
+check(await page.evaluate(() => !!document.querySelector('.ldx')), 'lose: no LD.ui.loseExtras(rl) card');
 
 // ---- desktop look ----
 await page.setViewportSize({ width: 1440, height: 900 });

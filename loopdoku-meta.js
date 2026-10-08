@@ -10,7 +10,10 @@
      .currentId() / .setCurrent(id)
      .newGame(id?, opts?)        new LD.Game for that level (default: the current one), with the player's assist settings applied
      .nextId(id)                 the level after id (null at the very end)
-     .recordWin(id, winEvent)    -> {points, base, starBonus, firstClear, daily, total, nextId, support, affordable: [skins]}
+     .recordWin(id, winEvent)    -> {points, base, starBonus, firstClear, daily, total, nextId, support, affordable: [skins],
+                                    streak, streakBonus, dayStreak, dayBonus, goal {count, target, hit, bonus}, packUnlocked, nextLook, tease, cheer}
+     .recordLoss()               -> {streakLost, cheer, nextLook}
+     .today()  .nextLook()  .tease()
      .daily()                    -> {id, puzzle, done}  today's Daily Jam (double points the first time)
      .points()                   current points
      .skins()                    [{id, name, artist, file, cost, unlocked, current}]   .skin() current id
@@ -19,6 +22,7 @@
      .supportDue()               true when it is time to show the support screen (call after a win)
    LD.ui (overlays; theme them with CSS variables on :root, see THEME below)
      .levels({onPlay(id)})  .skins()  .support()  .settings({onChange})  .confirm(text, yesLabel, onYes)  .toast(text)  .close()
+     .winExtras(r)  .loseExtras(lossResult)  .titleExtras()   -> a card with the duo's cheer, streaks, the daily set and the next-look bar
      .isOpen()
    THEME (set on :root in your skin; all optional)
      --ld-font --ld-font-display --ld-ink --ld-muted --ld-panel --ld-panel-2 --ld-backdrop --ld-accent --ld-accent-ink
@@ -45,9 +49,12 @@
     },
     supportAfterWins: 3,   // first support screen after this many wins
     supportEvery: 4,       // then every this many wins
-    points: { easy: 15, normal: 30, hard: 60, expert: 100, extreme: 200, nightmare: 350 },
+    points: { easy: 15, normal: 30, chill: 40, hard: 60, expert: 100, terror: 150, extreme: 200, melt: 300, nightmare: 350 },
+    dailyGoal: 3, dailyGoalBonus: 50,   // win this many gigs in a day for a bonus
+    streakStep: 0.1, streakMax: 0.5,     // +10% per win in a row after the first, up to +50%
+    dayStreakPoints: 10, dayStreakMax: 10, // first win of a day: +10 per day in a row, up to +100
     replayShare: 0.2,      // replaying a solved level pays this share
-    packNeeds: { normal: ['easy', 3], hard: ['normal', 5], expert: ['hard', 5], extreme: ['expert', 5], nightmare: ['extreme', 5] },
+    packNeeds: { normal: ['easy', 3], chill: ['normal', 3], hard: ['normal', 5], expert: ['hard', 5], terror: ['hard', 8], extreme: ['expert', 5], melt: ['terror', 5], nightmare: ['extreme', 5] },
     openAhead: 3,          // inside a pack, this many unsolved levels are open at once
   });
   const SKINS = (LD.SKINS = [
@@ -95,12 +102,13 @@
   // ---------------------------------------------------------------------------------------------------------------
   const KEY = 'loopdoku_save_v1';
   const fresh = () => ({ v: 1, points: 0, earned: 0, wins: 0, losses: 0, solved: {}, current: null, skin: 'neon', unlocked: FREE.slice(),
-    supportLast: 0, daily: {}, settings: { sound: true, music: true, assist: false } });
+    supportLast: 0, daily: {}, streak: 0, bestStreak: 0, dayStreak: 0, lastDay: '', dayWins: {}, settings: { sound: true, music: true, assist: false } });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (_) { /* no storage: play without saving */ }
   S.settings = Object.assign(fresh().settings, S.settings || {});
   for (const id of FREE) if (!S.unlocked.includes(id)) S.unlocked.push(id);
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) { /* ignore */ } };
+  const yesterday = () => { const d = new Date(Date.now() - 864e5); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 
   function packInfo(pack) {
@@ -162,6 +170,23 @@
       let daily = false;
       if (isDaily && !S.daily[today()]) { points *= 2; daily = true; S.daily[today()] = true; }
       const before = S.points;
+      const packsBefore = meta.packs().filter((p) => p.unlocked).map((p) => p.id);
+      // win streak: +10% per win in a row after the first
+      S.streak = (S.streak || 0) + 1; S.bestStreak = Math.max(S.bestStreak || 0, S.streak);
+      const streakBonus = Math.round(points * Math.min(CONFIG.streakMax, CONFIG.streakStep * (S.streak - 1)));
+      // day streak: the first win of a day pays more the more days in a row you played
+      const d = today(), firstToday = !S.dayWins[d];
+      let dayBonus = 0;
+      if (firstToday) {
+        S.dayStreak = S.lastDay === yesterday() ? (S.dayStreak || 0) + 1 : 1;
+        S.lastDay = d;
+        dayBonus = CONFIG.dayStreakPoints * Math.min(CONFIG.dayStreakMax, S.dayStreak);
+        for (const k of Object.keys(S.dayWins)) if (k !== d) delete S.dayWins[k];
+      }
+      S.dayWins[d] = (S.dayWins[d] || 0) + 1;
+      const goalHit = S.dayWins[d] === CONFIG.dailyGoal;
+      const goalBonus = goalHit ? CONFIG.dailyGoalBonus : 0;
+      points += streakBonus + dayBonus + goalBonus;
       S.points += points; S.earned += points; S.wins++;
       const newBest = !prev || (e.ms && (!prev.bestMs || e.ms < prev.bestMs));
       S.solved[id] = { stars: Math.max(stars, prev ? prev.stars : 0), bestMs: prev && prev.bestMs && (!e.ms || prev.bestMs < e.ms) ? prev.bestMs : (e.ms || 0) };
@@ -169,10 +194,58 @@
       if (nextId) S.current = nextId;
       const affordable = SKINS.filter((k) => !S.unlocked.includes(k.id) && k.id !== S.skin && k.cost <= S.points && k.cost > before);
       save();
-      return { points, base, starBonus, firstClear: !prev, daily, total: S.points, newBest: !!newBest, nextId, support: meta.supportDue(), affordable };
+      const packUnlocked = meta.packs().filter((p) => p.unlocked && !packsBefore.includes(p.id)).map((p) => p.name)[0] || null;
+      const r = { points, base, starBonus, firstClear: !prev, daily, total: S.points, newBest: !!(prev && newBest), nextId, support: meta.supportDue(), affordable,
+        streak: S.streak, streakBonus, dayStreak: S.dayStreak, dayBonus, goal: { count: Math.min(S.dayWins[d], CONFIG.dailyGoal), target: CONFIG.dailyGoal, hit: goalHit, bonus: goalBonus },
+        packUnlocked, nextLook: meta.nextLook(), tease: meta.tease() };
+      r.cheer = meta.cheer(r);
+      return r;
     },
     currentIdAfterDaily() { S.current = null; return meta.currentId(); },
-    recordLoss() { S.losses++; save(); },
+    recordLoss() {
+      const lost = S.streak || 0;
+      S.losses++; S.streak = 0; save();
+      const lines = lost >= 3 ? ['A ' + lost + '-win streak! Win the next one to start a new one.', 'Even legends drop a mic. ' + lost + ' in a row was huge, go again!']
+        : ['So close! Every gig you finish brings a new look nearer.', 'Shake it off and loop it again!', 'Roxor says: one more take. Jasmin agrees.'];
+      return { streakLost: lost, cheer: lines[(S.losses + lost) % lines.length], nextLook: meta.nextLook() };
+    },
+    // the cheapest look still locked, and how far the player is from it
+    nextLook() {
+      const k = SKINS.filter((x) => !S.unlocked.includes(x.id)).sort((a, b) => a.cost - b.cost)[0];
+      if (!k) return null;
+      return { id: k.id, name: k.name, cost: k.cost, have: S.points, need: Math.max(0, k.cost - S.points), pct: Math.min(1, S.points / k.cost), ready: S.points >= k.cost };
+    },
+    // the nearest locked pack and how many wins it still needs
+    tease() {
+      for (const p of meta.packs()) {
+        if (p.unlocked || !p.need) continue;
+        const other = meta.packs().find((x) => x.id === p.need.pack);
+        if (!other || !other.unlocked) continue;
+        return { pack: p.name, need: Math.max(0, p.need.count - other.solved), from: other.name };
+      }
+      return null;
+    },
+    // today's progress, for the title screen
+    today() {
+      const d = today();
+      const atRisk = S.dayStreak > 0 && S.lastDay === yesterday();
+      return { goal: { count: Math.min(S.dayWins[d] || 0, CONFIG.dailyGoal), target: CONFIG.dailyGoal, bonus: CONFIG.dailyGoalBonus },
+        dayStreak: S.lastDay === d || atRisk ? S.dayStreak : 0, playedToday: !!S.dayWins[d], atRisk, streak: S.streak || 0, bestStreak: S.bestStreak || 0 };
+    },
+    // one line from the duo, picked for the moment
+    cheer(r) {
+      const pick = (arr) => arr[(S.wins * 7 + (r.streak || 0)) % arr.length];
+      if (r.packUnlocked) return 'New stage unlocked: ' + r.packUnlocked + '! Jasmin is already warming up.';
+      if (r.affordable && r.affordable.length) return 'You can unlock ' + r.affordable[0].name + ' now! Open Looks.';
+      if (r.nextLook && !r.nextLook.ready && r.nextLook.need <= 60) return 'Only ' + r.nextLook.need + ' pts to ' + r.nextLook.name + '. One more gig?';
+      if (r.goal && r.goal.hit) return 'Daily set complete: +' + r.goal.bonus + ' pts! Roxor drops the beat for you.';
+      if (r.streak >= 5) return pick([r.streak + ' in a row! The crowd is going wild!', 'Unstoppable! ' + r.streak + ' gigs straight!']);
+      if (r.streak >= 3) return pick(['Hat trick! Keep the loop going for a bigger bonus.', r.streak + ' in a row! Next win pays even more.']);
+      if (r.goal && r.goal.count === r.goal.target - 1) return 'One more gig today for the daily set bonus!';
+      if (r.tease && r.tease.need > 0 && r.tease.need <= 2) return r.tease.need + ' more ' + r.tease.from + ' gig' + (r.tease.need > 1 ? 's' : '') + ' to open ' + r.tease.pack + '!';
+      if (r.newBest) return 'New personal best! You are getting fast.';
+      return pick(['Encore! The crowd wants one more.', 'That was smooth. Ready for the next gig?', 'Roxor: "Boots and cats!" Jasmin: "One more!"', 'Loop it again? The next stage is calling.', 'Mic drop! Keep the tour rolling.']);
+    },
     daily() {
       const d = today();
       let h = 2166136261;
@@ -288,6 +361,22 @@
   .ldui-toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483001;padding:12px 18px;border-radius:999px;
     background:var(--ld-accent-2,#ffd54a);color:var(--ld-accent-2-ink,#221);font:800 15px var(--ld-font,system-ui);box-shadow:0 8px 24px #0003;border:var(--ld-line,0 solid transparent);
     animation:ldtoast 2.4s ease forwards;pointer-events:none;white-space:nowrap}
+  .ldx{font-family:var(--ld-font,system-ui,sans-serif);color:var(--ld-ink,#221);background:var(--ld-panel,#fff);border:var(--ld-line,0 solid transparent);border-radius:calc(var(--ld-radius,22px)*.7);
+    box-shadow:var(--ld-shadow,0 6px 20px rgba(0,0,0,.18));padding:10px 12px;display:grid;gap:8px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;text-align:left;animation:ldup .4s cubic-bezier(.2,1.3,.4,1) both}
+  .ldx *{box-sizing:border-box}
+  .ldx-cheer{font:400 17px/1.2 var(--ld-font-display,var(--ld-font,system-ui));margin:0}
+  .ldx-pills{display:flex;flex-wrap:wrap;gap:6px}
+  .ldx-pill{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:12.5px;line-height:1;padding:6px 9px;border-radius:999px;background:var(--ld-panel-2,#f1eef4);white-space:nowrap}
+  .ldx-pill.hot{background:var(--ld-accent,#ff5aa5);color:var(--ld-accent-ink,#fff);animation:ldpop .5s cubic-bezier(.2,1.6,.4,1) both}
+  .ldx-pill.gold{background:var(--ld-accent-2,#ffd54a);color:var(--ld-accent-2-ink,#221);animation:ldpop .5s .1s cubic-bezier(.2,1.6,.4,1) both}
+  .ldx-goal{display:inline-flex;gap:3px;margin-left:2px}.ldx-goal i{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.25}.ldx-goal i.on{opacity:1}
+  .ldx-look{display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:center;font-size:12.5px;font-weight:700}
+  .ldx-look img{width:34px;height:44px;object-fit:cover;object-position:top;border-radius:6px;border:var(--ld-line,0 solid transparent)}
+  .ldx-bar{height:10px;border-radius:999px;background:var(--ld-panel-2,#eee);overflow:hidden;margin-top:4px;border:var(--ld-line,0 solid transparent)}
+  .ldx-bar b{display:block;height:100%;width:var(--from,0%);background:var(--ld-accent,#ff5aa5);border-radius:inherit;animation:ldbar 1.1s .35s cubic-bezier(.3,1,.4,1) forwards}
+  .ldx-look.ready .ldx-bar b{background:var(--ld-accent-2,#ffd54a)}
+  @keyframes ldbar{to{width:var(--to,0%)}} @keyframes ldpop{from{transform:scale(.4);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.ldx,.ldx-pill{animation:none}.ldx-bar b{animation:none;width:var(--to,0%)}}
   @keyframes ldfade{from{opacity:0}} @keyframes ldup{from{transform:translateY(40px) scale(.96);opacity:0}}
   @keyframes ldbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}30%{transform:scale(1)}45%{transform:scale(1.1)}}
   @keyframes ldtoast{0%{opacity:0;transform:translate(-50%,20px) scale(.9)}10%{opacity:1;transform:translate(-50%,0) scale(1.05)}15%{transform:translate(-50%,0) scale(1)}85%{opacity:1}100%{opacity:0;transform:translate(-50%,-10px)}}
@@ -413,7 +502,40 @@
     r.querySelector('[data-n]').addEventListener('click', () => close());
   }
 
-  LD.ui = { levels: levelsUI, skins: skinsUI, support: supportUI, settings: settingsUI, confirm: confirmUI, toast, close, isOpen: () => !!root };
+  // ---- encouragement cards: drop them into your win / lose / title screen (themed by the same --ld-* variables) ----
+  function lookRow(nl, fromPct) {
+    if (!nl) return '<div class="ldx-look"><span></span><div>Every look unlocked. Legend!</div></div>';
+    const to = Math.round(nl.pct * 100), from = Math.round((fromPct === undefined ? nl.pct : fromPct) * 100);
+    return '<div class="ldx-look' + (nl.ready ? ' ready' : '') + '"><img src="thumbs/skin-' + nl.id + '.jpeg" alt=""><div>'
+      + (nl.ready ? 'Ready to unlock: <b>' + esc(nl.name) + '</b>! Open Looks.' : 'Next look: <b>' + esc(nl.name) + '</b>, ' + nl.need + ' pts to go')
+      + '<div class="ldx-bar"><b style="--from:' + from + '%;--to:' + to + '%"></b></div></div></div>';
+  }
+  function goalDots(g) { let s = ''; for (let k = 0; k < g.target; k++) s += '<i class="' + (k < g.count ? 'on' : '') + '"></i>'; return '<span class="ldx-goal">' + s + '</span>'; }
+  function card(html) { style(); const d = document.createElement('div'); d.className = 'ldx'; d.innerHTML = html; return d; }
+  function winExtras(r) {
+    if (!r) return card('');
+    const pills = [];
+    if (r.streak >= 2) pills.push('<span class="ldx-pill hot">🔥 ' + r.streak + ' in a row' + (r.streakBonus ? ' +' + r.streakBonus : '') + '</span>');
+    if (r.dayBonus) pills.push('<span class="ldx-pill gold">📅 Day ' + r.dayStreak + ' +' + r.dayBonus + '</span>');
+    pills.push('<span class="ldx-pill' + (r.goal.hit ? ' gold' : '') + '">Daily set ' + goalDots(r.goal) + (r.goal.hit ? ' +' + r.goal.bonus : '') + '</span>');
+    if (r.tease && r.tease.need > 0) pills.push('<span class="ldx-pill">🔒 ' + esc(r.tease.pack) + ': ' + r.tease.need + ' to go</span>');
+    const before = r.nextLook ? Math.max(0, (r.total - r.points) / r.nextLook.cost) : 0;
+    return card('<p class="ldx-cheer">' + esc(r.cheer) + '</p><div class="ldx-pills">' + pills.join('') + '</div>' + lookRow(r.nextLook, before));
+  }
+  function loseExtras(rl) {
+    rl = rl || {};
+    return card('<p class="ldx-cheer">' + esc(rl.cheer || 'So close! Go again.') + '</p>' + lookRow(meta.nextLook()));
+  }
+  function titleExtras() {
+    const t = meta.today(), pills = [];
+    if (t.dayStreak) pills.push('<span class="ldx-pill ' + (t.playedToday ? 'gold' : 'hot') + '">📅 ' + t.dayStreak + '-day streak' + (t.atRisk && !t.playedToday ? ': win today to keep it!' : '') + '</span>');
+    pills.push('<span class="ldx-pill">Daily set ' + goalDots(t.goal) + ' +' + t.goal.bonus + '</span>');
+    if (t.streak >= 2) pills.push('<span class="ldx-pill hot">🔥 ' + t.streak + ' in a row</span>');
+    const ts = meta.tease();
+    if (ts && ts.need > 0) pills.push('<span class="ldx-pill">🔒 ' + esc(ts.pack) + ': ' + ts.need + ' ' + esc(ts.from) + ' to go</span>');
+    return card('<div class="ldx-pills">' + pills.join('') + '</div>' + lookRow(meta.nextLook()));
+  }
+  LD.ui = { winExtras, loseExtras, titleExtras, levels: levelsUI, skins: skinsUI, support: supportUI, settings: settingsUI, confirm: confirmUI, toast, close, isOpen: () => !!root };
 
   // the music setting: the Loop Station keeps its beat (skins pulse on it) but plays no sound when music is off
   LD.loop.silent = S.settings.music === false;

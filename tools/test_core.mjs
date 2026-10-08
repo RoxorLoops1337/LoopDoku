@@ -19,7 +19,7 @@ function count(p) {
   return c;
 }
 const packs = LD.meta.packs();
-ok(packs.map((p) => p.id).join().startsWith('easy,normal,hard,expert,extreme'), 'packs in order');
+ok(packs.map((p) => p.id).join().startsWith('easy,normal,chill,hard,expert,terror,extreme'), 'packs in order');
 let total = 0;
 for (const p of packs) for (const L of p.levels) {
   total++;
@@ -52,11 +52,15 @@ LD.meta.set('assist', false);
 // points, unlocks, support
 const win = (id) => { const gm = LD.meta.newGame(id); let r; gm.on('win', (e) => { r = LD.meta.recordWin(id, e); }); for (let x = 0; x < gm.n; x++) gm.place(x * gm.n + gm.p.sol[x]); return r; };
 const r1 = win('easy-1');
-ok(r1 && r1.points === 15 + 8 && r1.firstClear, 'easy first clear with 3 stars pays 23, got ' + (r1 && r1.points));
+ok(r1 && r1.points === 15 + 8 + 10 && r1.firstClear && r1.dayBonus === 10, 'easy first clear, 3 stars and the day bonus pay 33, got ' + (r1 && r1.points));
+ok(typeof r1.cheer === 'string' && r1.nextLook && r1.nextLook.id === 'comic', 'cheer and next look');
 const r2 = win('easy-1');
 ok(r2.points < r1.points && !r2.firstClear, 'replay pays less');
 ok(LD.meta.packs()[1].unlocked === false, 'normal locked at first');
-win('easy-2'); win('easy-3');
+win('easy-2'); const r3 = win('easy-3');
+ok(r3.streak === 4 && r3.streakBonus > 0, 'win streak bonus');
+ok(r3.goal.count === 3 && r2.goal.count === 2, 'daily set counts');
+const rl = LD.meta.recordLoss(); ok(rl.streakLost === 4 && LD.meta.state.streak === 0, 'a loss ends the streak');
 ok(LD.meta.packs()[1].unlocked === true, 'normal opens after 3 easy');
 ok(LD.meta.state.wins === 4 && LD.meta.supportDue() === true, 'support due after the 3rd win');
 LD.meta.markSupportShown();

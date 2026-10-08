@@ -35,6 +35,19 @@ body .ldui-hero h3{font-family:var(--ld-font-display);color:#ff9fc6;text-shadow:
 body .ldui-row{border-bottom:3px dotted #5b3d8a}
 body .ldui-sw{border:3px solid #1a0b26;background:#3a2560} body .ldui-sw::after{border-radius:0;box-shadow:none;background:#fff6e0}
 body .ldui-sw[aria-checked="true"]{background:#78bd35}
+/* the shared encouragement card, pixelled */
+body .ldx{border-radius:0!important;border:3px solid #1a0b26!important;box-shadow:inset 0 0 0 3px #e9dcff,inset 0 0 0 6px #1a0b26!important;background:#22143d!important;color:#fff6e0!important;padding:10px 12px!important;gap:6px!important;font-family:"VT323",ui-monospace,monospace!important}
+body .ldx-cheer{font-family:"Silkscreen",ui-monospace,monospace!important;font-size:13px!important;line-height:1.25!important;color:#ffd84a;text-shadow:2px 2px 0 #1a0b26}
+body .ldx-pill{border-radius:0!important;border:2px solid #1a0b26;font-family:"Silkscreen",ui-monospace,monospace!important;font-size:10px!important;font-weight:400!important;background:#3a2560;color:#fff;box-shadow:0 2px 0 #1f1238}
+body .ldx-pill.hot{background:#ff7fb2;color:#1a0b26} body .ldx-pill.gold{background:#ffd84a;color:#1a0b26}
+body .ldx-goal i{border-radius:0!important;width:7px!important;height:7px!important}
+body .ldx-look{font-size:16px!important;font-weight:400!important;grid-template-columns:28px 1fr!important}
+body .ldx-look img{border-radius:0!important;width:28px!important;height:36px!important;border:2px solid #1a0b26!important;image-rendering:pixelated}
+body .ldx-bar{border-radius:0!important;height:9px!important;border:2px solid #1a0b26!important;background:#1a0b26!important}
+body .ldx-bar b{border-radius:0!important;background:repeating-linear-gradient(90deg,#78bd35 0 6px,#a9f060 6px 9px)!important}
+body .ldx-look.ready .ldx-bar b{background:repeating-linear-gradient(90deg,#ffd84a 0 6px,#fff7b0 6px 9px)!important}
+.xslot{width:calc(var(--u)*124);flex:0 0 auto}
+.xslot .ldx{margin:0}
 body .ldui-toast{border:3px solid #1a0b26;background:#ffd84a;color:#1a0b26;box-shadow:0 5px 0 #7a4f06;font-size:13px}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:#120a22;overflow:hidden;overscroll-behavior:none}
@@ -923,7 +936,7 @@ function mkBtn(o) {
   b.type = 'button';
   b.setAttribute('aria-label', o.aria || String(o.label || '').replace('\n', ' '));
   sizeEl(b, o.w, o.h);
-  const setFace = (fo) => { b.innerHTML = ''; const f = faceC(fo); sizeEl(f, f.width, f.height); b.appendChild(f); b._face = f; };
+  const setFace = (fo) => { b.innerHTML = ''; const f = faceC(fo); sizeEl(f, f.width, f.height); b.appendChild(f); b._face = f; const t = document.createElement('span'); t.className = 'sr'; t.textContent = fo.aria || String(fo.label || '').split('\n').join(' '); b.appendChild(t); };
   setFace(o);
   b.setFace = (patch) => { Object.assign(o, patch); if (patch.label && !o.aria) b.setAttribute('aria-label', String(patch.label).replace(/\n/g, ' ')); setFace(o); };
   b.addEventListener('pointerdown', () => { LD.audio.unlock(); CHIP.ui(); });
@@ -1475,7 +1488,7 @@ function firework(x0, y0) {
 }
 function onLose() {
   if (QUIET.on) return; G.loseT = now();
-  if (!G.isDemo) LD.meta.recordLoss();
+  G.rl = G.isDemo ? null : LD.meta.recordLoss();
   setReact('rox', 'hurt', ['hurt'], 99999); setReact('jas', 'hurt', ['hurt'], 99999);
   const o = boardOrigin(), cx = o.x + G.geo.B / 2, cy = o.y + G.geo.B / 2;
   // the stage lights die row by row, GAME OVER drops in
@@ -1489,7 +1502,7 @@ function onLose() {
   later(1100, () => {
     if (CHIP.ok()) { const t0 = LD.audio.ctx.currentTime; for (let k = 0; k < 4; k++) { CHIP.note(100, 0.03, { vol: 0.03, at: t0 + 0.4 + k * 0.09 + (k > 1 ? 0.25 : 0) }); } }
     openModal(() => {
-      const p = mkPanel(110, 120); p.style.cssText += ';display:flex;flex-direction:column;align-items:center;gap:' + px(3) + ';padding-top:' + px(2);
+      const p = mkPanel(116, 120); p.style.height = 'auto'; p.style.cssText += ';display:flex;flex-direction:column;align-items:center;gap:' + px(3) + ';padding:' + px(2) + ' 0 ' + px(3);
       const c = artCanvas(100, 66); p.appendChild(c);
       let tries = 0;
       const draw = () => {
@@ -1505,6 +1518,7 @@ function onLose() {
         text(x, 'THE CROWD WANTS MORE...', 50, 21, { font: FONT5, color: '#ffc9de', align: 'center' });
       };
       requestAnimationFrame(draw);
+      { const xs = el('div', 'xslot', p); xs.style.width = px(104); xs.appendChild(LD.ui.loseExtras(G.rl || {})); }
       p.appendChild(mkBtn({ kind: 'gold', label: 'TRY AGAIN', font: FONT7, icon: iconC('undo', '#1a0b26'), color: '#1a0b26', shadow: '#fff7b0', w: 96, h: 24, onClick: () => { closeModal(); startGig(G.id); } }));
       p.appendChild(mkBtn({ kind: 'plum', label: 'WORLD TOUR', icon: iconC('map'), w: 96, h: 18, onClick: () => openTour() }));
       return p;
@@ -1620,7 +1634,7 @@ function drawHUD(t) {
   hudBox(x, 0, 0, 130, 11, '#1a0b26');
   const tag = G.isDemo ? 'DEMO ' : (String(g.p.packName || '') + (g.p.packName === 'Daily Jam' ? '' : ' ' + (g.p.num || ''))).toUpperCase() + ' ';
   let city = (g.p.city || '').toUpperCase() + ' ', ven = (g.p.venue || '').toUpperCase();
-  const wt = textW(tag, FONT5); if (wt + textW(city + ven, FONT5) > 122) ven = ''; if (wt + textW(city, FONT5) > 122) city = '';
+  const wt = textW(tag, FONT5); if (wt + textW(city + ven, FONT5) > 116) ven = ''; if (wt + textW(city, FONT5) > 116) city = '';
   const tw = wt + textW(city, FONT5) + textW(ven, FONT5), sx = Math.round(65 - tw / 2);
   text(x, tag, sx, 3, { font: FONT5, color: '#fff27a' }); text(x, city, sx + wt, 3, { font: FONT5, color: '#ffffff' }); text(x, ven, sx + wt + textW(city, FONT5), 3, { font: FONT5, color: '#ff9fc6' });
   // score
@@ -1679,6 +1693,14 @@ function drawHUD(t) {
   // the duo
   drawDuoMember(x, 'rox', 4, 40, t);
   drawDuoMember(x, 'jas', 104, 40, t);
+  // win-streak badge: a pixel flame and the count
+  const stk = G.isDemo ? 0 : (LD.meta.state.streak || 0);
+  if (stk >= 2) {
+    const sw = textW(String(stk), FONT5) + 11, sx2 = 128 - sw, fl = ((t / 120) | 0) % 2;
+    x.fillStyle = '#1a0b26'; x.fillRect(sx2, 35, sw, 10); x.fillStyle = '#ff7fb2'; x.fillRect(sx2 + 1, 36, sw - 2, 8);
+    x.drawImage(S('flame' + fl, () => mapCanvas(fl ? ['..o..', '.ooo.', 'oyoyo', 'oyyyo', '.oyo.'] : ['.o...', '.oo..', 'ooyo.', 'oyyyo', '.oyo.'], PAL)), sx2 + 2, 38);
+    text(x, String(stk), sx2 + 8, 38, { font: FONT5, color: '#1a0b26' });
+  }
   // speech bubble
   const bb = G.bubble;
   if (bb && t < bb.until) {
@@ -1908,7 +1930,8 @@ const TT = { duoT: 0 };
 function buildTitle() {
   const s = $('#scr-title'); s.innerHTML = '';
   spacer(s, 2);
-  const c = artCanvas(130, 150); c.id = 'titleC'; s.appendChild(c);
+  const c = artCanvas(130, 129); c.id = 'titleC'; s.appendChild(c);
+  const xs = el('div', 'xslot', s); xs.id = 'titleX';
   spacer(s).style.maxHeight = px(4);
   const w = mkBtn({ kind: 'gold', label: 'PLAY', font: FONT7, sc: 1, icon: iconC('play', '#1a0b26'), color: '#1a0b26', shadow: '#fff7b0', w: 124, h: 24, aria: 'Play: continue your gig', onClick: () => { TT.duoT = now(); startGig(LD.meta.currentId()); } });
   w.id = 'bWatch'; s.appendChild(w);
@@ -1922,7 +1945,7 @@ function buildTitle() {
   r2.appendChild(mkBtn({ kind: 'plum', label: 'OUTFITS', icon: iconC('shirt'), stack: true, w: 33, h: 24, onClick: () => go('outfits') }));
   r2.appendChild(mkBtn({ kind: 'plum', label: 'HOW TO', icon: iconC('hint'), stack: true, w: 32, h: 24, aria: 'How to play: watch the demo', onClick: () => { LD.audio.unlock(); TT.duoT = now(); iris(() => show('game', { demo: true })); } }));
   r2.appendChild(mkBtn({ kind: 'plum', label: 'SETUP', icon: iconC('gear'), stack: true, w: 30, h: 24, aria: 'Settings', onClick: () => openSettings() }));
-  spacer(s, 3);
+  spacer(s, 2);
   s.appendChild(mkBtn({ kind: 'pink', label: 'SUPPORT US', icon: iconC('heart'), w: 124, h: 15, aria: 'Support us', onClick: () => LD.ui.support() }));
   spacer(s);
   const tk = artCanvas(130, 9); tk.id = 'tickC'; s.appendChild(tk);
@@ -1930,7 +1953,7 @@ function buildTitle() {
 }
 const TICKER = '* 100% ORGANIC MUSIC WITH THE HUMAN VOICE * BEATBOX + SINGING DUO * ONE PERFORMER PER ROW, COLUMN AND ZONE * NO TOUCHING, NOT EVEN DIAGONALLY * ';
 function drawTitle(t) {
-  const c = $('#titleC'), x = g2(c); x.clearRect(0, 0, 130, 150);
+  const c = $('#titleC'), x = g2(c); x.clearRect(0, 0, 130, 129);
   // pink circle + sunburst (the brand header's hot pink circle)
   const burst = S('burst' + (((t / 260) | 0) % 2), () => { const b = cv(130, 150), bx = g2(b); sunburst(bx, 65, 92, 62, ((t / 260) | 0) % 2 ? 1300 : 0, '#2f1650'); return b; });
   x.drawImage(burst, 0, 0);
@@ -1963,7 +1986,12 @@ function drawTitle(t) {
   // blink the "watch" button face like PRESS START
   const w = $('#bWatch'); if (w && w._face) w._face.style.transform = ((t / 450) | 0) % 2 ? 'translateY(0)' : 'translateY(calc(var(--u)*-1))';
 }
-defScreen('title', { enter() { BG.mode = 'title'; stopDemo(); LD.loop.stop(); G.game && G.game.over && (G.game = G.game); }, frame: drawTitle });
+function playLabel() { const L = LD.meta.level(LD.meta.currentId()); const nm = L.packName === 'Daily Jam' ? 'DAILY JAM' : (L.packName + ' ' + L.num).toUpperCase(); return 'PLAY ' + nm; }
+defScreen('title', { enter() {
+  BG.mode = 'title'; stopDemo(); LD.loop.stop();
+  const xs = $('#titleX'); xs.innerHTML = ''; xs.appendChild(LD.ui.titleExtras());
+  const lab = playLabel(), b = $('#bWatch'); if (b) b.setFace({ label: lab, font: textW(lab, FONT7) > 100 ? FONT5 : FONT7 }); if (b) b.setAttribute('aria-label', 'Play: ' + lab.slice(5));
+}, frame: drawTitle });
 
 // ---------------------------------------------------------------- GAME
 defScreen('game', {
@@ -1986,35 +2014,40 @@ const WN = { t0: 0, r: null, dur: 0 };
 function buildWin() {
   const s = $('#scr-win'); s.innerHTML = '';
   spacer(s, 2);
-  const c = artCanvas(130, 200); c.id = 'winC'; s.appendChild(c);
-  spacer(s).style.maxHeight = px(4);
-  const r = el('div', 'row', s); r.id = 'winBtns'; r.style.gap = px(3);
+  const c = artCanvas(130, 146); c.id = 'winC'; s.appendChild(c);
+  const xs = el('div', 'xslot', s); xs.id = 'winX';
+  spacer(s, 3);
+  const r = el('div', 'col', s); r.id = 'winBtns'; r.style.gap = px(3);
   spacer(s);
 }
 // the support screen comes first when it is due, then we go where the player wanted to go
 function viaSupport(goTo) { const r = WN.r && WN.r.r; if (r && r.support && !WN.supDone) { WN.supDone = true; LD.ui.support({ onClose: goTo }); } else goTo(); }
 function buildWinButtons() {
-  const row = $('#winBtns'); row.innerHTML = ''; const res = WN.r, r = res.r;
+  const col = $('#winBtns'); col.innerHTML = ''; const res = WN.r, r = res.r;
+  const xs = $('#winX'); xs.innerHTML = ''; if (r) xs.appendChild(LD.ui.winExtras(r));
+  const row = el('div', 'row', col); row.style.gap = px(3);
   if (res.demo) {
     row.appendChild(mkBtn({ kind: 'green', label: 'PLAY NOW', font: FONT7, icon: iconC('play'), w: 70, h: 24, aria: 'Play now', onClick: () => startGig(LD.meta.currentId()) }));
     row.appendChild(mkBtn({ kind: 'pink', label: 'WORLD TOUR', icon: iconC('map'), w: 54, h: 24, onClick: () => openTour() }));
     return;
   }
   const next = r && r.nextId;
-  if (next) row.appendChild(mkBtn({ kind: 'green', label: 'NEXT GIG', font: FONT7, icon: iconC('play'), w: 62, h: 24, aria: 'Next gig', onClick: () => viaSupport(() => startGig(next)) }));
-  row.appendChild(mkBtn({ kind: 'pink', label: 'WORLD TOUR', icon: iconC('map'), w: next ? 44 : 70, h: 24, aria: 'World Tour', onClick: () => viaSupport(() => openTour()) }));
-  row.appendChild(mkBtn({ kind: 'plum', icon: iconC('undo'), w: 18, h: 24, aria: 'Encore: play this gig again', onClick: () => viaSupport(() => startGig(res.id)) }));
+  if (next) { const big = mkBtn({ kind: 'gold', label: r.streak >= 2 ? 'ONE MORE! NEXT GIG' : 'NEXT GIG!', font: FONT7, icon: iconC('play', '#1a0b26'), color: '#1a0b26', shadow: '#fff7b0', w: 124, h: 26, aria: 'Next gig', onClick: () => viaSupport(() => startGig(next)) }); big.id = 'bNext'; col.insertBefore(big, row); }
+  row.appendChild(mkBtn({ kind: 'pink', label: 'WORLD TOUR', icon: iconC('map'), w: 100, h: 20, aria: 'World Tour', onClick: () => viaSupport(() => openTour()) }));
+  row.appendChild(mkBtn({ kind: 'plum', icon: iconC('undo'), w: 21, h: 20, aria: 'Encore: play this gig again', onClick: () => viaSupport(() => startGig(res.id)) }));
 }
 defScreen('win', {
   enter(r) {
     BG.mode = 'win';
     WN.r = r || G.result; if (!WN.r) { show('title'); return; }
     WN.t0 = now(); WN.stars = 0; WN.tally = 0; WN.supDone = false; WN.popped = false;
-    const H = Math.max(160, Math.min(240, (LY.sh || 281) - 36)); setArt($('#winC'), 130, H); WN.H = H;
+    const H = 146; setArt($('#winC'), 130, H); WN.H = H;
+    const R0 = WN.r.r; WN.flair = R0 ? (R0.packUnlocked ? 'NEW PACK!' : R0.goal && R0.goal.hit ? 'DAILY SET!' : R0.streak >= 3 ? R0.streak + ' IN A ROW!' : '') : '';
+    if (WN.flair) { for (let k = 0; k < 4; k++) later2(2700 + k * 180, () => { if (SCR.cur === 'win') firework(LY.sx + 15 + k * 33, winTop() + 20 + (k % 2) * 14); }); later2(2700, () => CHIP.ok() && CHIP.fanfare()); }
     buildWinButtons();
     LD.audio.unlock();
     if (CHIP.ok()) { LD.loop.setLayers(9); LD.loop.start(); }
-    for (let k = 0; k < 3; k++) later2(400 + k * 380, () => { if (SCR.cur !== 'win') return; if (k < WN.r.stars) { CHIP.star(k); const sx = LY.sx + 65 + (k - 1) * 36; sparkBurst(sx, winTop() + 66, 14, ['#fff27a', '#ffffff', '#ffa552'], 80); shakeWin(); } });
+    for (let k = 0; k < 3; k++) later2(400 + k * 380, () => { if (SCR.cur !== 'win') return; if (k < WN.r.stars) { CHIP.star(k); const sx = LY.sx + 65 + (k - 1) * 31; sparkBurst(sx, winTop() + 66, 14, ['#fff27a', '#ffffff', '#ffa552'], 80); shakeWin(); } });
     for (let k = 0; k < 6; k++) later2(1600 + k * 500, () => { if (SCR.cur === 'win') firework(LY.sx + 10 + Math.random() * 110, winTop() + 10 + Math.random() * 40); });
   },
   leave() { LD.loop.stop(); },
@@ -2040,7 +2073,7 @@ function drawWin(t) {
   text(x, ((r.demo ? 'DEMO ' : (r.p.packName === 'Daily Jam' ? 'DAILY JAM ' : r.p.packName + ' ' + r.p.num + ' ')) + r.p.city).toUpperCase(), 65, 37, { font: FONT5, color: '#ffc9de', outline: '#1a0b26', align: 'center' });
   // stars slam in one by one
   for (let k = 0; k < 3; k++) {
-    const sx = 65 + (k - 1) * 36, sy = 60, d = age - 400 - k * 380;
+    const sx = 65 + (k - 1) * 31, sy = 60, d = age - 400 - k * 380;
     x.drawImage(S('starE2', () => scaleC(mapCanvas(M.starEmpty), 2)), sx - 15, sy - 15);
     if (k < r.stars && d >= 0) {
       const sc = d < 90 ? 4 : d < 150 ? 2.6 : d < 210 ? 1.8 : 2;
@@ -2077,14 +2110,15 @@ function drawWin(t) {
     if (tallyP >= 1) { const tot = 'TOTAL ' + R.total + ' PTS'; text(x, tot, 65, 134, { font: FONT5, color: ((t / 300) | 0) % 2 ? '#ffffff' : '#fff27a', align: 'center' }); }
   }
   // the duo dances on stage
-  const sy0 = 146, big = H >= 220;
-  disc(x, 65, sy0 + (big ? 32 : 20), big ? 34 : 22, '#c93f78'); disc(x, 65, sy0 + (big ? 32 : 20), big ? 32 : 20, '#ff4f97', 0.6);
-  x.fillStyle = '#3a2560'; x.fillRect(4, H - 8, 122, 3); x.fillStyle = '#6b4a9a'; x.fillRect(4, H - 8, 122, 1); x.fillStyle = '#22143d'; x.fillRect(4, H - 5, 122, 5);
   const f = ((t / 220) | 0) % 2, f2 = ((t / 220 + 1) | 0) % 2;
   const rx = charC('rox', f ? 'cheer' : 'idle', ['happy', 'open']), jx = charC('jas', f2 ? 'cheer' : 'idle', ['happy', 'open']);
-  const k = big ? 2 : 1, hop = (ff) => (ff ? -2 * k : 0);
-  x.drawImage(rx, 0, 0, 22, 30, 65 - 4 - 22 * k, H - 8 - 30 * k + hop(f), 22 * k, 30 * k);
-  x.drawImage(jx, 0, 0, 22, 30, 65 + 4, H - 8 - 30 * k + hop(f2), 22 * k, 30 * k);
+  x.drawImage(rx, 0, 46 - (f ? 2 : 0)); x.drawImage(jx, 108, 46 - (f2 ? 2 : 0));
+  // streak / new pack / daily set: a rainbow ribbon sweeps across
+  if (WN.flair && age > 2600 && age < 5200) {
+    const a = age - 2600, xx = Math.round(130 - Math.min(1, a / 350) * 130 + (a > 2200 ? (a - 2200) / 400 * -130 : 0));
+    x.fillStyle = '#1a0b26'; x.fillRect(xx, 64, 130, 20); for (let q = 0; q < 6; q++) { x.fillStyle = rainbow[(q + ((t / 80) | 0)) % 6]; x.fillRect(xx, 66 + q * 3, 130, 3); }
+    text(x, WN.flair, xx + 65, 67, { sc: 2, bold: true, color: '#ffffff', outline: '#1a0b26', align: 'center' });
+  }
   // confetti rain
   for (let q = 0; q < 26; q++) { const cx0 = (q * 37) % 130, sp = 20 + (q % 5) * 6, cy0 = ((t / 1000 * sp + q * 23) % (H + 10)) - 5; x.fillStyle = rainbow[q % 6]; x.fillRect(cx0 + Math.round(Math.sin(t / 300 + q) * 2), Math.round(cy0), q % 3 ? 1 : 2, q % 2 ? 2 : 1); }
 }

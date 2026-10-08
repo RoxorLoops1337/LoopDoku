@@ -92,7 +92,7 @@ body.wide #stage{max-width:1080px}
 
 /* ---------- title ---------- */
 #s-title{align-items:center;justify-content:center;padding:4px 14px calc(12px + env(safe-area-inset-bottom,0px));gap:4px}
-.tHero{position:relative;width:100%;max-width:372px;height:min(37dvh,320px);flex:none;margin-top:18px}
+.tHero{position:relative;width:100%;max-width:372px;height:min(31dvh,300px);flex:none;margin-top:18px}
 .tCircle{position:absolute;left:50%;top:1%;height:90%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:var(--grain),radial-gradient(circle at 38% 32%,#ff8fc6,#f2579f 58%,#d53a85);border:7px solid #fff;box-shadow:var(--sh)}
 .tCircle::after{content:'';position:absolute;inset:8%;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.4),rgba(255,255,255,0) 40%)}
 .tFig{position:absolute;bottom:-3%;height:94%;will-change:transform}
@@ -145,6 +145,21 @@ body.wide #stage{max-width:1080px}
 @media (max-height:760px){.tFoot{display:none}}
 .tFoot{margin-top:10px;white-space:nowrap;font:400 clamp(14px,4.5vw,18px)/1 var(--fh);color:#fff;opacity:.92;text-align:center;letter-spacing:.03em;text-shadow:0 2px 0 rgba(160,20,90,.45)}
 .tFoot b{font-weight:400;color:var(--pink-lt)}
+/* encouragement cards (LD.ui extras), dressed as a peel-off sticker label */
+.xWrap{width:100%}
+.xWrap .ldx{border:3px solid #fff;border-radius:16px 16px 6px 16px;background:#fff;box-shadow:var(--shs);padding:8px 10px;gap:6px;transform:rotate(.6deg)}
+.xWrap .ldx-cheer{font:400 17px/1.15 var(--fh);color:var(--pink-dk)}
+.xWrap .ldx-pill{border:2px solid #fff;box-shadow:0 2px 0 rgba(60,0,40,.18);font-family:var(--fd);font-weight:700}
+.tX{max-width:362px;margin-top:10px;flex:none}
+.tX .ldx{transform:rotate(-1deg)}
+#wExtras .ldx{padding:6px 8px;font-size:12px}
+#wExtras .ldx-cheer{font-size:16px}
+.overCard .xWrap{margin:-4px 0 12px;text-align:left}
+.streakChip{gap:2px;font:800 14px/1 var(--fn);padding:5px 8px 4px;background:var(--red);color:#fff;border:3px solid #fff;transform:rotate(4deg);animation:jpulse2 1.25s ease-in-out infinite}
+.streakChip[hidden]{display:none}
+.btn .go{font-style:normal;display:inline-block;animation:goNudge .8s ease-in-out infinite;margin-left:2px}
+@keyframes goNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+#wNext .face{font-size:30px;min-height:70px;background:linear-gradient(180deg,#8fd645,#6cb22a)}
 .tMenu .btn .face{font-size:17px}
 .tMenu .btn.big .face{font-size:28px}
 
@@ -153,7 +168,7 @@ body.wide #stage{max-width:1080px}
 .hud{position:relative;margin:2px 10px 0;padding:7px 8px 7px;flex:none}
 .hudTop{display:flex;align-items:center;gap:7px}
 .gig{flex:1;min-width:0;padding:0 2px}
-.gig .city{font:700 21px/1 var(--fd);color:var(--ink);text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gig .city{font:700 var(--cityfs,21px)/1 var(--fd);color:var(--ink);text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gig .venue{font:600 12.5px/1.25 var(--fn);color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 .gig .venue b{color:var(--pink-dk);font-weight:800}
 .timer{display:flex;align-items:center;gap:4px;padding:6px 9px 5px;background:var(--ink);color:#fff;border:3px solid #fff;border-radius:12px 12px 4px 12px;font:800 18px/1 var(--fn);box-shadow:var(--shs);transform:rotate(2deg);font-variant-numeric:tabular-nums;flex:none}
@@ -208,22 +223,23 @@ body.wide #stage{max-width:1080px}
 @keyframes slapIn{0%{transform:scale(1.5) rotate(-10deg);opacity:0}55%{transform:scale(.94) rotate(1deg);opacity:1}80%{transform:scale(1.03) rotate(-2.5deg)}100%{transform:rotate(-2deg)}}
 
 /* ---------- win ---------- */
-#s-win{align-items:center;justify-content:center;padding:4px 12px calc(14px + env(safe-area-inset-bottom,0px));overflow:hidden}
+#s-win{align-items:center;justify-content:flex-start;padding:6px 12px calc(14px + env(safe-area-inset-bottom,0px));overflow-x:hidden;overflow-y:auto}
+#s-title{overflow-y:auto;justify-content:flex-start!important}
 #bomb{position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:0}
 .winCard{position:relative;z-index:2;width:100%;max-width:370px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.encore{display:flex;font:700 clamp(58px,18vw,76px)/1 var(--fd);filter:url(#dcL);transform:rotate(-5deg);margin-bottom:-4px}
+.encore{display:flex;margin-top:12px;font:700 clamp(46px,14vw,66px)/1 var(--fd);filter:url(#dcL);transform:rotate(-5deg);margin-bottom:-4px}
 .encore span{display:inline-block;animation:eHop .9s ease-in-out infinite;animation-delay:calc(var(--i) * .08s)}
 @keyframes eHop{0%,100%{transform:translateY(0)}30%{transform:translateY(-9px) rotate(-3deg)}}
 .winPanel{--peel:26px;width:100%;padding:10px 10px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;transform:rotate(-1deg);background:radial-gradient(120% 70% at 50% 45%,#fff 0%,var(--cream) 60%)}
 .winGig{font-size:14px;padding:6px 12px;transform:rotate(1.5deg);background:var(--ink);color:#fff}
 .winGig b{color:var(--pink-lt)!important}
 .winGig b{color:var(--pink-dk)}
-.stars{display:flex;gap:6px;align-items:flex-end;height:84px}
-.bigstar{width:76px;height:76px;position:relative}
-.bigstar.mid{width:88px;height:88px;margin-bottom:10px}
+.stars{display:flex;gap:6px;align-items:flex-end;height:60px}
+.bigstar{width:50px;height:50px;position:relative}
+.bigstar.mid{width:60px;height:60px;margin-bottom:6px}
 .bigstar svg{width:100%;height:100%}
 .bigstar .empty{position:absolute;inset:8%;}
-.winDuo{display:flex;justify-content:center;align-items:flex-end;height:clamp(110px,18dvh,170px);margin:-4px 0 -6px}
+.winDuo{display:flex;justify-content:center;align-items:flex-end;height:clamp(96px,14dvh,150px);margin:-2px 0 -6px}
 .winDuo .fig{height:100%}
 .winDuo .fig svg{height:100%;width:auto}
 .winDuo .fig.r{margin-right:-34px;animation:hop .62s ease-in-out infinite}
@@ -367,7 +383,7 @@ body.wide #stage{max-width:1080px}
         <button class="btn" id="bSettings" style="--tilt:1deg"><span class="face" data-i="settings">Settings</span></button>
         <button class="btn pink" id="bSupport" style="--tilt:-1deg"><span class="face" data-i="heart">Support us</span></button>
       </div>
-      <div class="tFoot">beatbox &amp; singing duo · <b>100% organic music</b></div>
+      <div class="xWrap tX" id="tExtras"></div>
     </section>
 
     <!-- GAME -->
@@ -382,6 +398,7 @@ body.wide #stage{max-width:1080px}
         <div class="hudMid">
           <div class="lives" id="lives" aria-label="Lives"></div>
           <div class="lbl ptsChip" aria-label="Your points"><span class="star">&#9733;</span><b class="ptsVal">0</b></div>
+          <div class="lbl streakChip" id="gStreak" hidden>&#128293;<b>2</b></div>
           <div class="lsHead"><div class="t">Loop Station</div><div class="n" id="lsN">0/9 · <b>silent</b></div></div>
         </div>
         <div class="tracks" id="tracks"></div>
@@ -401,6 +418,7 @@ body.wide #stage{max-width:1080px}
           <div class="overCard card">
             <h2>MIC DROP!</h2>
             <p>Out of mics… the crowd still loves you.</p>
+            <div class="xWrap" id="lExtras"></div>
             <div class="btns">
               <button class="btn primary big" id="bRetry"><span class="face" data-i="restart">Try again</span></button>
               <button class="btn" id="bLoseTour"><span class="face" data-i="map">World Tour</span></button>
@@ -434,9 +452,10 @@ body.wide #stage{max-width:1080px}
             <div class="ptsBig">+<b id="wPts">0</b><small>pts</small></div>
             <div class="ptsSide"><div class="breaks" id="wBreak"></div><div class="tot">total <b id="wTotal">0</b></div></div>
           </div>
+          <div class="xWrap" id="wExtras"></div>
         </div>
         <div class="winBtns">
-          <button class="btn primary big" id="wNext" style="--tilt:-1deg"><span class="face" data-i="next"><b>Next gig</b></span></button>
+          <button class="btn primary big" id="wNext" style="--tilt:-1deg"><span class="face"><b>Next gig</b><i class="go">&#9654;</i></span></button>
           <button class="btn" id="wTour" style="--tilt:1deg"><span class="face" data-i="map">World Tour</span></button>
           <button class="btn icon" id="wHome" style="--tilt:-2deg" aria-label="Title"><span class="face" data-i="home"></span></button>
         </div>
@@ -1534,7 +1553,9 @@ function onWin(e) {
   setTimeout(() => { if (game === g && ST.screen === 'game') show('win', true); }, 2700);
 }
 function onLose() {
-  if (!ST.isDemoGame) LD.meta.recordLoss();
+  const rl = ST.isDemoGame ? { cheer: 'Even the demo drops a mic! Go again.' } : LD.meta.recordLoss();
+  const lx = $('#lExtras'); lx.innerHTML = ''; lx.appendChild(LD.ui.loseExtras(rl));
+  renderStreak();
   if (instant) return;
   const g = game;
   react('both', 'hurt', 0); say('Mic drop…', 'r', 3000);
@@ -1582,10 +1603,11 @@ function renderHUD() {
   const lvl = !p.packName ? 'Demo gig' : p.packName === 'Daily Jam' ? 'Daily Jam' : p.packName + ' ' + p.num;
   $('#gCity').textContent = lvl;
   $('#gVenue').innerHTML = (p.packName === 'Daily Jam' ? '' : p.city + ' · ') + p.venue + ` · <b>${p.n}×${p.n}</b>`;
-  renderPoints();
+  renderPoints(); renderStreak();
   renderLives(false);
   setTracks(LD.loop.layers, false);
   tickTimer();
+  requestAnimationFrame(fitCity);
 }
 function renderLives(anim, lives) {
   if (!game) return;
@@ -1785,7 +1807,7 @@ function show(name, push) {
   } else if (name !== 'win') LD.loop.stop();
   if (name === 'win') renderWin(); else stopBomb();
   if (name === 'outfits') renderOutfits();
-  if (name === 'title') renderPoints();
+  if (name === 'title') { renderPoints(); renderTitleExtras(); }
   const sc = $('#s-' + name); if (sc) sc.scrollTop = 0;
   if (name === 'win') sideReact('cheer', 0); else if (ST.sideCheer) sideReact('idle', 0);
   ST.sideCheer = name === 'win';
@@ -1798,7 +1820,36 @@ function route() {
   else if (h === 'outfits') show('outfits', false);
   else show('title', false);
 }
+function renderStreak() {
+  const s = (LD.meta.state && LD.meta.state.streak) || 0, el = $('#gStreak');
+  el.hidden = s < 2; el.querySelector('b').textContent = s;
+}
+function fitCity() {
+  const el = $('#gCity'); if (!el) return;
+  let fs = 21; el.style.setProperty('--cityfs', fs + 'px');
+  while (fs > 13 && el.scrollWidth > el.clientWidth + 1) { fs -= 1; el.style.setProperty('--cityfs', fs + 'px'); }
+}
+function levelName(id) { const L = LD.meta.level(id); return !L ? '' : L.packName === 'Daily Jam' ? 'Daily Jam' : L.packName + ' ' + L.num; }
+function renderTitleExtras() {
+  const t = $('#tExtras'); t.innerHTML = ''; t.appendChild(LD.ui.titleExtras());
+  let nm = ''; try { nm = levelName(LD.meta.currentId()); } catch (_) { /* */ }
+  $('#bPlay .face').lastChild.textContent = nm ? 'Continue · ' + nm : 'Play';
+}
+// big moments get an extra sticker slapped across the screen
+function winFlourish(r) {
+  const words = [];
+  if (r.packUnlocked) words.push(['NEW PACK!', C.pdk]);
+  if (r.streak >= 3) words.push([r.streak + ' IN A ROW!', '#ff5a2a']);
+  if (r.goal && r.goal.hit) words.push(['DAILY SET!', C.green]);
+  const t0 = now() + 2100;
+  words.forEach(([w, c], k) => {
+    const sp = labelSprite(w, c, '#fff', 54);
+    OV.parts.push({ k: 'text', sp, x: innerWidth / 2 + (k - (words.length - 1) / 2) * 30, y: innerHeight * (0.36 + k * 0.1), vx: 0, vy: -30, drag: 2, rot: (k % 2 ? 0.12 : -0.14), t0: t0 + k * 420, life: 1500 });
+    setTimeout(() => { if (ST.screen === 'win') { SFX.stamp(2); confettiRain(0, -20, innerWidth, 70, now()); } }, 2100 + k * 420);
+  });
+}
 function renderPoints() {
+  if ($("#gStreak")) renderStreak();
   const p = LD.meta.points();
   $$('.ptsVal').forEach((el) => { el.textContent = p; });
 }
@@ -1844,8 +1895,10 @@ function renderWin() {
     $('#wPtsBox').classList.add('demo');
   }
   const nextLbl = $('#wNext .face b');
-  if (w.demo) { $('#wNext').hidden = false; nextLbl.textContent = 'Play for real'; }
-  else { $('#wNext').hidden = !(r && r.nextId); nextLbl.textContent = 'Next gig'; }
+  $('#wNext').hidden = false;
+  nextLbl.textContent = w.demo ? 'Play for real' : (r && r.streak >= 2 ? 'Next gig · 🔥' + r.streak : 'Next gig');
+  const wx = $('#wExtras'); wx.innerHTML = ''; if (r) wx.appendChild(LD.ui.winExtras(r));
+  if (r && (r.streak >= 3 || r.packUnlocked || (r.goal && r.goal.hit)) && !RM()) winFlourish(r);
   const st = $('#stars'); st.innerHTML = '';
   for (let k = 0; k < 3; k++) {
     const d = document.createElement('div'); d.className = 'bigstar' + (k === 1 ? ' mid' : '');
