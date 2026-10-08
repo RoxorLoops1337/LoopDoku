@@ -5,5 +5,6 @@ let bad = 0;
 const run = (args) => { const r = spawnSync(process.execPath, args, { encoding: 'utf8' }); process.stdout.write(r.stdout + r.stderr); if (r.status) bad++; };
 run(['tools/test_core.mjs']);
 for (const s of skins) run(['tools/skin_check.mjs', s]);
+run(['tools/touch_check.mjs']);
 console.log(bad ? bad + ' check(s) failed' : 'everything passes');
 process.exit(bad ? 1 : 0);
