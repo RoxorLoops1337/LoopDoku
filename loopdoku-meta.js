@@ -18,11 +18,14 @@
      .points()                   current points
      .skins()                    [{id, name, artist, file, cost, unlocked, current}]   .skin() current id
      .buySkin(id)                -> {ok, reason}      .useSkin(id) saves and opens that skin's page
-     .settings()                 {sound, music, assist}  .set(key, value)
+     .settings()                 {sound, music, assist, haptics, fullscreen}  .set(key, value)   (haptics: phone vibration on place, mistake, win, lose;
+                                 fullscreen: hide the browser bars on the first tap and at the start of each gig, where the phone allows it)
      .supportDue()               true when it is time to show the support screen (call after a win)
    LD.ui (overlays; theme them with CSS variables on :root, see THEME below)
      .levels({onPlay(id)})  .skins()  .support()  .settings({onChange})  .confirm(text, yesLabel, onYes)  .toast(text)  .close()
      .winExtras(r)  .loseExtras(lossResult)  .titleExtras()   -> a card with the duo's cheer, streaks, the daily set and the next-look bar
+                                 (the win card also has a Share button: native share sheet on phones, copies the text elsewhere)
+     .share(r)                   share a win result (r from recordWin)
      .isOpen()
    THEME (set on :root in your skin; all optional)
      --ld-font --ld-font-display --ld-ink --ld-muted --ld-panel --ld-panel-2 --ld-backdrop --ld-accent --ld-accent-ink
@@ -32,6 +35,22 @@
   'use strict';
   const LD = window.LD;
   if (!LD || !LD.Game) { console.error('loopdoku-meta: load loopdoku-core.js first'); return; }
+  const canBuzz = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
+  // full screen: browsers only allow it from a tap, so we ask on the first tap and when a gig starts (not on iPhone,
+  // which has no full screen for pages; there, Add to Home Screen gives the same bar-free view)
+  const installed = () => typeof matchMedia === 'function' && matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true;
+  const canFull = () => typeof document !== 'undefined' && !!(document.documentElement && document.documentElement.requestFullscreen && document.fullscreenEnabled) && !installed();
+  const touchy = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+  function goFull() {
+    if (typeof document === 'undefined' || !canFull() || document.fullscreenElement || !touchy() || S.settings.fullscreen === false) return;
+    try { const p = document.documentElement.requestFullscreen({ navigationUI: 'hide' }); if (p && p.catch) p.catch(() => {}); } catch (e) { /* not allowed right now */ }
+  }
+  if (typeof document !== 'undefined' && document.head && typeof addEventListener === 'function') {
+    addEventListener('pointerup', goFull, { once: true, capture: true });
+    document.addEventListener('fullscreenchange', () => setTimeout(() => dispatchEvent(new Event('resize')), 60));
+    // stop pull-to-refresh and rubber-banding from moving the whole game
+    const st = document.createElement('style'); st.textContent = 'html,body{overscroll-behavior:none}body *{overscroll-behavior:contain}'; document.head.appendChild(st);
+  }
 
   // ---------------------------------------------------------------------------------------------------------------
   // CONFIG: links and numbers the owners may want to change
@@ -102,7 +121,7 @@
   // ---------------------------------------------------------------------------------------------------------------
   const KEY = 'loopdoku_save_v1';
   const fresh = () => ({ v: 1, points: 0, earned: 0, wins: 0, losses: 0, solved: {}, current: null, skin: 'neon', unlocked: FREE.slice(),
-    supportLast: 0, daily: {}, streak: 0, bestStreak: 0, dayStreak: 0, lastDay: '', dayWins: {}, settings: { sound: true, music: true, assist: false } });
+    supportLast: 0, daily: {}, streak: 0, bestStreak: 0, dayStreak: 0, lastDay: '', dayWins: {}, settings: { sound: true, music: true, assist: false, haptics: true, fullscreen: true } });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (_) { /* no storage: play without saving */ }
   S.settings = Object.assign(fresh().settings, S.settings || {});
@@ -157,6 +176,8 @@
       return null;
     },
     recordWin(id, e) {
+      const shareInfo = (lid, st, ms) => { let P = null; try { P = meta.level(lid); } catch (err) { /* no level info */ }
+        return { daily: lid.startsWith('daily-'), n: P ? P.n : 0, city: P ? P.city || '' : '', venue: P ? P.venue || '' : '', pack: P ? P.packName || '' : '', stars: st || 1, ms: ms || 0 }; };
       e = e || {};
       const isDaily = id.startsWith('daily-');
       const L = BY_ID.get(id);
@@ -197,7 +218,7 @@
       const packUnlocked = meta.packs().filter((p) => p.unlocked && !packsBefore.includes(p.id)).map((p) => p.name)[0] || null;
       const r = { points, base, starBonus, firstClear: !prev, daily, total: S.points, newBest: !!(prev && newBest), nextId, support: meta.supportDue(), affordable,
         streak: S.streak, streakBonus, dayStreak: S.dayStreak, dayBonus, goal: { count: Math.min(S.dayWins[d], CONFIG.dailyGoal), target: CONFIG.dailyGoal, hit: goalHit, bonus: goalBonus },
-        packUnlocked, nextLook: meta.nextLook(), tease: meta.tease() };
+        packUnlocked, nextLook: meta.nextLook(), tease: meta.tease(), share: shareInfo(id, stars, e.ms) };
       r.cheer = meta.cheer(r);
       return r;
     },
@@ -276,7 +297,7 @@
       return true;
     },
     settings: () => S.settings,
-    set(key, value) { S.settings[key] = value; save(); if (key === 'sound') LD.audio.setMuted(!value); if (key === 'music') LD.loop.silent = !value; },
+    set(key, value) { S.settings[key] = value; save(); if (key === 'fullscreen') { if (value) goFull(); else if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } if (key === 'sound') LD.audio.setMuted(!value); if (key === 'music') LD.loop.silent = !value; },
     supportDue() {
       if (S.wins < CONFIG.supportAfterWins) return false;
       if (S.wins - S.supportLast < (S.supportLast ? CONFIG.supportEvery : 0)) return false;
@@ -366,6 +387,9 @@
   .ldx *{box-sizing:border-box}
   .ldx-cheer{font:400 17px/1.2 var(--ld-font-display,var(--ld-font,system-ui));margin:0}
   .ldx-pills{display:flex;flex-wrap:wrap;gap:6px}
+  .ldx-share{font:inherit;font-weight:800;font-size:12.5px;border:0;cursor:pointer;background:var(--ld-accent-2,#ffd54a);color:var(--ld-accent-2-ink,#221);position:relative}
+  .ldx-share::after{content:'';position:absolute;inset:-8px -2px}
+  .ldx-share:active{transform:scale(.96)}
   .ldx-pill{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:12.5px;line-height:1;padding:6px 9px;border-radius:999px;background:var(--ld-panel-2,#f1eef4);white-space:nowrap}
   .ldx-pill.hot{background:var(--ld-accent,#ff5aa5);color:var(--ld-accent-ink,#fff);animation:ldpop .5s cubic-bezier(.2,1.6,.4,1) both}
   .ldx-pill.gold{background:var(--ld-accent-2,#ffd54a);color:var(--ld-accent-2-ink,#221);animation:ldpop .5s .1s cubic-bezier(.2,1.6,.4,1) both}
@@ -375,6 +399,8 @@
   .ldx-bar{height:10px;border-radius:999px;background:var(--ld-panel-2,#eee);overflow:hidden;margin-top:4px;border:var(--ld-line,0 solid transparent)}
   .ldx-bar b{display:block;height:100%;width:var(--from,0%);background:var(--ld-accent,#ff5aa5);border-radius:inherit;animation:ldbar 1.1s .35s cubic-bezier(.3,1,.4,1) forwards}
   .ldx-look.ready .ldx-bar b{background:var(--ld-accent-2,#ffd54a)}
+  @media (max-height:720px){.ldx{padding:7px 10px;gap:5px}.ldx-cheer{font-size:14px}.ldx-pill{padding:5px 8px;font-size:11.5px}.ldx-look{grid-template-columns:24px 1fr;gap:6px;font-size:11.5px}.ldx-look img{width:24px;height:31px}.ldx-bar{height:7px;margin-top:3px}}
+  @media (max-height:660px){.ldx-cheer{display:none}}
   @keyframes ldbar{to{width:var(--to,0%)}} @keyframes ldpop{from{transform:scale(.4);opacity:0}}
   @media (prefers-reduced-motion:reduce){.ldx,.ldx-pill{animation:none}.ldx-bar b{animation:none;width:var(--to,0%)}}
   @keyframes ldfade{from{opacity:0}} @keyframes ldup{from{transform:translateY(40px) scale(.96);opacity:0}}
@@ -485,6 +511,8 @@
     const row = (key, label, note) => `<div class="ldui-row"><span>${label}<small>${note}</small></span><button class="ldui-sw" type="button" role="switch" data-k="${key}" aria-checked="${!!st[key]}" aria-label="${label}"></button></div>`;
     const html = row('sound', 'Sound', 'Beatbox clicks and voices') + row('music', 'Loop Station music', 'The groove that builds as you play')
       + row('assist', 'Auto-cross helper', 'Cross out everything a performer rules out (makes gigs easier)')
+      + (canBuzz ? row('haptics', 'Vibration', 'A little buzz when you place, miss or win') : '')
+      + (canFull() ? row('fullscreen', 'Full screen', 'Hide the browser bars while you play') : '')
       + `<div style="display:grid;gap:8px;margin-top:16px"><button class="ldui-btn alt" type="button" data-support="1">💗 Support the duo</button><button class="ldui-btn alt" type="button" data-reset="1">Reset all progress</button></div>`;
     const r = open('Settings', html, { onClose: o.onClose });
     r.querySelectorAll('.ldui-sw').forEach((b) => b.addEventListener('click', () => {
@@ -520,7 +548,27 @@
     pills.push('<span class="ldx-pill' + (r.goal.hit ? ' gold' : '') + '">Daily set ' + goalDots(r.goal) + (r.goal.hit ? ' +' + r.goal.bonus : '') + '</span>');
     if (r.tease && r.tease.need > 0) pills.push('<span class="ldx-pill">🔒 ' + esc(r.tease.pack) + ': ' + r.tease.need + ' to go</span>');
     const before = r.nextLook ? Math.max(0, (r.total - r.points) / r.nextLook.cost) : 0;
-    return card('<p class="ldx-cheer">' + esc(r.cheer) + '</p><div class="ldx-pills">' + pills.join('') + '</div>' + lookRow(r.nextLook, before));
+    if (r.share) pills.push('<button class="ldx-pill ldx-share" type="button">📣 Share</button>');
+    const c = card('<p class="ldx-cheer">' + esc(r.cheer) + '</p><div class="ldx-pills">' + pills.join('') + '</div>' + lookRow(r.nextLook, before));
+    const b = c.querySelector('.ldx-share'); if (b) b.addEventListener('click', (ev) => { ev.stopPropagation(); click(); share(r); });
+    return c;
+  }
+  function shareText(r) {
+    const sh = r.share || {}, stars = '⭐'.repeat(Math.max(1, Math.min(3, sh.stars || 1)));
+    const where = sh.daily ? 'the Daily Jam' : [sh.venue, sh.city].filter(Boolean).join(' in ') || 'a gig';
+    const m = Math.floor((sh.ms || 0) / 60000), sec = Math.floor(((sh.ms || 0) % 60000) / 1000);
+    const time = sh.ms >= 1000 ? ' in ' + m + ':' + String(sec).padStart(2, '0') : '';
+    let t = 'I played ' + where + (sh.n ? ' (' + sh.n + 'x' + sh.n + ')' : '') + ' in LoopDoku ' + stars + time + '.';
+    if (r.streak >= 2) t += ' ' + r.streak + ' gigs in a row 🔥';
+    return t + ' Can you beat it?';
+  }
+  function share(r) {
+    const url = new URL('./', location.href).href, text = shareText(r);
+    if (navigator.share) { navigator.share({ title: 'LoopDoku', text, url }).catch(() => {}); return; }
+    const all = text + ' ' + url;
+    const done = () => toast('Copied! Paste it anywhere');
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(all).then(done, () => toast(all));
+    else toast(all);
   }
   function loseExtras(rl) {
     rl = rl || {};
@@ -535,8 +583,25 @@
     if (ts && ts.need > 0) pills.push('<span class="ldx-pill">🔒 ' + esc(ts.pack) + ': ' + ts.need + ' ' + esc(ts.from) + ' to go</span>');
     return card('<div class="ldx-pills">' + pills.join('') + '</div>' + lookRow(meta.nextLook()));
   }
-  LD.ui = { winExtras, loseExtras, titleExtras, levels: levelsUI, skins: skinsUI, support: supportUI, settings: settingsUI, confirm: confirmUI, toast, close, isOpen: () => !!root };
+  LD.ui = { share, winExtras, loseExtras, titleExtras, levels: levelsUI, skins: skinsUI, support: supportUI, settings: settingsUI, confirm: confirmUI, toast, close, isOpen: () => !!root };
 
   // the music setting: the Loop Station keeps its beat (skins pulse on it) but plays no sound when music is off
   LD.loop.silent = S.settings.music === false;
+
+  // vibration: a short buzz on place, a double on a mistake, a little pattern on a win (Android; iPhones ignore it)
+  const BUZZ = { place: 12, mistake: [45, 60, 45], win: [30, 60, 30, 60, 120], lose: 220, hint: 8 };
+  {
+    const emit = LD.Game.prototype.emit;
+    LD.Game.prototype.emit = function (type, d) {
+      emit.call(this, type, d);
+      if (type === 'start') goFull();   // the first tap of a gig: back to full screen if the player left it
+      const p = BUZZ[type];
+      if (canBuzz && p && S.settings.haptics !== false && !(d && d.source === 'auto')) { try { navigator.vibrate(p); } catch (e) { /* not allowed yet */ } }
+    };
+  }
+
+  // play offline: a small service worker keeps the last version of the game on the phone
+  if ('serviceWorker' in navigator && window.isSecureContext && !navigator.webdriver) {
+    addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
 })();
