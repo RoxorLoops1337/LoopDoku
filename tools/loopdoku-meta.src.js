@@ -18,7 +18,8 @@
      .points()                   current points
      .skins()                    [{id, name, artist, file, cost, unlocked, current}]   .skin() current id
      .buySkin(id)                -> {ok, reason}      .useSkin(id) saves and opens that skin's page
-     .settings()                 {sound, music, assist, haptics}  .set(key, value)   (haptics: phone vibration on place, mistake, win, lose)
+     .settings()                 {sound, music, assist, haptics, fullscreen}  .set(key, value)   (haptics: phone vibration on place, mistake, win, lose;
+                                 fullscreen: hide the browser bars on the first tap and at the start of each gig, where the phone allows it)
      .supportDue()               true when it is time to show the support screen (call after a win)
    LD.ui (overlays; theme them with CSS variables on :root, see THEME below)
      .levels({onPlay(id)})  .skins()  .support()  .settings({onChange})  .confirm(text, yesLabel, onYes)  .toast(text)  .close()
@@ -35,6 +36,21 @@
   const LD = window.LD;
   if (!LD || !LD.Game) { console.error('loopdoku-meta: load loopdoku-core.js first'); return; }
   const canBuzz = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
+  // full screen: browsers only allow it from a tap, so we ask on the first tap and when a gig starts (not on iPhone,
+  // which has no full screen for pages; there, Add to Home Screen gives the same bar-free view)
+  const installed = () => typeof matchMedia === 'function' && matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true;
+  const canFull = () => typeof document !== 'undefined' && !!(document.documentElement && document.documentElement.requestFullscreen && document.fullscreenEnabled) && !installed();
+  const touchy = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+  function goFull() {
+    if (typeof document === 'undefined' || !canFull() || document.fullscreenElement || !touchy() || S.settings.fullscreen === false) return;
+    try { const p = document.documentElement.requestFullscreen({ navigationUI: 'hide' }); if (p && p.catch) p.catch(() => {}); } catch (e) { /* not allowed right now */ }
+  }
+  if (typeof document !== 'undefined' && document.head && typeof addEventListener === 'function') {
+    addEventListener('pointerup', goFull, { once: true, capture: true });
+    document.addEventListener('fullscreenchange', () => setTimeout(() => dispatchEvent(new Event('resize')), 60));
+    // stop pull-to-refresh and rubber-banding from moving the whole game
+    const st = document.createElement('style'); st.textContent = 'html,body{overscroll-behavior:none}body *{overscroll-behavior:contain}'; document.head.appendChild(st);
+  }
 
   // ---------------------------------------------------------------------------------------------------------------
   // CONFIG: links and numbers the owners may want to change
@@ -105,7 +121,7 @@
   // ---------------------------------------------------------------------------------------------------------------
   const KEY = 'loopdoku_save_v1';
   const fresh = () => ({ v: 1, points: 0, earned: 0, wins: 0, losses: 0, solved: {}, current: null, skin: 'neon', unlocked: FREE.slice(),
-    supportLast: 0, daily: {}, streak: 0, bestStreak: 0, dayStreak: 0, lastDay: '', dayWins: {}, settings: { sound: true, music: true, assist: false, haptics: true } });
+    supportLast: 0, daily: {}, streak: 0, bestStreak: 0, dayStreak: 0, lastDay: '', dayWins: {}, settings: { sound: true, music: true, assist: false, haptics: true, fullscreen: true } });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (_) { /* no storage: play without saving */ }
   S.settings = Object.assign(fresh().settings, S.settings || {});
@@ -281,7 +297,7 @@
       return true;
     },
     settings: () => S.settings,
-    set(key, value) { S.settings[key] = value; save(); if (key === 'sound') LD.audio.setMuted(!value); if (key === 'music') LD.loop.silent = !value; },
+    set(key, value) { S.settings[key] = value; save(); if (key === 'fullscreen') { if (value) goFull(); else if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } if (key === 'sound') LD.audio.setMuted(!value); if (key === 'music') LD.loop.silent = !value; },
     supportDue() {
       if (S.wins < CONFIG.supportAfterWins) return false;
       if (S.wins - S.supportLast < (S.supportLast ? CONFIG.supportEvery : 0)) return false;
@@ -496,6 +512,7 @@
     const html = row('sound', 'Sound', 'Beatbox clicks and voices') + row('music', 'Loop Station music', 'The groove that builds as you play')
       + row('assist', 'Auto-cross helper', 'Cross out everything a performer rules out (makes gigs easier)')
       + (canBuzz ? row('haptics', 'Vibration', 'A little buzz when you place, miss or win') : '')
+      + (canFull() ? row('fullscreen', 'Full screen', 'Hide the browser bars while you play') : '')
       + `<div style="display:grid;gap:8px;margin-top:16px"><button class="ldui-btn alt" type="button" data-support="1">💗 Support the duo</button><button class="ldui-btn alt" type="button" data-reset="1">Reset all progress</button></div>`;
     const r = open('Settings', html, { onClose: o.onClose });
     r.querySelectorAll('.ldui-sw').forEach((b) => b.addEventListener('click', () => {
@@ -573,12 +590,13 @@
 
   // vibration: a short buzz on place, a double on a mistake, a little pattern on a win (Android; iPhones ignore it)
   const BUZZ = { place: 12, mistake: [45, 60, 45], win: [30, 60, 30, 60, 120], lose: 220, hint: 8 };
-  if (canBuzz) {
+  {
     const emit = LD.Game.prototype.emit;
     LD.Game.prototype.emit = function (type, d) {
       emit.call(this, type, d);
+      if (type === 'start') goFull();   // the first tap of a gig: back to full screen if the player left it
       const p = BUZZ[type];
-      if (p && S.settings.haptics !== false && !(d && d.source === 'auto')) { try { navigator.vibrate(p); } catch (e) { /* not allowed yet */ } }
+      if (canBuzz && p && S.settings.haptics !== false && !(d && d.source === 'auto')) { try { navigator.vibrate(p); } catch (e) { /* not allowed yet */ } }
     };
   }
 
