@@ -311,9 +311,9 @@
     padding-bottom:env(safe-area-inset-bottom,0px)}
   @media (min-width:640px){.ldui-sheet{border-radius:var(--ld-radius,22px);max-height:88dvh}}
   .ldui-head{display:flex;align-items:center;gap:10px;padding:16px 16px 10px}
-  .ldui-title{flex:1;margin:0;font:400 26px/1.05 var(--ld-font-display,var(--ld-font,system-ui));letter-spacing:.01em}
+  .ldui-title{flex:1;min-width:0;overflow-wrap:break-word;margin:0;font:400 26px/1.05 var(--ld-font-display,var(--ld-font,system-ui));letter-spacing:.01em}
   .ldui-pts{font-weight:800;font-size:14px;padding:7px 11px;border-radius:999px;background:var(--ld-accent-2,#ffd54a);color:var(--ld-accent-2-ink,#221);white-space:nowrap}
-  .ldui-x{width:44px;height:44px;border-radius:50%;border:var(--ld-line,0 solid transparent);background:var(--ld-panel-2,#f1eef4);color:inherit;font:700 22px/1 system-ui;cursor:pointer}
+  .ldui-x{flex:none;width:44px;height:44px;border-radius:50%;border:var(--ld-line,0 solid transparent);background:var(--ld-panel-2,#f1eef4);color:inherit;font:700 22px/1 system-ui;cursor:pointer}
   .ldui-body{overflow:auto;padding:4px 16px 18px;-webkit-overflow-scrolling:touch}
   .ldui-tabs{display:flex;gap:6px;overflow-x:auto;padding:0 16px 10px;scrollbar-width:none}
   .ldui-tab{flex:none;border:var(--ld-line,0 solid transparent);background:var(--ld-panel-2,#f1eef4);color:inherit;border-radius:999px;padding:9px 13px;font:800 14px var(--ld-font,system-ui);cursor:pointer}

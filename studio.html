@@ -496,6 +496,8 @@ svg{display:block}
 .backb:hover{box-shadow:0 0 0 2px var(--amber),0 2px 0 rgba(0,0,0,.35)}
 .t-duo>div{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.w-duo>div svg{animation:none}}
+/* fit: drop the model plate text on narrow phones so the sound switch stays on screen */
+@media (max-width:419px){.plate .mlogo+.model{display:none}}
 </style>
 </head>
 <body>

@@ -279,6 +279,10 @@ button{font:inherit;color:inherit}
 @media (prefers-reduced-motion:reduce){#bNext{animation:none}}
 @media (prefers-reduced-motion:reduce){#bg::after{animation:none}.bobA{animation:none}}
 @media (max-height:740px){.logo .w{font-size:64px}.lineup{display:none!important}}
+/* fit: timer, mics, streak and points share one row on narrow phones */
+.hudrow>*{flex-shrink:0}#ptsChip{min-width:0}
+@media (max-width:430px){.hudrow{gap:6px}#timer{min-width:0;font-size:19px;padding:3px 6px 1px}#timer svg{width:16px;height:16px}#lives{padding:1px 5px}#lives .mic{width:22px;height:30px}#strk,#ptsChip{font-size:17px;padding-left:6px;padding-right:6px}#ptsChip svg,#strk svg{width:15px;height:16px}}
+@media (max-width:359px){.hudrow{gap:5px}#lives .mic{width:18px;height:26px}#timer{font-size:16px}#strk,#ptsChip{font-size:15px;padding-left:4px;padding-right:4px}}
 </style></head>
 <body>
 <div id="bg"></div>
