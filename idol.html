@@ -315,6 +315,11 @@ svg.ic{width:22px;height:22px;flex:0 0 auto}
 .kdark canvas{max-width:100%}
 .lbls{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
 @media (prefers-reduced-motion:reduce){.burst,.logo-wrap canvas,.encore canvas,.gem .shine::before{animation:none}}
+/* fit: long labels never spill out of their buttons */
+.trow .gem,.wbtns .gem{min-width:0}
+.trow:not(.two):not(.mini) .gem{white-space:normal;line-height:1.05;text-align:center}
+.wbtns .gem.next{font-size:clamp(16px,5.4vw,20px);padding:0 8px}
+@media (max-width:359px){.hudrow{padding:12px 8px 0;gap:4px}.hudrow .pill{padding:0 8px 0 6px;font-size:14px;gap:3px}.hudrow .pill svg.ic{width:16px;height:16px}.trow.two .gem{font-size:14px;padding:0 6px;gap:5px}}
 </style>
 </head>
 <body>

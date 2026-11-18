@@ -357,6 +357,9 @@ body.wide #stage{max-width:1080px}
 
 #ov{position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:60}
 @media (prefers-reduced-motion:reduce){#world::after,.deco,.tFig,.juiceBtn,.encore span,.winDuo .fig,.side .fig{animation:none!important}}
+/* fit: the Loop Station label gives way to the chips on narrow phones */
+.hudMid .lsHead{min-width:0;overflow:hidden}.lsHead .t,.lsHead .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:419px){.hudMid .lsHead{display:none}}
 </style>
 </head>
 <body>

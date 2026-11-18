@@ -353,6 +353,9 @@ svg{overflow:visible}
 .duo{min-height:140px}
 @media (max-height:860px){ .t-foot{display:none} }
 .t-btns{gap:10px}
+/* fit: "One more!" never pushes the win buttons off screen */
+.w-btns .tk{min-width:0}
+.w-btns .tk.next{font-size:clamp(15px,5vw,19px)}
 </style>
 </head>
 <body>

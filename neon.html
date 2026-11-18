@@ -409,6 +409,13 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 .tpts{display:flex;gap:6px;align-items:center}
 .gig b{padding:2px 16px 4px;text-shadow:0 0 2px #fff,0 0 6px var(--p),0 0 12px rgba(255,79,168,.8)!important;line-height:1}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+/* fit: long labels never push buttons off the screen */
+.win-btns .btn,.title-btns .row .btn,.controls .btn{min-width:0}
+.controls{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr) minmax(0,1fr) 56px}
+.win-btns .nextb{white-space:normal;text-align:center;line-height:1.1;font-size:clamp(15px,4.8vw,19px);letter-spacing:.05em;padding:0 12px}
+#bNextL small{display:block;font-size:.68em;letter-spacing:.12em;margin-top:3px;opacity:.9}
+@media (max-width:379px){.controls .btn.hintb{letter-spacing:.03em;gap:4px;padding:0 4px}.controls .btn.hintb .mini{width:28px;height:28px}}
+@media (max-width:359px){.title-btns .row .btn{font-size:12px;letter-spacing:.04em;padding:0 6px;gap:6px}.controls{gap:6px}.controls .btn{letter-spacing:.02em;font-size:9.5px;padding:0 3px}.controls .btn.hintb{font-size:10px;gap:4px}.controls .btn.hintb .mini{width:26px;height:26px}.ticker span{font-size:16px}}
 </style>
 </head>
 <body>
@@ -2063,7 +2070,7 @@ function showWin(st, r) {
   const chips = $('#wChips'), gain = $('#wGain'), tot = $('#wTotal');
   chips.innerHTML = '';
   $('#bNext').style.display = !r || r.nextId ? '' : 'none';
-  $('#bNextL').textContent = !r ? 'Play now ▶' : r.streak >= 2 ? 'One more! Next gig ▶' : 'Next gig ▶';
+  $('#bNextL').innerHTML = !r ? 'Play now ▶' : r.streak >= 2 ? 'One more!<small>Next gig ▶</small>' : 'Next gig ▶';
   const wx = $('#wExtras'); wx.innerHTML = '';
   if (r) { try { wx.appendChild(LD.ui.winExtras(r)); } catch (e) { console.warn(e); } }
   if (r) {
