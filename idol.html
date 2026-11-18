@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2a1458">
 <title>LoopDoku</title>
+<meta name="description" content="LoopDoku: A logic puzzle with RoxorLoops &amp; Jasmin. One performer per row, column and colour, and they never touch. No ads, ever.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="thumbs/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta property="og:type" content="website">
+<meta property="og:title" content="LoopDoku · Anime Idol Stage">
+<meta property="og:description" content="A logic puzzle with RoxorLoops &amp; Jasmin. One performer per row, column and colour, and they never touch. No ads, ever.">
+<meta property="og:image" content="https://roxorloops1337.github.io/loopdoku/thumbs/og/idol.jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://roxorloops1337.github.io/loopdoku/idol.html">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1498,9 +1511,9 @@ function enterWin(st) {
   $('#wPts').textContent = '+0'; $('#wTot').textContent = 'Total ★ ' + (total - pts) + ' pts';
   $('#nextT').textContent = r && r.nextId ? (r.streak >= 2 ? 'One more!' : 'Next gig') : (st.demo ? 'Play now' : 'World Tour');
   const wx = $('#wX'); wx.innerHTML = ''; if (r) wx.appendChild(LD.ui.winExtras(r));
-  if (r && (r.streak >= 3 || r.packUnlocked || (r.goal && r.goal.hit))) WIN.timers.push(setTimeout(() => flourish(r), 1500));
   WIN.timers && WIN.timers.forEach(clearTimeout);
   WIN.timers = [];
+  if (r && (r.streak >= 3 || r.packUnlocked || (r.goal && r.goal.hit))) WIN.timers.push(setTimeout(() => flourish(r), 1500));
   const t0 = 550, dur = 1000;
   WIN.timers.push(setTimeout(function tickUp() {
     const k = Math.min(1, (now() - WIN.cu) / dur), v = Math.round(EZ.outCubic(k) * pts);
