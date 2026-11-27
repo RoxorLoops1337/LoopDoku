@@ -90,7 +90,8 @@ Made for and with RoxorLoops & Jasmin, "100% organic music with the human voice"
 
 ## Chinese edition (中文版)
 `cn/index.html` is a lightweight Simplified Chinese edition with a guided tutorial on the first visit. It is ONE self-contained
-file (about 114 KB, 35 KB gzipped): the engine, all levels and the UI are inlined, it uses system fonts and makes no request
+file (about 180 KB, 85 KB gzipped): the engine, all levels, the UI and the duo's approved chibis are inlined, it uses system fonts and makes no request
 outside its own origin (no Google Fonts, no CDNs), so it can be uploaded as is to any host, including one in mainland China.
 It keeps its own save (`loopdoku_cn_v1`). All Chinese text is in the `T` table of `tools/cn.src.html`, with the English next to
-each line. Rebuild with `node tools/build.mjs && node tools/build_cn.mjs`; check with `node tools/cn_check.mjs` (needs `node tools/serve.mjs`).
+each line. The chibis are baked from `rj-cast.js` into `tools/cn_art.json` by `node tools/cn_bake.mjs` (needs Chromium, plus Pillow for small PNGs; only re-run when the art changes).
+Rebuild with `node tools/build.mjs && node tools/build_cn.mjs`; check with `node tools/cn_check.mjs` (needs `node tools/serve.mjs`).

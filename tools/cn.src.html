@@ -6,14 +6,14 @@
 <meta name="format-detection" content="telephone=no">
 <title>LoopDoku 口技数独</title>
 <meta name="description" content="LoopDoku 口技数独：RoxorLoops 与 Jasmin 的逻辑谜题。每行、每列、每个颜色区域各放一位表演者，而且互不相邻。没有广告。">
-<meta name="theme-color" content="#d93a3a">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23d93a3a'/%3E%3Ccircle cx='32' cy='26' r='11' fill='%23ffd166'/%3E%3Crect x='28' y='36' width='8' height='16' rx='3' fill='%23ffd166'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#2a1446">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232a1446'/%3E%3Cpath d='M32 32c-6-8-18-8-18 0s12 8 18 0 18-8 18 0-12 8-18 0z' fill='none' stroke='%23ff7fb2' stroke-width='7'/%3E%3Cpath d='M32 32c-6-8-18-8-18 0s12 8 18 0' fill='none' stroke='%2378bd35' stroke-width='7'/%3E%3C/svg%3E">
 <style>
 /* system fonts only: no web fonts, so nothing has to load from outside the page */
-:root{--bg:#fff6e6;--ink:#2b1d16;--muted:#7a6656;--panel:#fff;--red:#d93a3a;--red2:#b72b2b;--gold:#ffc94a;--line:#2b1d16;--blue:#2f6fde;--pink:#e2468f;
+:root{--bg:#2a1446;--ink:#2b1d3a;--muted:#7a6690;--panel:#fff;--red:#ff4f9a;--red2:#c93f78;--gold:#ffc94d;--line:#2b1d3a;--rox:#78bd35;--rox2:#3f7f18;--jas:#ff7fb2;--jas2:#c93f78;--lite:#e6d8ff;
   --font:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC","WenQuanYi Micro Hei",sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:500 16px/1.45 var(--font);overflow:hidden}
+html,body{margin:0;height:100%;background:var(--bg) radial-gradient(120% 70% at 50% -10%,#5a2a8c 0%,#3a1c63 40%,#22103b 75%,#180a2b 100%) fixed;color:#fff;font:500 16px/1.45 var(--font);overflow:hidden}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-text-size-adjust:100%}
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
 .scr{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;padding:max(10px,env(safe-area-inset-top)) 12px max(10px,env(safe-area-inset-bottom));overflow-y:auto}
@@ -21,61 +21,71 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
 .btn{display:block;width:100%;max-width:320px;padding:13px 16px;margin:6px auto;border-radius:14px;background:var(--red);color:#fff;font-weight:800;font-size:18px;
   box-shadow:0 4px 0 var(--red2);transition:transform .08s}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--red2)}
-.btn.alt{background:#fff;color:var(--ink);box-shadow:0 4px 0 #d8c7b4;border:2px solid #ead9c4}
+.btn.alt{background:#fff;color:var(--ink);box-shadow:0 4px 0 #b9a6d6;border:2px solid #fff}
+.btn.green{background:var(--rox);box-shadow:0 4px 0 var(--rox2)}
 .btn.gold{background:var(--gold);color:var(--ink);box-shadow:0 4px 0 #d9a21f}
-.small{font-size:13px;color:var(--muted)}
+.small{font-size:13px;color:var(--lite)}
+.card .small{color:var(--muted)}
 /* title */
 #title{justify-content:center;text-align:center}
-.logo{font-size:44px;font-weight:900;letter-spacing:1px;margin:0;color:var(--red);text-shadow:3px 3px 0 var(--gold)}
-.logo small{display:block;font-size:22px;color:var(--ink);text-shadow:none;letter-spacing:6px;margin-top:2px}
-.duo{margin:8px 0 14px;color:var(--muted);font-size:14px}
-.pts{display:inline-block;background:#fff;border:2px solid #ead9c4;border-radius:99px;padding:4px 14px;font-weight:800;margin-bottom:10px}
-.mini{display:flex;gap:6px;justify-content:center;margin:10px 0 18px}
-.mini i{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-style:normal;font-weight:900;color:#fff}
+.logo{margin:0;line-height:.95;font-weight:900;font-size:54px;letter-spacing:1px;-webkit-text-stroke:2px #fff;paint-order:stroke fill;filter:drop-shadow(0 4px 0 rgba(0,0,0,.35))}
+.logo .l1{color:var(--rox);display:flex;align-items:center;justify-content:center}
+.logo .l1 svg{height:.78em;width:1.75em;margin:0 .02em}
+.logo .l2{color:var(--jas);display:block}
+.zh{display:block;font-size:20px;letter-spacing:8px;color:#fff;-webkit-text-stroke:0;margin-top:6px;font-weight:800}
+.sub{display:inline-block;background:#fff;color:var(--ink);border-radius:99px;padding:5px 16px;font-weight:800;font-size:15px;margin:10px 0 0;box-shadow:0 3px 0 #b9a6d6}
+.sub .r{color:var(--rox2)} .sub .j{color:var(--jas2)}
+.hero{width:min(300px,78vw);aspect-ratio:600/430;margin:6px auto -4px;background:center bottom/contain no-repeat;position:relative;filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))}
+.stage{width:min(320px,84vw);height:22px;margin:0 auto 8px;border-radius:50%;background:radial-gradient(closest-side,#ffd6f0,#c88cff 55%,transparent);opacity:.8}
+.duo{margin:2px 0 10px;color:var(--lite);font-size:13px}
+.pts{display:inline-block;background:#fff;color:var(--ink);border-radius:99px;padding:4px 14px;font-weight:800;margin-bottom:8px}
+.web{color:var(--jas);text-decoration:none;font-weight:700}
 /* levels */
 .top{width:100%;max-width:520px;display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.top h2{flex:1;margin:0;font-size:22px;text-align:center}
-.ib{width:44px;height:44px;border-radius:12px;background:#fff;border:2px solid #ead9c4;font-size:20px;font-weight:900;flex:none}
+.top h2{flex:1;margin:0;font-size:22px;text-align:center;color:#fff}
+.ib{width:44px;height:44px;border-radius:12px;background:#fff;color:var(--ink);border:2px solid #fff;font-size:20px;font-weight:900;flex:none}
 .tabs{display:flex;gap:6px;overflow-x:auto;width:100%;max-width:520px;padding-bottom:6px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex:none;padding:8px 12px;border-radius:99px;background:#fff;border:2px solid #ead9c4;font-weight:700;font-size:15px;white-space:nowrap}
+.tab{flex:none;padding:8px 12px;border-radius:99px;background:#fff;color:var(--ink);border:2px solid #fff;font-weight:700;font-size:15px;white-space:nowrap}
 .tab[aria-selected=true]{background:var(--red);border-color:var(--red);color:#fff}
 .tab span{font-size:12px;opacity:.75;margin-left:4px}
-.note{width:100%;max-width:520px;margin:6px 0 10px;color:var(--muted);font-size:14px;text-align:center}
+.note{width:100%;max-width:520px;margin:6px 0 10px;color:var(--lite);font-size:14px;text-align:center}
 .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%;max-width:520px}
-.lv{aspect-ratio:1;border-radius:12px;background:#fff;border:2px solid #ead9c4;font-weight:800;font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.lv{aspect-ratio:1;border-radius:12px;background:#fff;color:var(--ink);border:2px solid #fff;font-weight:800;font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
 .lv small{font-size:11px;color:#e0a100;letter-spacing:-1px;min-height:12px}
 .lv.done{background:#fff3c9;border-color:var(--gold)}
-.lv.cur{border-color:var(--red);box-shadow:0 0 0 2px var(--red) inset}
+.lv.cur{border-color:var(--red);box-shadow:0 0 0 2px var(--red) inset,0 0 14px var(--jas)}
 .lv[disabled]{opacity:.4}
 /* game */
 #game{padding-top:max(6px,env(safe-area-inset-top))}
 .hud{width:100%;max-width:520px;display:flex;align-items:center;gap:8px}
 .hud .t{flex:1;min-width:0;text-align:center}
 .hud b{display:block;font-size:18px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hud span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud span{display:block;font-size:12px;color:var(--lite);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stat{width:100%;max-width:520px;display:flex;justify-content:space-between;align-items:center;margin:6px 0 4px;font-weight:700;font-size:15px}
-.mics{letter-spacing:2px;font-size:18px}
+.mics{letter-spacing:2px;font-size:16px;background:#fff;border-radius:99px;padding:1px 8px;min-height:26px}
+.mics:empty{background:none}
 .mics .gone{opacity:.2;filter:grayscale(1)}
 .loopbar{display:flex;gap:3px}
-.loopbar i{width:7px;height:14px;border-radius:2px;background:#e8d6c0}
-.loopbar i.on{background:var(--red)}
+.loopbar i{width:7px;height:14px;border-radius:2px;background:rgba(255,255,255,.18)}
+.loopbar i.on{background:var(--jas)}
+.loopbar i.on:nth-child(odd){background:var(--rox)}
 .loopbar i.beat{transform:scaleY(1.35)}
 .play{position:relative;display:grid;margin:4px auto 0}
 .colarr,.rowarr{display:grid}
-.arr{display:grid;place-items:center;padding:0;color:var(--red);transition:transform .1s,opacity .2s}
+.arr{display:grid;place-items:center;padding:0;color:var(--jas);transition:transform .1s,opacity .2s}
 .arr svg{width:15px;height:15px;fill:currentColor}
 .arr.dim{opacity:.3}
 .arr:active,.arr.press{transform:scale(.78)}
-.board{position:relative;display:grid;border:3px solid var(--line);border-radius:8px;overflow:hidden;background:var(--line);-webkit-touch-callout:none;touch-action:none}
+.board{position:relative;display:grid;border:3px solid var(--line);border-radius:8px;overflow:hidden;background:var(--line);box-shadow:0 0 0 3px #fff,0 0 24px rgba(255,127,178,.45);-webkit-touch-callout:none;touch-action:none}
 .c{position:relative;display:grid;place-items:center;font-weight:900}
 .c .x{color:rgba(43,29,22,.55);font-size:.55em;line-height:1;animation:pop .18s ease-out}
 .c.w .x{color:#d11}
-.c .pc{width:78%;height:78%;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:.5em;border:2px solid rgba(0,0,0,.25);animation:land .35s cubic-bezier(.3,1.6,.5,1)}
-.pc.roxor{background:var(--blue)}
-.pc.jasmin{background:var(--pink)}
+.c .pc{width:88%;height:88%;border-radius:50%;background-color:#fff;background-position:center 18%;background-size:108% auto;background-repeat:no-repeat;box-shadow:0 0 0 2.5px var(--rox),0 2px 4px rgba(0,0,0,.3);animation:land .35s cubic-bezier(.3,1.6,.5,1)}
+.pc.roxor{background-color:#eaf7da}
+.pc.jasmin{background-color:#ffe6f0;box-shadow:0 0 0 2.5px var(--jas),0 2px 4px rgba(0,0,0,.3)}
 .c.hl::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.55);animation:fade 1.6s forwards;pointer-events:none}
-.c.cur{outline:3px solid var(--blue);outline-offset:-3px}
+.c.cur{outline:3px solid var(--rox2);outline-offset:-3px}
 .glow{animation:glow 1s ease-in-out infinite;position:relative;z-index:2}
 .c.glow::before{content:"";position:absolute;inset:2px;border:3px solid #fff;border-radius:6px;box-shadow:0 0 0 2px var(--red);pointer-events:none}
 .shake{animation:shake .35s}
@@ -87,21 +97,21 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
 @keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 @keyframes wob{30%{transform:rotate(-8deg)}70%{transform:rotate(6deg)}}
 .tools{width:100%;max-width:520px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
-.tools button{padding:9px 2px;border-radius:12px;background:#fff;border:2px solid #ead9c4;font-weight:800;font-size:15px}
+.tools button{padding:9px 2px;border-radius:12px;background:#fff;color:var(--ink);border:2px solid #fff;font-weight:800;font-size:15px}
 .tools button:active{transform:translateY(2px)}
 .tools .hint{background:var(--gold);border-color:#e8b02c}
 .tools button.glow{box-shadow:0 0 0 3px var(--red)}
 .arr.glow{background:var(--gold);border-radius:8px;box-shadow:0 0 0 2px var(--red);opacity:1}
-.coach{width:100%;max-width:520px;margin-top:10px;background:#fff;border:2px solid var(--red);border-radius:14px;padding:10px 12px;display:none;gap:8px;align-items:flex-start}
+.coach{width:100%;max-width:520px;margin-top:10px;background:#fff;color:var(--ink);border:3px solid var(--jas);border-radius:14px;padding:10px 12px;display:none;gap:8px;align-items:flex-start}
 .coach.on{display:flex}
-.coach .face{flex:none;width:36px;height:36px;border-radius:50%;background:var(--pink);color:#fff;display:grid;place-items:center;font-weight:900}
+.coach .face{flex:none;width:44px;height:44px;border-radius:50%;background-color:#ffe6f0;background-position:center 18%;background-size:110% auto;background-repeat:no-repeat;box-shadow:0 0 0 2.5px var(--jas)}
 .coach p{margin:0;flex:1;font-size:15px}
 .coach .st{display:block;font-size:12px;color:var(--muted)}
 .coach button{flex:none;font-size:13px;color:var(--muted);text-decoration:underline;padding:4px}
 /* modal */
 .modal{position:fixed;inset:0;background:rgba(43,29,22,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
 .modal.on{display:flex}
-.card{width:100%;max-width:380px;max-height:100%;overflow-y:auto;background:var(--panel);border-radius:20px;padding:20px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:up .25s ease-out}
+.card{color:var(--ink);width:100%;max-width:380px;max-height:100%;overflow-y:auto;background:var(--panel);border-radius:20px;padding:20px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:up .25s ease-out}
 @keyframes up{from{transform:translateY(30px);opacity:0}}
 .card h3{margin:0 0 6px;font-size:24px;color:var(--red)}
 .card p{margin:6px 0}
@@ -110,7 +120,10 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
 .big{font-size:30px;font-weight:900;color:var(--red)}
 .rules{text-align:left;margin:10px 0;padding:0;list-style:none}
 .rules li{display:flex;gap:10px;align-items:center;margin:8px 0;font-size:16px}
-.rules li i{flex:none;width:30px;height:30px;border-radius:9px;background:#fff3c9;display:grid;place-items:center;font-style:normal;font-weight:900;color:var(--red)}
+.rules li i{flex:none;width:30px;height:30px;border-radius:9px;background:#ffe6f0;display:grid;place-items:center;font-style:normal;font-weight:900;color:var(--jas2)}
+.rules li:nth-child(odd) i{background:#eaf7da;color:var(--rox2)}
+.pic{margin:-4px auto 2px;background:center bottom/contain no-repeat}
+/*ART*/
 .row2{display:flex;gap:8px}
 .row2 .btn{margin:6px 0}
 .toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:12px;font-size:15px;max-width:92vw;text-align:center;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none}
@@ -122,18 +135,21 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
 <noscript>LoopDoku 需要开启 JavaScript 才能玩。</noscript>
 
 <section id="title" class="scr">
-  <h1 class="logo">LoopDoku<small>口技数独</small></h1>
-  <div class="mini" aria-hidden="true"><i style="background:#ef8a8a">R</i><i style="background:#8fc7f0">✕</i><i style="background:#f6cf6a">J</i><i style="background:#9fd9a6">✕</i></div>
+  <h1 class="logo" aria-label="LoopDoku"><span class="l1">L<svg viewBox="0 0 100 44" aria-hidden="true"><path d="M50 22C40 6 8 6 8 22s32 16 42 0 42-16 42 0-32 16-42 0z" fill="none" stroke="#fff" stroke-width="17"/><path d="M50 22C40 6 8 6 8 22s32 16 42 0" fill="none" stroke="#78bd35" stroke-width="10" stroke-linecap="round"/><path d="M50 22c10 16 42 16 42 0S60 6 50 22" fill="none" stroke="#ff7fb2" stroke-width="10" stroke-linecap="round"/></svg>P</span><span class="l2">DOKU</span><span class="zh">口技数独</span></h1>
+  <div class="sub" id="tSub"></div>
+  <div class="hero art-duo" role="img" aria-label="RoxorLoops &amp; Jasmin"></div>
+  <div class="stage"></div>
   <p class="duo" id="tDuo"></p>
   <div class="pts" id="tPts"></div>
   <button class="btn" id="bPlay"></button>
-  <button class="btn alt" id="bLevels"></button>
+  <button class="btn green" id="bLevels"></button>
   <button class="btn alt" id="bTut"></button>
   <div class="row2" style="max-width:320px;width:100%;margin:0 auto">
     <button class="btn alt" id="bSound"></button>
     <button class="btn alt" id="bMusic"></button>
   </div>
   <p class="small" id="tFoot"></p>
+  <a class="small web" href="https://roxorloopsandjasmin.com" target="_blank" rel="noopener">roxorloopsandjasmin.com</a>
 </section>
 
 <section id="levels" class="scr">
@@ -156,7 +172,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
     <div class="rowarr" id="rowArr"></div>
     <div class="board" id="board"></div>
   </div>
-  <div class="coach" id="coach"><div class="face">J</div><p id="coachTxt"></p><button id="coachSkip"></button></div>
+  <div class="coach" id="coach"><div class="face art-jasmin"></div><p id="coachTxt"></p><button id="coachSkip"></button></div>
   <div class="tools">
     <button id="tUndo"></button><button id="tClear"></button><button class="hint" id="tHint"></button><button id="tRestart"></button>
   </div>
@@ -175,7 +191,8 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
   // so a native speaker can check it in one place.
   // ===================================================================================================================
   const T = {
-    duo: 'RoxorLoops 与 Jasmin · 来自丹麦的口技与歌唱二人组',   // RoxorLoops & Jasmin, the beatbox and singing duo from Denmark
+    sub: '<span class="r">RoxorLoops</span> 与 <span class="j">Jasmin</span> 的口技谜题',  // a RoxorLoops & Jasmin puzzle
+    duo: '来自丹麦的口技与歌唱二人组 · 100% 纯人声音乐',          // the beatbox and singing duo from Denmark · 100% organic music with the human voice
     foot: '没有广告，永远免费。纯人声音乐。',                     // No ads, free forever. Music made with the human voice only.
     pts: (n) => n + ' 分',                                       // N points
     play: '开始演出',                                            // Start playing
@@ -363,7 +380,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
     const v = game.cells[i], el = cellEls[i];
     if (!el) return;
     el.classList.toggle('w', !!game.wrong[i]);
-    if (v === LD.CELL.PIECE) { const who = game.who(i); el.innerHTML = '<span class="pc ' + who + '">' + (who === 'roxor' ? 'R' : 'J') + '</span>'; }
+    if (v === LD.CELL.PIECE) { const who = game.who(i); el.innerHTML = '<span class="pc ' + who + ' art-' + who + '"></span>'; }
     else if (v === LD.CELL.CROSS || v === LD.CELL.AUTO) el.innerHTML = '<span class="x">✕</span>';
     else el.innerHTML = '';
   }
@@ -433,7 +450,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
 
   function onWin(e) {
     if (tut) { const done = () => { S.tut = true; save(); endTutorial(false); startGig(PACKS[0].levels[0].id); };
-      modal('<h3>' + T.tutDoneT + '</h3><div class="stars">★★★</div><p>' + T.tutDoneP + '</p><button class="btn" data-go>' + T.tutDoneB + '</button>', (c) => { c.querySelector('[data-go]').onclick = () => { closeModal(); done(); }; });
+      modal('<div class="pic art-duo" style="width:190px;height:136px"></div><h3>' + T.tutDoneT + '</h3><div class="stars">★★★</div><p>' + T.tutDoneP + '</p><button class="btn" data-go>' + T.tutDoneB + '</button>', (c) => { c.querySelector('[data-go]').onclick = () => { closeModal(); done(); }; });
       return; }
     if (recorded) return; recorded = true;
     const L = BY.get(cur.id), first = !S.solved[L.id];
@@ -447,7 +464,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
     const nx = nextId(L.id);
     let stars = ''; for (let k = 1; k <= 3; k++) stars += k <= e.stars ? '★' : '<span class="no">★</span>';
     const notes = [first ? T.first : T.replay]; if (e.stars >= 2 && first) notes.push(T.starB(e.stars));
-    modal('<h3>' + T.winT + '</h3><div class="stars">' + stars + '</div><p class="small">' + T.winTime(fmt(e.ms), e.mistakes) + '</p>'
+    modal('<div class="pic art-duo" style="width:150px;height:108px"></div><h3>' + T.winT + '</h3><div class="stars">' + stars + '</div><p class="small">' + T.winTime(fmt(e.ms), e.mistakes) + '</p>'
       + '<div class="big" id="wPts">+0</div><p class="small">' + esc(notes.join(' · ')) + '</p><p><b>' + T.total(S.points) + '</b></p>'
       + (newPack ? '<p style="color:var(--red);font-weight:800">' + esc(T.newPack(newPack.name)) + '</p>' : '')
       + (nx ? '<button class="btn" data-n>' + T.next + '</button>' : '') + '<button class="btn alt" data-l>' + T.toList + '</button>', (c) => {
@@ -461,7 +478,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
   function onLose() {
     if (tut) return;
     const id = cur.id;
-    modal('<h3>' + T.loseT + '</h3><p style="font-size:44px;margin:4px">🎤💤</p><p>' + T.loseP + '</p><button class="btn" data-r>' + T.retry + '</button><button class="btn alt" data-l>' + T.toList + '</button>', (c) => {
+    modal('<h3>' + T.loseT + '</h3><div class="pic art-sad" style="width:180px;height:130px"></div><p>' + T.loseP + '</p><button class="btn" data-r>' + T.retry + '</button><button class="btn alt" data-l>' + T.toList + '</button>', (c) => {
       c.querySelector('[data-r]').onclick = () => { tapSound(); closeModal(); startGig(id); };
       c.querySelector('[data-l]').onclick = () => { tapSound(); closeModal(); openLevels(); };
     });
@@ -480,7 +497,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
   ];
   function intro(onGo) {
     const li = T.rules.map((r) => '<li><i>' + r[0] + '</i>' + esc(r[1]) + '</li>').join('');
-    modal('<h3>' + T.tutT + '</h3><ul class="rules">' + li + '</ul><p class="small">' + T.rulesP + '</p><button class="btn" data-go>' + T.tutGo + '</button><button class="btn alt" data-sk>' + T.tutSkip + '</button>', (c) => {
+    modal('<div class="pic art-duo" style="width:150px;height:108px"></div><h3>' + T.tutT + '</h3><ul class="rules">' + li + '</ul><p class="small">' + T.rulesP + '</p><button class="btn" data-go>' + T.tutGo + '</button><button class="btn alt" data-sk>' + T.tutSkip + '</button>', (c) => {
       c.querySelector('[data-go]').onclick = () => { tapSound(); closeModal(); onGo(); };
       c.querySelector('[data-sk]').onclick = () => { tapSound(); closeModal(); S.tut = true; save(); startGig(currentId()); };
     });
@@ -581,7 +598,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
     });
   };
 
-  $('tDuo').textContent = T.duo; $('tFoot').textContent = T.foot;
+  $('tSub').innerHTML = T.sub; $('tDuo').textContent = T.duo; $('tFoot').textContent = T.foot;
   $('bLevels').textContent = T.levels; $('bTut').textContent = T.tut; $('coachSkip').textContent = T.tutSkip;
   $('lvTitle').textContent = T.levels;
   $('tUndo').textContent = T.undo; $('tClear').textContent = T.clear; $('tHint').textContent = T.hint; $('tRestart').textContent = T.restart;

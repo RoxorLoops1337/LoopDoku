@@ -11,8 +11,12 @@ const slim = (js) => js.replace(/^\s*\/\*[\s\S]*?\*\/\s*$/gm, '').split('\n').fi
 const core = slim(fs.readFileSync(path.join(root, 'loopdoku-core.js'), 'utf8'));
 const levels = fs.readFileSync(path.join(root, 'loopdoku-levels.js'), 'utf8').replace(/^\/\*.*\*\/\n/, '');
 const src = fs.readFileSync(path.join(here, 'cn.src.html'), 'utf8');
-const out = src.replace('<!--CORE-->', () => '<script>\n' + core + '\n</script>').replace('<!--LEVELS-->', () => '<script>' + levels.trim() + '</script>');
-if (/(src|href)\s*=\s*["']https?:/i.test(out) || /@import|url\(\s*["']?https?:/i.test(out)) throw new Error('cn page must not load anything from outside');
+// the duo's chibis, baked from the approved kit by tools/cn_bake.mjs; each image is inlined once, as a CSS class
+const art = JSON.parse(fs.readFileSync(path.join(here, 'cn_art.json'), 'utf8'));
+const artCss = Object.entries(art).map(([k, v]) => '.art-' + k + '{background-image:url(' + v + ')}').join('\n');
+const out = src.replace('/*ART*/', () => artCss).replace('<!--CORE-->', () => '<script>\n' + core + '\n</script>').replace('<!--LEVELS-->', () => '<script>' + levels.trim() + '</script>');
+// plain links the player may tap are fine; anything the page itself would LOAD from another host is not
+if (/<(script|link|img|iframe|audio|video|source)\b[^>]*\b(src|href)\s*=\s*["']?(https?:)?\/\//i.test(out) || /@import|url\(\s*["']?(https?:)?\/\//i.test(out)) throw new Error('cn page must not load anything from outside');
 fs.mkdirSync(path.join(root, 'cn'), { recursive: true });
 fs.writeFileSync(path.join(root, 'cn', 'index.html'), out);
 const gz = zlib.gzipSync(out, { level: 9 }).length;

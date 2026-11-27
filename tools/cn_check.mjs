@@ -40,6 +40,18 @@ await wait(400);
 check(await page.isVisible('#modal.on .rules'), 'first visit opens the tutorial intro');
 check(await page.evaluate(() => document.documentElement.lang) === 'zh-CN', 'lang is zh-CN');
 await shot('1-intro');
+const art = await page.evaluate(async () => {
+  const res = {};
+  for (const k of ['duo', 'sad', 'roxor', 'jasmin']) {
+    const el = document.createElement('div'); el.className = 'art-' + k; document.body.appendChild(el);
+    const m = /url\("?(data:[^")]+)"?\)/.exec(getComputedStyle(el).backgroundImage); el.remove();
+    if (!m) { res[k] = 0; continue; }
+    const im = new Image(); im.src = m[1];
+    try { await im.decode(); res[k] = im.naturalWidth; } catch (e) { res[k] = 0; }
+  }
+  return res;
+});
+check(Object.values(art).every((w) => w > 20), 'every chibi image decodes ' + JSON.stringify(art));
 await page.click('#modal [data-go]');
 await wait(300);
 check(await step() === 0, 'tutorial at step 1');
@@ -84,7 +96,8 @@ check(fit.n === 10 && fit.left >= 0 && fit.right <= 390, '10x10 board fits the w
 check(fit.bottom <= 844, '10x10 tools fit on screen ' + fit.bottom);
 check(fit.aw >= 28 && fit.ah >= 28, 'arrow tap target >= 28px ' + fit.aw + 'x' + fit.ah);
 check(await overflow() <= 0, 'no horizontal scroll on 10x10');
-await page.click('#colArr button:nth-child(3)'); await wait(700); await shot('9-10x10');
+await page.click('#colArr button:nth-child(3)'); await wait(300);
+await page.evaluate(() => { const g = LDCN.game(); g.place(g.p.sol[0]); g.place(g.n + g.p.sol[1]); }); await wait(700); await shot('9-10x10');
 // lose
 await page.evaluate(() => LDCN.start('easy-2')); await wait(300);
 const wrong = await page.evaluate(() => { const g = LDCN.game(), o = []; for (let i = 0; i < g.N && o.length < 3; i++) if (!g.isSolution(i)) o.push(i); return o; });
@@ -102,4 +115,4 @@ const size = fs.statSync(path.join(root, 'cn', 'index.html')).size;
 await browser.close();
 console.log('cn/index.html', (size / 1024).toFixed(1) + ' KB');
 if (fails.length) { console.log('FAIL\n- ' + fails.join('\n- ')); process.exit(1); }
-console.log('PASS: tutorial, win, 10x10 fit, lose, no outside requests, no errors');
+console.log('PASS: chibi art, tutorial, win, 10x10 fit, lose, no outside requests, no errors');
