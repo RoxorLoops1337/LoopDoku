@@ -23,12 +23,12 @@ const TUTT = {
 };
 LD.loop.LAYER_NAMES = ['底鼓', '踩镲', '军鼓', '贝斯', '和声', '沙锤', '旋律', '拍手', '切片'];  // Kick Hats Snare Bass Pad Shaker Hook Claps Chops
 
-const TUT = { on: false, step: 0, gm: null, timer: 0, ring: 0 };
+const TUT = { on: false, step: 0, gm: null, timer: 0, ring: 0, row: 4 };
 const TUT_STEPS = [
   { txt: 's1', cell: (g) => g.idx(0, 0), done: (ev, d) => ev === 'mark' && d.on && (d.source === 'tap' || d.source === 'drag') },
   { txt: 's2', row: 3, cells: (g) => [0, 1, 2, 3].map((c) => g.idx(3, c)), done: (ev, d) => ev === 'stroke' && d.count >= 2 },
   { txt: 's3', cell: (g) => g.idx(4, 2), done: (ev) => ev === 'place' },
-  { txt: 's4', arrow: ['row', 4], done: (ev) => ev === 'line' },
+  { txt: 's4', arrow: () => ['row', TUT.row], done: (ev) => ev === 'line' },  // the row of the performer just placed
   { txt: 's5', btn: '#hintBtn', done: (ev) => ev === 'hint' },
   { txt: 's6', done: () => false },
 ];
@@ -50,7 +50,7 @@ function tutPoint() {
   const w = $('#bwrap').getBoundingClientRect();
   if (st.cell) wandTo(st.cell(game), 650);
   else if (st.cells) { const cs = st.cells(game); wandTo(cs[0], 650); }
-  else if (st.arrow) { const el = arrowEl(st.arrow[0], st.arrow[1]); if (el) { const r = el.getBoundingClientRect(); wandXY(r.left - w.left + r.width / 2, r.top - w.top + r.height / 2, 650); } }
+  else if (st.arrow) { const a = st.arrow(), el = arrowEl(a[0], a[1]); if (el) { const r = el.getBoundingClientRect(); wandXY(r.left - w.left + r.width / 2, r.top - w.top + r.height / 2, 650); } }
   else if (st.btn) { const r = $(st.btn).getBoundingClientRect(); wandXY(r.left - w.left + r.width / 2, r.top - w.top + r.height * 0.3, 650); }
   else wandOff();
 }
@@ -67,7 +67,7 @@ function tutGo(k) {
   TUT.step = k;
   const st = TUT_STEPS[k]; if (!st) return;
   tutSay(TUTT[st.txt]);
-  if (st.arrow) { const el = arrowEl(st.arrow[0], st.arrow[1]); if (el) el.classList.add('tglow'); }
+  if (st.arrow) { const a = st.arrow(), el = arrowEl(a[0], a[1]); if (el) el.classList.add('tglow'); }
   if (st.btn) $(st.btn).classList.add('tglow');
   setTimeout(tutPoint, 60);
   tutPulse(); TUT.ring = setInterval(tutPulse, 1500);
@@ -76,9 +76,17 @@ function tutGo(k) {
 function tutEnd() {
   if (!TUT.on) return;
   TUT.on = false; tutClear(); wandOff();
-  $('#scr-game').classList.remove('tut');
+  $('#scr-game').classList.remove('tut'); $('#scr-game .crowdbox').style.height = '';
   $('#say').classList.remove('on');
   if (scr === 'game') layoutGame(true);
+}
+function tutFit() {
+  const box = $('#scr-game .crowdbox'), el = $('#say'), t = $('#sayT'), keep = t.innerHTML;
+  box.style.height = '';
+  let h = 0;
+  for (const k of ['s1', 's2', 's3', 's3bad', 's4', 's5', 's6']) { t.innerHTML = '<small class="tstep">1 / 6</small>' + TUTT[k]; h = Math.max(h, el.offsetHeight); }
+  t.innerHTML = keep;
+  box.style.height = Math.ceil(h + 4 + 6 + $('#tutSkip').offsetHeight + 4) + 'px';
 }
 function tutDone() { if (!LD.meta.settings().tutDone) LD.meta.set('tutDone', true); }
 function startTutorial() {
@@ -89,12 +97,14 @@ function startTutorial() {
   setupGame(new LD.Game(P), true);
   TUT.on = true; TUT.gm = game; TUT.step = 0;
   $('#scr-game').classList.add('tut');
+  tutFit();
   layoutGame(true);
   const gm = game;
   gm.on('*', (ev, d) => {
     if (!TUT.on || game !== gm) return;
     if (ev === 'mistake' && TUT.step === 2) { tutSay(TUTT.s3bad); return; }
     if (ev === 'win') { tutDone(); setTimeout(tutEnd, 300); return; }
+    if (ev === 'place') TUT.row = d.r;
     const st = TUT_STEPS[TUT.step];
     if (st && st.done(ev, d)) { const nx = TUT.step + 1; TUT.step = -1; setTimeout(() => tutGo(nx), ev === 'place' || ev === 'line' ? 700 : 300); }
   });
@@ -108,7 +118,7 @@ show = function (name, opt) { if (name !== 'title') $('#tutIntro').classList.rem
 const startGigOrig = startGig;
 startGig = function (id) { $('#tutIntro').classList.remove('on'); tutEnd(); startGigOrig(id); };
 $('#tutSkip').addEventListener('click', () => { tutDone(); tutEnd(); startGig(); });
-window.addEventListener('resize', () => { if (TUT.on) setTimeout(tutPoint, 50); });
+window.addEventListener('resize', () => { if (TUT.on) { tutFit(); layoutGame(false); setTimeout(tutPoint, 50); } });
 
 // the rules card: the first time someone opens the game, and before the tutorial
 function tutIntro() {
@@ -125,4 +135,4 @@ const ACT_PLAY = ACT.play;
 ACT.play = function () { if (!LD.meta.settings().tutDone) tutIntro(); else ACT_PLAY(); };
 ACT.demo = function () { $('#sheet').classList.remove('on'); tutIntro(); };
 // test hook (tools/cn_check.mjs)
-window.LDCN = { tut: () => (TUT.on ? TUT.step : -1), screen: () => scr };
+window.LDCN = { tut: () => (TUT.on ? TUT.step : -1), screen: () => scr, zoneColours, labD };

@@ -140,6 +140,39 @@ for (const [w, h] of [[360, 640], [390, 720], [412, 900]]) {
   await S.close();
 }
 
+// ---- 4. the tutorial on a small phone, taking the other one-square zone (row 2), with the bubble checked at every step
+{
+  const S = await session(360, 640);
+  const { page } = S;
+  const bubble = async (k) => {
+    const r = await page.evaluate(() => { const b = document.getElementById('say').getBoundingClientRect(), c = document.querySelector('#scr-game .crowdbox').getBoundingClientRect(), k = document.getElementById('tutSkip').getBoundingClientRect(), row = document.querySelector('.btnrow').getBoundingClientRect();
+      return { inBox: b.top >= c.top - 1 && b.bottom <= c.bottom + 1 && b.left >= 0 && b.right <= innerWidth, overlap: !(b.bottom <= k.top || k.bottom <= b.top || b.right <= k.left || k.right <= b.left), onScreen: row.bottom <= innerHeight + 1 }; });
+    check(r.inBox && !r.overlap && r.onScreen, `360x640 tutorial step ${k}: bubble ${JSON.stringify(r)}`);
+  };
+  await page.click('[data-tut=go]'); await S.wait(900); await bubble(1);
+  await S.tap(0); await S.wait(600); await bubble(2);
+  { const a = await S.cellXY(15), b = await S.cellXY(18); await page.mouse.move(a.x, a.y); await page.mouse.down(); for (let k = 1; k <= 8; k++) await page.mouse.move(a.x + (b.x - a.x) * k / 8, a.y, { steps: 2 }); await page.mouse.up(); await S.wait(700); }
+  await bubble(3);
+  await S.dbl(10); await S.wait(1200);
+  check(await tut(S) === 3, '360x640: the other one-square zone also advances, got ' + await tut(S));
+  check(await page.evaluate(() => { const el = document.querySelector('#arws .arw.tglow'); return el && el.dataset.k === 'row' && el.dataset.i === '2'; }), 'step 4 points at the row of the performer just placed');
+  await bubble(4); await S.shot('tut4-alt');
+  await page.locator('#arws .arw[data-k=row][data-i="2"]').dispatchEvent('pointerdown'); await S.wait(1100);
+  check(await tut(S) === 4, '360x640: row arrow advances, got ' + await tut(S));
+  check(await page.evaluate(() => !LDSKIN.game().mistakes), 'the alternative path made no mistake');
+  await bubble(5); await page.click('#hintBtn'); await S.wait(900); await bubble(6);
+  await S.shot('tut6'); await S.english('tutorial');
+  await S.solve(); await S.wait(3800);
+  check(await page.evaluate(() => LDCN.screen()) === 'win', '360x640 tutorial ends on the win screen');
+  // rare branches: a win streak and the daily challenge
+  await page.evaluate(() => { LD.meta.state.streak = 3; LDSKIN.start('easy-3'); }); await S.wait(600);
+  await S.solve(); await S.wait(4200); await S.shot('streak-win'); await S.english('streak win');
+  await page.evaluate(() => LDSKIN.start(LD.meta.daily().id)); await S.wait(900); await S.shot('daily'); await S.english('daily');
+  check(!S.outside.length, '360x640 outside requests: ' + S.outside.join(', '));
+  check(!S.errors.length, '360x640 errors: ' + S.errors.join(' | '));
+  await S.close();
+}
+
 // ---- 3. an old save from the first Chinese edition carries over
 {
   const old = JSON.stringify({ points: 77, solved: { 'easy-1': { stars: 3, ms: 9000 }, 'easy-2': { stars: 2, ms: 12000 } }, current: null, tut: true, sound: true, music: false });

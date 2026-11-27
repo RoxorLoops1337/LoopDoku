@@ -12,7 +12,8 @@ export const FONT = CNF;
 // ------------------------------------------------------------------------------------------------------------------
 export const IDOL = [
   // page
-  ['<html lang="en">', '<html lang="zh-CN">', 1],
+  ['<html lang="en">', '<html lang="zh-CN" translate="no">', 1],  // browsers must not machine-translate it: buttons would change, the drawn text would not
+  ['<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="google" content="notranslate">', 1],
   ['<title>LoopDoku</title>', '<title>LoopDoku 口技数独</title>\n<meta name="description" content="LoopDoku 口技数独：RoxorLoops 与 Jasmin 的逻辑谜题。每行、每列、每个颜色区域各放一位表演者，而且互不相邻。没有广告。">\n<meta name="format-detection" content="telephone=no">', 1],
   ['<link rel="preconnect" href="https://fonts.googleapis.com">\n', '', 1],
   ['<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n', '', 1],
