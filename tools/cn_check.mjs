@@ -303,9 +303,21 @@ for (const [w, h] of [[360, 640], [390, 720], [412, 900]]) {
   // a real win scores and the win screen says how much
   await page.evaluate(() => LDSKIN.start('easy-2')); await S.wait(600);
   await S.solve(); await S.wait(4500);
-  check(S.board.posts === 1 && /排行榜 \+40/.test(await page.textContent('#wLB')), 'a win is sent and the win screen shows the points: ' + await page.textContent('#wLB'));
+  check(S.board.posts === 1 && await page.isVisible('#wLB .lbclimb'), 'a win is sent and the win screen shows the climb line');
+  await S.wait(1800); await S.shot('lb-climb-mid');
+  await S.wait(1500);
+  const cl = await page.evaluate(() => ({ c: LDLB.climb(), t: document.querySelector('#wLB .lbclimb').textContent, rose: document.querySelector('#wLB .lbclimb').classList.contains('rose') }));
+  check(cl.c && cl.c.old === 0 && cl.c.now === 40 && cl.c.fromRank === 11 && cl.c.rank === 3 && cl.rose && /40/.test(cl.t) && /第 3 名/.test(cl.t) && /🔥/.test(cl.t), 'the score rolls to 40 and the rank climbs to 3rd: ' + JSON.stringify(cl));
+  check(await page.evaluate(() => [...window.__txt].some((t) => t.indexOf('冲进前十') >= 0)), 'the "into the top 10" call pops in Chinese');
   check(await page.evaluate(() => { const r = document.getElementById('nextBtn').getBoundingClientRect(); return r.bottom <= innerHeight; }), 'Next still visible with the leaderboard line');
   await S.shot('lb-win'); await S.english('leaderboard win');
+  // tapping the line opens today's board, my row slides up into 3rd place
+  await page.click('#wLB .lbclimb'); await S.wait(800); await S.shot('lb-climb-board');
+  await S.wait(1200);
+  const rows = await page.evaluate(() => [...document.querySelectorAll('#lbList li[data-rank]')].map((li) => li.textContent));
+  check(rows.length === 3 && /口技小明/.test(rows[2]) && /40/.test(rows[2]), 'the board shows me in 3rd after the climb: ' + JSON.stringify(rows));
+  await S.shot('lb-climb-board-end'); await S.english('climb board');
+  await page.click('[data-lbx]'); await S.wait(300);
   // reset progress keeps the name; offline wins wait in the queue and go later
   await page.evaluate(() => LD.meta.resetProgress());
   check(await page.evaluate(() => !!LDLB.me()), 'reset progress keeps the leaderboard name');

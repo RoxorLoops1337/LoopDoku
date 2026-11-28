@@ -22,7 +22,11 @@ const LBT = {
   win: (p, r) => '🏆 排行榜 +' + p + ' 分' + (r ? ' · 今日第 ' + r + ' 名' : ''), // leaderboard +p points · today rank r
   winRepeat: '🏆 这一关的最好成绩已经计入排行榜',                           // this puzzle's best result already counts
   winQueued: '🏆 已保存，联网后自动上传到排行榜',                           // saved, uploads when online
-  notRanked: '未进前 100',                                              // not in the top 100
+  notRanked: '未进前 100',
+  today: '🏆 今日', rankOf: (r) => '第 ' + r + ' 名',                     // today; rank r
+  up: (k) => '排名上升 ▲' + k,                                          // rank up by k
+  newTop: '冲进前十！', first: '今日第一！👑',                             // into the top 10! / number one today!
+  tapBoard: '点我看排行榜',                                              // tap to see the board                                              // not in the top 100
 };
 function lbTexts() {
   $('#lbBox .rtxt').textContent = LBT.title; $('#lbNameBox .rtxt').textContent = LBT.nameT;
@@ -65,7 +69,7 @@ function lbRender() {
   const list = d ? d[tab] || [] : [];
   const medal = (r) => (r === 1 ? '🥇' : r === 2 ? '🥈' : r === 3 ? '🥉' : r);
   const mine = (e) => m && e.name.normalize('NFKC').toLowerCase() === m.name.normalize('NFKC').toLowerCase();
-  let h = list.length ? list.map((e) => '<li class="' + (mine(e) ? 'me' : '') + '"><b>' + medal(e.rank) + '</b><span>' + escH(e.name) + (mine(e) ? ' <i>' + LBT.you + '</i>' : '') + '</span><em>' + LBT.pts(e.pts) + '</em></li>').join('')
+  let h = list.length ? list.map((e) => '<li data-rank="' + e.rank + '" class="' + (mine(e) ? 'me' : '') + '"><b>' + medal(e.rank) + '</b><span>' + escH(e.name) + (mine(e) ? ' <i>' + LBT.you + '</i>' : '') + '</span><em>' + LBT.pts(e.pts) + '</em></li>').join('')
     : '<li class="none">' + LBT.empty + '</li>';
   if (m && d && d.me && d.me[tab] && !list.some(mine)) {
     const x = d.me[tab];
@@ -74,9 +78,48 @@ function lbRender() {
   $('#lbList').innerHTML = h;
   $('#lbJoin').style.display = m ? 'none' : '';
 }
-async function lbOpen() {
-  closeCards(); $('#lbBox').classList.add('on'); lbRender();
+async function lbOpen(climb) {
+  closeCards(); $('#lbBox').classList.add('on');
+  if (climb) { LB.tab = 'd'; lbRender(); lbClimbBoard(climb); return; }
+  lbRender();
   await lbFlush(); await lbRefresh(); lbRender();
+}
+// the board after a win: my row starts where I was and slides up past the players I just overtook, its points counting up
+function lbClimbBoard(c) {
+  const rows = $$('#lbList li[data-rank]'), mine = $('#lbList li.me[data-rank]');
+  if (!mine || !c.rank) return;
+  const h = rows.length > 1 ? rows[1].getBoundingClientRect().top - rows[0].getBoundingClientRect().top : mine.offsetHeight + 5;
+  const from = c.fromRank && c.fromRank <= rows.length ? c.fromRank : rows.length + 1, to = c.rank, moved = Math.max(0, from - to);
+  const em = mine.querySelector('em');
+  em.textContent = LBT.pts(c.old);
+  for (const li of rows) {
+    const r = +li.dataset.rank; li.style.transition = 'none';
+    if (li === mine) li.style.transform = 'translateY(' + (moved * h) + 'px)';
+    else if (r > to && r <= to + moved) li.style.transform = 'translateY(' + (-h) + 'px)';
+  }
+  mine.style.position = 'relative'; mine.style.zIndex = 2;
+  void mine.offsetWidth;
+  setTimeout(() => {
+    for (const li of rows) { li.style.transition = 'transform .9s cubic-bezier(.3,1.25,.45,1)'; li.style.transform = ''; }
+    mine.classList.add('climb');
+    lbCount(em, c.old, c.now, 900, (v) => LBT.pts(v));
+    for (let k = 0; k < moved; k++) setTimeout(() => S.pop(k + 3), 120 + k * (800 / moved));
+    setTimeout(() => {
+      const r = mine.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + r.height / 2, { n: 14, sp0: 120, sp1: 260, sz: 18, life: 0.7, add: 1, img: (j) => sparkSpr(j % 2 ? '#ffd84d' : '#ff9fcb') });
+      S.sparkle();
+    }, 950);
+  }, 450);
+}
+// a number that rolls from a to b
+function lbCount(el, a, b, ms, fmt) {
+  const t0 = now(); let lastV = a;
+  const step = () => {
+    const k = Math.min(1, (now() - t0) / ms), v = Math.round(a + (b - a) * EZ.outCubic(k));
+    if (v !== lastV) { lastV = v; el.textContent = fmt ? fmt(v) : v; }
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 $('#lbBox').addEventListener('click', (e) => {
   const t = e.target.closest('[data-tab]'); if (t) { LB.tab = t.dataset.tab; lbRender(); S.ui(); return; }
@@ -148,20 +191,70 @@ setupGame = function (gm, demoFlag) {
   });
 };
 // one line on the win screen: the points it earned, or the button to join
+// the score before this win and the rank it had, worked out from today's board the server sent back.
+// fromRank: the old place (11 = outside the top 10 shown, null = not on today's board before)
+function lbClimbOf(r) {
+  const m = me(); if (!r || !m || !r.me || !r.me.d || !(r.gained > 0)) return null;
+  const key = (n) => n.normalize('NFKC').toLowerCase();
+  const nowPts = r.me.d.pts, old = Math.max(0, nowPts - r.gained), others = (r.d || []).filter((e) => key(e.name) !== key(m.name));
+  const rank = r.me.d.rank;
+  let fromRank = null;
+  if (rank) fromRank = old > 0 ? Math.min(11, 1 + others.filter((e) => e.pts > old).length) : 11;
+  return { old, now: nowPts, rank, fromRank, gained: r.gained };
+}
+// one line on the win screen. After a scoring win: today's total rolls up and the rank climbs, then a call pops
 function lbWinLine() {
   const box = $('#wLB'); if (!box) return;
   if (!WIN.st || WIN.st.demo) { box.innerHTML = ''; return; }
   if (!me()) { box.innerHTML = LB.state === 'on' ? '<button type="button" class="lbjoin" data-lbjoin="1">' + LBT.join + '</button>' : ''; return; }
-  const r = LB.result;
-  box.innerHTML = '<div class="lbline">' + (r ? (r.gained > 0 ? LBT.win(r.gained, r.me && r.me.d && r.me.d.rank) : LBT.winRepeat) : LBT.winQueued) + '</div>';
+  const r = LB.result, c = lbClimbOf(r);
+  if (!c) { box.innerHTML = '<div class="lbline">' + (r ? (r.gained > 0 ? LBT.win(r.gained, r.me && r.me.d && r.me.d.rank) : LBT.winRepeat) : LBT.winQueued) + '</div>'; return; }
+  if (box.dataset.done === String(WIN.t0)) return;                         // this win already animated
+  box.dataset.done = String(WIN.t0);
+  LB.climb = c;
+  const from = c.fromRank;
+  box.innerHTML = '<button type="button" class="lbclimb" data-lbclimb="1" aria-label="' + LBT.tapBoard + '"><span class="lbt">' + LBT.today + '</span>'
+    + '<b class="lbn">' + c.old + '</b><small>分</small><span class="lbg">+' + c.gained + '</span>'
+    + (c.rank ? '<span class="lbr">' + (from && from <= 10 ? LBT.rankOf(from) : '10+') + '</span>' : '') + '<span class="lbup"></span></button>';
+  const el = box.querySelector('.lbclimb'), num = el.querySelector('.lbn'), rk = el.querySelector('.lbr'), up = el.querySelector('.lbup');
+  // start after the gig's own points have counted up
+  const wait = Math.max(150, WIN.t0 + 2700 - now());
+  setTimeout(() => {
+    if (!el.isConnected) return;
+    el.classList.add('go'); S.whoosh();
+    lbCount(num, c.old, c.now, 1100);
+    for (let k = 0; k < 6; k++) setTimeout(() => S.tick(k * 2), k * 170);
+    if (rk && c.rank && from && from > c.rank) {
+      // the rank ticks up one place at a time
+      const steps = from - c.rank;
+      for (let k = 1; k <= steps; k++) setTimeout(() => {
+        if (!el.isConnected) return;
+        const v = k === steps ? c.rank : from - k;
+        rk.textContent = v > 10 ? '10+' : LBT.rankOf(v);
+        rk.classList.remove('pop'); void rk.offsetWidth; rk.classList.add('pop'); S.pop(k + 2);
+        const b = rk.getBoundingClientRect();
+        burst(b.left + b.width / 2, b.top + b.height / 2, { n: 5, sp0: 60, sp1: 140, sz: 12, life: 0.45, add: 1, img: () => sparkSpr('#ffd84d') });
+      }, 1200 + k * (700 / steps));
+      setTimeout(() => {
+        if (!el.isConnected) return;
+        const call = c.rank === 1 ? LBT.first : from > 10 && c.rank <= 10 ? LBT.newTop : LBT.up(from - c.rank);
+        up.textContent = c.rank === 1 ? '👑' : from > 10 ? '🔥' : '▲' + (from - c.rank);   // from outside the top 10 the old place is not known
+        el.classList.add('rose');
+        const b = el.getBoundingClientRect(), lb = labelSpr(call, 20, '#fff6b0', '#ff5ea2');
+        addP({ type: 'label', img: lb, x: b.left + b.width / 2, y: b.top - 6, life: 1.4, rise: 30, sc: Math.min(1, (b.width + 40) / lb.w), fo: 0.7 });
+        burst(b.left + b.width / 2, b.top + b.height / 2, { n: 16, sp0: 140, sp1: 320, sz: 18, life: 0.8, add: 1, img: (j) => (j % 3 ? starSpr(j % 2 ? '#ffd84d' : '#ff9fcb') : sparkSpr('#ffffff')) });
+        S.sparkle(); S.kick(0.8); S.clap(0.5);
+      }, 1200 + 760);
+    } else setTimeout(() => { if (el.isConnected) { S.pop(4); el.classList.add('rose'); } }, 1150);
+  }, wait);
 }
 const enterWinLB = enterWin;
 enterWin = function (st) { enterWinLB(st); lbWinLine(); };
-document.addEventListener('click', (e) => { if (e.target.closest('[data-lbjoin]')) lbName(() => { LB.result = LB.data && LB.data.gained != null ? LB.data : null; lbWinLine(); }); });
+document.addEventListener('click', (e) => { if (e.target.closest('[data-lbclimb]')) { S.ui(); lbOpen(LB.climb || null); return; } if (e.target.closest('[data-lbjoin]')) lbName(() => { LB.result = LB.data && LB.data.gained != null ? LB.data : null; lbWinLine(); }); });
 
 lbTexts();
 // on load: find out whether this site has the board, and send anything left in the queue
 setTimeout(async () => { await lbRefresh(); await lbFlush(); }, 600);
 const showLB = show;
 show = function (name, opt) { $('#lbBox').classList.remove('on'); $('#lbNameBox').classList.remove('on'); showLB(name, opt); };
-window.LDLB = { state: () => LB.state, me, queue: () => lsGet(Q_KEY, []), data: () => LB.data };
+window.LDLB = { climb: () => LB.climb, state: () => LB.state, me, queue: () => lsGet(Q_KEY, []), data: () => LB.data };

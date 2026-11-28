@@ -90,6 +90,19 @@ const EXTRA_CSS = `
 #lbInput:focus{box-shadow:0 0 0 3px var(--p)}
 .lberr{margin:0;min-height:18px;color:#e3124a;font:800 13px/1.3 var(--ui);text-align:center}
 .lbjoin{margin-top:6px;width:100%;padding:8px;border-radius:14px;border:2px solid var(--ink);background:linear-gradient(#fff6c2,#ffd84d);font:900 14px/1.2 var(--ui);color:var(--ink)}
+.lbclimb{margin-top:6px;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:7px 10px;border-radius:16px;border:2px solid var(--ink);background:linear-gradient(#fff,#ffeaf4);font:900 14px/1 var(--ui);color:var(--ink);box-shadow:0 3px 0 #a283e8;transition:transform .2s var(--spring)}
+.lbclimb.go{animation:lbgo .5s var(--spring)}
+.lbclimb.rose{background:linear-gradient(#fff6c2,#ffd84d);box-shadow:0 3px 0 #d9a21f,0 0 18px rgba(255,216,77,.8)}
+.lbclimb .lbn{font-size:20px;color:var(--pd);min-width:2.2em;text-align:right;font-variant-numeric:tabular-nums}
+.lbclimb small{font-size:12px}
+.lbclimb .lbg{color:#3f7f18;font-size:13px}
+.lbclimb .lbr{padding:4px 8px;border-radius:99px;background:var(--ink);color:#fff;font-size:12.5px;display:inline-block}
+.lbclimb .lbr.pop{animation:lbpop .3s var(--spring)}
+.lbclimb .lbup{color:#e3124a;font-size:14px}
+.lblist li.climb{animation:lbglow 1.6s ease-out}
+@keyframes lbgo{0%{transform:scale(.9)}60%{transform:scale(1.06)}100%{transform:none}}
+@keyframes lbpop{0%{transform:scale(1.6)}100%{transform:none}}
+@keyframes lbglow{0%,60%{box-shadow:0 0 0 3px #ffd84d,0 0 22px rgba(255,216,77,.9)}100%{box-shadow:0 0 0 2px var(--p)}}
 .lbline{margin-top:6px;text-align:center;font:900 13.5px/1.3 var(--ui);color:var(--pd)}
 #pickLv{z-index:30}
 .gem.lvopt{height:auto!important;min-height:62px;flex-direction:column;gap:3px;padding:9px 14px;line-height:1.2}
