@@ -25,6 +25,7 @@ async function session(vw, vh, oldSave) {
   if (oldSave) await ctx.addInitScript((s) => { if (!localStorage.getItem('loopdoku_cn_v2')) localStorage.setItem('loopdoku_cn_v1', s); }, oldSave);
   // record every string drawn on a canvas, to catch English in the art
   await ctx.addInitScript(() => {
+    window.__vib = []; navigator.vibrate = (p) => { window.__vib.push(p); return true; };
     window.__txt = new Set();
     const P = CanvasRenderingContext2D.prototype;
     for (const k of ['fillText', 'strokeText']) { const f = P[k]; P[k] = function (t, ...a) { window.__txt.add(String(t)); return f.call(this, t, ...a); }; }
@@ -90,7 +91,10 @@ const tut = (S) => S.page.evaluate(() => LDCN.tut());
   check(await page.evaluate(() => LDCN.screen()) === 'win', 'tutorial ends on the win screen');
   check(await page.evaluate(() => LD.meta.settings().tutDone === true && !Object.keys(LD.meta.state.solved).length), 'tutorial marked done, nothing solved');
   await S.shot('6-tut-win'); await S.english('tutorial win');
-  await page.click('[data-act=next]'); await S.wait(900);
+  await page.click('[data-act=next]'); await S.wait(700);
+  check(await page.evaluate(() => LDCN.picker()), 'after the tutorial the level picker opens');
+  await S.shot('7a-picker'); await S.english('picker');
+  await page.click('[data-lv="0"]'); await S.wait(900);
   check(await page.evaluate(() => LDSKIN.game().p.id) === 'easy-1', 'tutorial leads into Easy 1, got ' + await page.evaluate(() => LDSKIN.game().p.id));
   await S.shot('7-easy1'); await S.english('game');
   await S.solve(); await S.wait(3800);
@@ -126,7 +130,7 @@ const tut = (S) => S.page.evaluate(() => LDCN.tut());
 // ---- 2. small and tall phones: the 10x10 fits, nothing scrolls sideways, arrows are big enough
 for (const [w, h] of [[360, 640], [390, 720], [412, 900]]) {
   const S = await session(w, h);
-  await S.page.click('[data-tut=skip]');
+  await S.page.click('[data-tut=skip]'); await S.wait(300); await S.page.click('[data-lv="0"]'); await S.wait(500);
   await S.page.evaluate(() => LDSKIN.start('nightmare-1')); await S.wait(900);
   const fit = await S.page.evaluate(() => {
     const b = document.getElementById('bwrap').getBoundingClientRect(), row = document.querySelector('.btnrow').getBoundingClientRect(), a = document.querySelector('#arws .arw').getBoundingClientRect();
@@ -170,6 +174,71 @@ for (const [w, h] of [[360, 640], [390, 720], [412, 900]]) {
   await page.evaluate(() => LDSKIN.start(LD.meta.daily().id)); await S.wait(900); await S.shot('daily'); await S.english('daily');
   check(!S.outside.length, '360x640 outside requests: ' + S.outside.join(', '));
   check(!S.errors.length, '360x640 errors: ' + S.errors.join(' | '));
+  await S.close();
+}
+
+// ---- 5. harder sooner: challenge to unlock (lost, then won), the picker from Settings, reset; hints, vibration, the clock
+{
+  const S = await session(360, 640);
+  const { page } = S;
+  await page.click('[data-tut=skip]'); await S.wait(300);
+  check(await page.evaluate(() => LDCN.picker()), 'skipping the tutorial opens the level picker');
+  await page.click('[data-lv="0"]'); await S.wait(800);
+  check(await page.evaluate(() => LDSKIN.game().p.id === 'easy-1' && !LD.meta.packOpen('hard')), 'beginner starts at Easy 1 with Hard still locked');
+  // hint: the bubble says why, in Chinese, two short lines at most, even on the bottom row of a small phone
+  await page.click('#hintBtn'); await S.wait(700);
+  const hb = await page.evaluate(() => { const b = document.getElementById('say').getBoundingClientRect(); return { t: document.getElementById('sayT').textContent, h: b.height, l: b.left, r: b.right }; });
+  check(/[一-鿿]/.test(hb.t) && hb.h < 64 && hb.l >= 0 && hb.r <= 360, 'hint bubble: ' + JSON.stringify(hb));
+  await S.shot('hint'); await S.english('hint');
+  // vibration on a placed performer, none when switched off
+  await S.dbl(await page.evaluate(() => { const g = LDSKIN.game(); for (let r = 0; r < g.n; r++) { const i = r * g.n + g.p.sol[r]; if (g.cells[i] !== LD.CELL.PIECE) return i; } return 0; })); await S.wait(500);
+  check(await page.evaluate(() => window.__vib.length > 0), 'placing a performer vibrates');
+  await page.evaluate(() => { LD.meta.set('vibrate', false); window.__vib.length = 0; });
+  await S.dbl(await page.evaluate(() => { const g = LDSKIN.game(); for (let r = 0; r < g.n; r++) { const i = r * g.n + g.p.sol[r]; if (g.cells[i] !== LD.CELL.PIECE) return i; } return 0; })); await S.wait(500);
+  check(await page.evaluate(() => window.__vib.length === 0), 'no vibration when switched off');
+  // the clock stops while the app is in the background
+  const t0 = await page.evaluate(() => LDSKIN.game().elapsed());
+  await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => true }); document.dispatchEvent(new Event('visibilitychange')); });
+  await S.wait(3000);
+  await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => false }); document.dispatchEvent(new Event('visibilitychange')); });
+  const t1 = await page.evaluate(() => LDSKIN.game().elapsed());
+  check(t1 - t0 < 1200, 'the clock paused in the background: ' + Math.round(t1 - t0) + ' ms passed');
+  // challenge to unlock Hard from the gig list, then lose it: Play still continues the Easy gig
+  await page.click('[data-act=pause]'); await S.wait(300); await page.click('#sheet [data-act=tour]'); await S.wait(600);
+  await page.click('.ldui-tab[data-p=hard]'); await S.wait(300);
+  await S.shot('challenge-offer'); await S.english('challenge offer');
+  await page.click('[data-try]'); await S.wait(900);
+  check(await page.evaluate(() => LDSKIN.game().p.id) === 'hard-1', 'the challenge starts Hard 1');
+  check(await page.evaluate(() => LD.meta.currentId()) !== 'hard-1', 'a challenge does not become the gig Play continues');
+  await S.shot('challenge'); await S.english('challenge');
+  const wrong = await page.evaluate(() => { const g = LDSKIN.game(), o = []; for (let i = 0; i < g.N && o.length < 3; i++) if (!g.isSolution(i) && !g.attacks(i, i)) o.push(i); return o; });
+  for (const i of wrong) { await S.dbl(i); await S.wait(500); }
+  await S.wait(1800);
+  check(await page.isVisible('#lose.on'), 'challenge lost');
+  await page.click('#lose [data-act=retry]'); await S.wait(700);
+  check(await page.evaluate(() => LDSKIN.game().p.id === 'hard-1' && LD.meta.currentId() !== 'hard-1'), 'retrying the challenge still keeps Play on the normal gig');
+  await page.click('[data-act=title]'); await S.wait(500);
+  check(/简单/.test(await page.textContent('#playSub')), 'Play still says Easy after the lost challenge: ' + await page.textContent('#playSub'));
+  // win the challenge: Hard opens and stays open after a reload
+  await page.evaluate(() => window.dispatchEvent(new CustomEvent('ld-try', { detail: 'hard-1' }))); await S.wait(900);
+  await S.solve(); await S.wait(4200);
+  check(await page.evaluate(() => LD.meta.packOpen('hard')), 'winning the challenge opens Hard');
+  check(await page.evaluate(() => [...window.__txt].some((t) => t.indexOf('新舞台开放') >= 0)), 'the "new stage open" call is shown in Chinese');
+  await S.shot('challenge-won'); await S.english('challenge won');
+  await page.goto(url, { waitUntil: 'load' }); await S.wait(800);
+  check(await page.evaluate(() => LD.meta.packOpen('hard') && LD.meta.currentId() === 'hard-2'), 'Hard stays open after a reload and Play continues at Hard 2: ' + await page.evaluate(() => LD.meta.currentId()));
+  // the picker from Settings opens Expert and Terror and starts Hard
+  await page.click('[data-act=settings]'); await S.wait(400); await S.shot('settings'); await S.english('settings');
+  await page.click('[data-pick]'); await S.wait(400);
+  check(await page.evaluate(() => LDCN.picker()), 'Settings opens the level picker');
+  await page.click('[data-lv="2"]'); await S.wait(900);
+  check(await page.evaluate(() => LD.meta.packOpen('expert') && LD.meta.packOpen('terror') && LDSKIN.game().p.id.startsWith('hard-')), 'expert choice opens Expert and Terror and starts a Hard gig');
+  await S.shot('expert-start'); await S.english('expert start');
+  // reset locks everything again
+  await page.evaluate(() => LD.meta.resetProgress());
+  check(await page.evaluate(() => !LD.meta.packOpen('hard') && !LD.meta.packOpen('expert')), 'reset locks the packs again');
+  check(!S.outside.length, 'section 5 outside requests: ' + S.outside.join(', '));
+  check(!S.errors.length, 'section 5 errors: ' + S.errors.join(' | '));
   await S.close();
 }
 

@@ -43,8 +43,20 @@ const EXTRA_HTML = `<div class="over" id="tutIntro"><div class="card">
   <button class="gem big wide" data-tut="go"><svg class="ic"><use href="#i-play"/></svg>开始教学</button>
   <button class="gem lav wide" data-tut="skip">跳过</button>
 </div></div>
+<div class="over" id="pickLv"><div class="card">
+  <div class="rib"><svg class="tl" viewBox="0 0 26 32"><path d="M1 2h24v28H1l7-14z"/></svg><svg class="tr" viewBox="0 0 26 32"><path d="M25 2H1v28h24l-7-14z"/></svg><div class="rb"><div class="rtxt">选择难度</div></div></div>
+  <p class="tnote" style="font-size:15px;color:#3b1d5e">你玩过这类逻辑谜题吗？</p>
+  <button class="gem lav wide lvopt" data-lv="0"><b>🌱 新手</b><small>从「简单」开始，一步一步来</small></button>
+  <button class="gem green wide lvopt" data-lv="1"><b>🎧 玩过类似的</b><small>马上开放「普通」「休闲大盘」「困难」</small></button>
+  <button class="gem big wide lvopt" data-lv="2"><b>🔥 逻辑高手</b><small>再开放「专家」和「恐怖」</small></button>
+  <p class="tnote">之后也可以在「设置」里更改，或在演出列表里挑战解锁。</p>
+</div></div>
 `;
 const EXTRA_CSS = `
+#pickLv{z-index:30}
+.gem.lvopt{height:auto!important;min-height:62px;flex-direction:column;gap:3px;padding:9px 14px;line-height:1.2}
+.lvopt b{font-size:18px}.lvopt small{font-size:12.5px;font-weight:900;white-space:normal;text-shadow:0 1px 1px rgba(0,0,0,.35)}.gem.lav.lvopt small{text-shadow:none;color:#5a3f86}#pickLv .card{gap:12px}
+.say{white-space:normal;width:max-content;max-width:min(94vw,380px);line-height:1.3}
 #tutIntro{z-index:30}
 .tduo{display:flex;justify-content:center;gap:4px;margin:2px 0 -4px}.tduo canvas{width:64px;height:64px}
 .trules{list-style:none;margin:0;padding:0;width:100%;display:grid;gap:7px}

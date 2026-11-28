@@ -169,6 +169,10 @@ function buildBoard() {
   ["$('#sheetT').textContent = 'MENU';", "$('#sheetT').textContent = '菜单';", 1],
   // How to play is the guided tutorial (added below), not the English autoplay demo
   ['function startDemo() {', 'function startDemoAuto() {', 1],
+  // fix from the idol page: the fanfare for a streak, a new stage or the daily set was queued before the timer list was
+  // cleared (so it never played, and threw on the first win of a visit)
+  ['  if (r && (r.streak >= 3 || r.packUnlocked || (r.goal && r.goal.hit))) WIN.timers.push(setTimeout(() => flourish(r), 1500));\n  WIN.timers && WIN.timers.forEach(clearTimeout);\n  WIN.timers = [];\n',
+    '  WIN.timers && WIN.timers.forEach(clearTimeout);\n  WIN.timers = [];\n  if (r && (r.streak >= 3 || r.packUnlocked || (r.goal && r.goal.hit))) WIN.timers.push(setTimeout(() => flourish(r), 1500));\n', 1],
 ];
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -251,6 +255,25 @@ export const META = [
   ['font:400 28px/1.05 var(--ld-font-display', 'font:900 26px/1.1 var(--ld-font-display', 1],
   ['font:400 17px/1.2 var(--ld-font-display', 'font:900 16px/1.35 var(--ld-font-display', 1],
   ['.ldui-toast{position:fixed;left:50%;', '.ldui-toast{max-width:92vw;white-space:normal!important;text-align:center;position:fixed;left:50%;', 1],
+  // ---- harder sooner: a level picker, challenge-to-unlock on every locked pack, more gigs open at once
+  ['    openAhead: 3,', '    openAhead: 5,', 1],
+  ['settings: { sound: true, music: true, assist: false }', 'settings: { sound: true, music: true, assist: false, vibrate: true }', 1],
+  ['    if (need) { const other = PACKS.find((p) => p.id === need[0]); unlocked = !!other && other.levels.filter((L) => S.solved[L.id]).length >= need[1]; }\n',
+    '    if (need) { const other = PACKS.find((p) => p.id === need[0]); unlocked = !!other && other.levels.filter((L) => S.solved[L.id]).length >= need[1]; }\n    if (S.open && S.open[pack.id]) unlocked = true;  // opened by the level picker or a won challenge\n', 1],
+  ['    markSupportShown() { S.supportLast = S.wins; save(); },\n',
+    "    markSupportShown() { S.supportLast = S.wins; save(); },\n    openPacks(ids) { S.open = Object.assign({}, S.open); for (const id of ids) S.open[id] = true; save(); },\n    packOpen(id) { const p = PACKS.find((x) => x.id === id); return !!p && packInfo(p).unlocked; },\n    packOf(id) { const L = BY_ID.get(id); return L ? L.pack : null; },\n", 1],
+  ['      const packsBefore = meta.packs().filter((p) => p.unlocked).map((p) => p.id);\n',
+    "      const packsBefore = meta.packs().filter((p) => p.unlocked).map((p) => p.id);\n      { const Lw = BY_ID.get(id); if (Lw && !packInfo(PACKS[Lw.pk]).unlocked) { S.open = Object.assign({}, S.open); S.open[Lw.pack] = true; } }  // a won challenge opens its pack\n", 1],
+  ["      if (sel === 'easy' || p.unlocked) {\n",
+    "      if (!p.unlocked) html += `<button class=\"ldui-btn gold\" type=\"button\" data-try=\"${p.levels[0].id}\" style=\"width:100%;margin-bottom:12px\">⚡ 挑战解锁：赢下第 1 场，「${esc(p.name)}」立即开放</button>`;\n      if (sel === 'easy' || p.unlocked) {\n", 1],
+  ["      const dj = r.querySelector('[data-daily]');\n",
+    "      const tr = r.querySelector('[data-try]');\n      if (tr) tr.addEventListener('click', () => { click(); const id = tr.dataset.try; close(true); window.dispatchEvent(new CustomEvent('ld-try', { detail: id })); });\n      const dj = r.querySelector('[data-daily]');\n", 1],
+  ["row('assist', '自动打叉助手', '自动排除表演者影响到的格子（更简单）')",
+    "row('assist', '自动打叉助手', '自动排除表演者影响到的格子（更简单）')\n      + (navigator.vibrate ? row('vibrate', '震动', '放置表演者和失误时手机轻轻震动') : '')", 1],
+  ['<button class="ldui-btn alt" type="button" data-reset="1">重置全部进度</button>',
+    '<button class="ldui-btn gold" type="button" data-pick="1">⚡ 选择难度（更快玩到难关）</button><button class="ldui-btn alt" type="button" data-reset="1">重置全部进度</button>', 1],
+  ["    r.querySelector('[data-reset]').addEventListener(",
+    "    r.querySelector('[data-pick]').addEventListener('click', () => { click(); close(true); window.dispatchEvent(new Event('ld-pick')); });\n    r.querySelector('[data-reset]').addEventListener(", 1],
 ];
 
 // the Loop Station layer names (core stays untouched, so they are set at runtime)
