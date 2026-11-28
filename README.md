@@ -87,3 +87,15 @@ Levels live in `tools/packs/<pack>.jsonl` (one puzzle per line; the order sets t
 `node tools/gen_levels.mjs --race <pack> <total> tools/packs/<pack>.jsonl`, then `node tools/merge_levels.mjs` and `node tools/build.mjs`.
 
 Made for and with RoxorLoops & Jasmin, "100% organic music with the human voice". https://roxorloopsandjasmin.com
+
+## Chinese edition (中文版)
+`cn/index.html` is the Simplified Chinese edition: the Anime Idol Stage look with the duo, fully translated, with a guided
+tutorial on the first visit (Jasmin's wand points at each step). It is ONE self-contained file (about 390 KB, 135 KB gzipped):
+the engine, all levels, the menus and the duo's drawing kit are inlined and minified, it uses the phone's own fonts and makes
+no request outside its own origin (no Google Fonts, no CDNs), so it can be uploaded as is to any host, including one in
+mainland China. Zones are told apart by colour only (no border lines); each board picks colours so touching zones never look
+alike. It keeps its own save (`loopdoku_cn_v2`, carried over from the first edition's `loopdoku_cn_v1`). There is no Looks
+shop and no Support screen (those pages and links do not work in China).
+- Text: `tools/cn_strings.mjs` (every English string and its Chinese) and `tools/cn_tutorial.js`, with the English next to each line.
+- Build: `node tools/build.mjs && node tools/build_cn.mjs` (needs `npm install` for esbuild). Check: `node tools/cn_check.mjs`
+  (needs `node tools/serve.mjs`): tutorial with real taps, win, 10x10 on three phone sizes, lose, old save, no English left, no outside requests.

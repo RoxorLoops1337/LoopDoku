@@ -12,6 +12,7 @@
     "fit": "node tools/fit_check.mjs"
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "playwright-core": "^1.64.0"
   }
 }
