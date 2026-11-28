@@ -20,8 +20,31 @@ const check = (ok, msg) => { if (!ok) fails.push(msg); };
 // words that may stay in Latin letters: the duo, the game's name, units
 const ALLOW = /^(RoxorLoops|Roxor|Jasmin|LoopDoku|LOOP|DOKU|L|P|D|O|K|U|T|RawClaw|Andy|Jordan|R|SR|SSR|x|X|pts?)$/;
 
-async function session(vw, vh, oldSave) {
+// a stand-in for the Games site's /api/loopdoku_board: claims (one name is taken), scores (the server's real rules live in
+// the Games repo, tested by tests/loopdoku_board.test.mjs), offline (network error) and absent (404 page, like GitHub Pages)
+function fakeBoard() {
+  const F = { mode: 'on', names: {}, tot: {}, posts: 0 };
+  const view = (name) => { const list = Object.entries(F.tot).sort((a, b) => b[1] - a[1]).map(([n, p], i) => ({ name: n, pts: p, rank: i + 1 })); const o = { d: list, w: list, m: list, all: list };
+    if (name && F.names[name]) { const r = list.findIndex((e) => e.name === name), x = { pts: F.tot[name] || 0, rank: r >= 0 ? r + 1 : null }; o.me = { d: x, w: x, m: x, all: x }; } return o; };
+  F.tot['节奏王'] = 500; F.tot['小红'] = 120;
+  F.handler = async (route) => {
+    if (F.mode === 'offline') return route.abort('internetdisconnected');
+    if (F.mode === 'absent') return route.fulfill({ status: 404, contentType: 'text/html', body: '<h1>404</h1>' });
+    const req = route.request(), j = (o, st) => route.fulfill({ status: st || 200, contentType: 'application/json', body: JSON.stringify(o) });
+    if (req.method() === 'GET') return j(view(new URL(req.url()).searchParams.get('name')));
+    const b = JSON.parse(req.postData() || '{}');
+    if (b.action === 'claim') { if (b.name === '已占用') return j({ error: 'taken' }, 409); F.names[b.name] = b.token; return j({ name: b.name }); }
+    if (F.names[b.name] !== b.token) return j({ error: 'token' }, 403);
+    F.posts++; const pts = 40; F.tot[b.name] = (F.tot[b.name] || 0) + pts;
+    return j(Object.assign({ pts, gained: pts }, view(b.name)));
+  };
+  return F;
+}
+
+async function session(vw, vh, oldSave, board) {
   const ctx = await browser.newContext({ viewport: { width: vw, height: vh }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, locale: 'zh-CN' });
+  board = board || fakeBoard();
+  await ctx.route('**/api/loopdoku_board**', (route) => board.handler(route));
   if (oldSave) await ctx.addInitScript((s) => { if (!localStorage.getItem('loopdoku_cn_v2')) localStorage.setItem('loopdoku_cn_v1', s); }, oldSave);
   // record every string drawn on a canvas, to catch English in the art
   await ctx.addInitScript(() => {
@@ -34,10 +57,10 @@ async function session(vw, vh, oldSave) {
   const errors = [], outside = [], origin = new URL(url).origin;
   page.on('request', (r) => { const u = r.url(); if (!u.startsWith(origin) && !u.startsWith('data:') && !u.startsWith('blob:')) outside.push(u); });
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
-  page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text().slice(0, 200)); });
+  page.on('console', (m) => { if (m.type() === 'error' && !(board.mode !== 'on' && /Failed to load resource|ERR_INTERNET_DISCONNECTED/.test(m.text())) && !/status of 409/.test(m.text())) errors.push('console: ' + m.text().slice(0, 200)); });
   const tag = vw + 'x' + vh;
   const S = {
-    page, errors, outside,
+    page, errors, outside, board,
     shot: (name) => page.screenshot({ path: path.join(root, 'shots', `cn-${tag}-${name}.jpeg`), type: 'jpeg', quality: 80 }),
     wait: (ms) => page.waitForTimeout(ms),
     cellXY: (i) => page.evaluate((i) => { const g = LDSKIN.game(), r = document.getElementById('host').getBoundingClientRect(), n = g.n, m = Math.round(Math.min(20, Math.max(11, r.width * 0.042))), c = (r.width - 2 * m) / n; return { x: r.left + m + (i % n + 0.5) * c, y: r.top + m + (((i / n) | 0) + 0.5) * c }; }, i),
@@ -252,6 +275,61 @@ for (const [w, h] of [[360, 640], [390, 720], [412, 900]]) {
   check(await page.evaluate(() => !LD.meta.packOpen('hard') && !LD.meta.packOpen('expert')), 'reset locks the packs again');
   check(!S.outside.length, 'section 5 outside requests: ' + S.outside.join(', '));
   check(!S.errors.length, 'section 5 errors: ' + S.errors.join(' | '));
+  await S.close();
+}
+
+// ---- 6. the leaderboard: join (a taken name, a bad name, a good one), a win scores, the board, the name stays, offline queue
+{
+  const S = await session(390, 720);
+  const { page } = S;
+  await page.click('[data-tut=skip]'); await S.wait(300); await page.click('[data-lv="0"]'); await S.wait(700);
+  await page.click('[data-act=title]'); await S.wait(600);
+  check(await page.isVisible('#lbBtn'), 'the title shows the leaderboard button');
+  await page.click('#lbBtn'); await S.wait(700);
+  check(await page.isVisible('#lbBox.on') && /节奏王/.test(await page.textContent('#lbList')), 'the board opens with the top players');
+  await S.shot('lb-board'); await S.english('leaderboard');
+  for (const k of ['w', 'm', 'all']) { await page.click(`.lbtab[data-tab=${k}]`); await S.wait(150); }
+  await page.click('#lbJoin'); await S.wait(400);
+  check(await page.isVisible('#lbNameBox.on'), 'join opens the name card');
+  await page.fill('#lbInput', 'x'); await page.click('[data-lbok]'); await S.wait(300);
+  check(/2 到 12/.test(await page.textContent('#lbErr')), 'a one-letter name is refused');
+  await page.fill('#lbInput', '已占用'); await page.click('[data-lbok]'); await S.wait(500);
+  check(/已经有人用了/.test(await page.textContent('#lbErr')), 'a taken name says so');
+  await S.shot('lb-name'); await S.english('name card');
+  await page.fill('#lbInput', '口技小明'); await page.click('[data-lbok]'); await S.wait(1200);
+  check(await page.evaluate(() => LDLB.me() && LDLB.me().name === '口技小明'), 'the name is kept on the phone');
+  check(/口技小明/.test(await page.textContent('#lbList')), 'back on the board after joining');
+  await page.click('[data-lbx]'); await S.wait(300);
+  // a real win scores and the win screen says how much
+  await page.evaluate(() => LDSKIN.start('easy-2')); await S.wait(600);
+  await S.solve(); await S.wait(4500);
+  check(S.board.posts === 1 && /排行榜 \+40/.test(await page.textContent('#wLB')), 'a win is sent and the win screen shows the points: ' + await page.textContent('#wLB'));
+  check(await page.evaluate(() => { const r = document.getElementById('nextBtn').getBoundingClientRect(); return r.bottom <= innerHeight; }), 'Next still visible with the leaderboard line');
+  await S.shot('lb-win'); await S.english('leaderboard win');
+  // reset progress keeps the name; offline wins wait in the queue and go later
+  await page.evaluate(() => LD.meta.resetProgress());
+  check(await page.evaluate(() => !!LDLB.me()), 'reset progress keeps the leaderboard name');
+  S.board.mode = 'offline';
+  await page.evaluate(() => LDSKIN.start('easy-3')); await S.wait(600);
+  await S.solve(); await S.wait(4500);
+  check(await page.evaluate(() => LDLB.queue().length === 1) && /联网后/.test(await page.textContent('#wLB')), 'an offline win waits in the queue');
+  S.board.mode = 'on';
+  await page.goto(url, { waitUntil: 'load' }); await S.wait(2500);
+  check(await page.evaluate(() => LDLB.queue().length === 0) && S.board.posts === 2, 'the queued win is sent on the next visit');
+  check(!(await page.isVisible('#lbNameBox.on')), 'no name card again on the next visit');
+  check(!S.outside.length, 'section 6 outside requests: ' + S.outside.join(', '));
+  check(!S.errors.length, 'section 6 errors: ' + S.errors.join(' | '));
+  await S.close();
+}
+// ---- 7. a site without the board (GitHub Pages, a host in China): the button stays hidden, the game is unaffected
+{
+  const b = fakeBoard(); b.mode = 'absent';
+  const S = await session(390, 720, null, b);
+  await S.page.click('[data-tut=skip]'); await S.wait(300); await S.page.click('[data-lv="0"]'); await S.wait(600);
+  await S.page.click('[data-act=title]'); await S.wait(500);
+  check(!(await S.page.isVisible('#lbBtn')), 'no board on the site: the button stays hidden');
+  check(await S.page.evaluate(() => LDLB.state()) === 'off', 'the board is switched off for the visit');
+  check(!S.errors.length, 'section 7 errors: ' + S.errors.join(' | '));
   await S.close();
 }
 

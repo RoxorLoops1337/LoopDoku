@@ -43,6 +43,22 @@ const EXTRA_HTML = `<div class="over" id="tutIntro"><div class="card">
   <button class="gem big wide" data-tut="go"><svg class="ic"><use href="#i-play"/></svg>开始教学</button>
   <button class="gem lav wide" data-tut="skip">跳过</button>
 </div></div>
+<div class="over" id="lbBox"><div class="card lbcard">
+  <div class="rib"><svg class="tl" viewBox="0 0 26 32"><path d="M1 2h24v28H1l7-14z"/></svg><svg class="tr" viewBox="0 0 26 32"><path d="M25 2H1v28h24l-7-14z"/></svg><div class="rb"><div class="rtxt"></div></div></div>
+  <button class="lbx" type="button" data-lbx="1" aria-label="关闭">×</button>
+  <div class="lbtabs" id="lbTabs"></div>
+  <ol class="lblist" id="lbList"></ol>
+  <button class="gem big wide" id="lbJoin" type="button"></button>
+  <p class="tnote" id="lbHow"></p>
+</div></div>
+<div class="over" id="lbNameBox"><div class="card">
+  <div class="rib"><svg class="tl" viewBox="0 0 26 32"><path d="M1 2h24v28H1l7-14z"/></svg><svg class="tr" viewBox="0 0 26 32"><path d="M25 2H1v28h24l-7-14z"/></svg><div class="rb"><div class="rtxt"></div></div></div>
+  <p class="tnote" id="lbNameP"></p>
+  <input id="lbInput" type="text" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="例如：小明">
+  <p class="lberr" id="lbErr"></p>
+  <button class="gem big wide" type="button" data-lbok="1"></button>
+  <button class="gem lav wide" type="button" data-lbno="1"></button>
+</div></div>
 <div class="over" id="pickLv"><div class="card">
   <div class="rib"><svg class="tl" viewBox="0 0 26 32"><path d="M1 2h24v28H1l7-14z"/></svg><svg class="tr" viewBox="0 0 26 32"><path d="M25 2H1v28h24l-7-14z"/></svg><div class="rb"><div class="rtxt">选择难度</div></div></div>
   <p class="tnote" style="font-size:15px;color:#3b1d5e">你玩过这类逻辑谜题吗？</p>
@@ -53,6 +69,28 @@ const EXTRA_HTML = `<div class="over" id="tutIntro"><div class="card">
 </div></div>
 `;
 const EXTRA_CSS = `
+#lbBox,#lbNameBox{z-index:31}
+.tlb{position:absolute;left:12px;top:4px;z-index:3;background:linear-gradient(#fff6c2,#ffd84d)!important}
+.lbcard{max-height:calc(100% - 30px)}
+.lbx{position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:50%;border:2px solid var(--ink);background:#f1e8ff;font:900 20px/1 var(--ui);color:var(--ink);padding:0}
+.lbtabs{display:flex;gap:6px;width:100%;margin-top:4px}
+.lbtab{flex:1;padding:8px 0;border-radius:99px;border:2px solid var(--ink);background:#f1e8ff;font:900 14px/1 var(--ui);color:var(--ink)}
+.lbtab.on{background:var(--p);color:#fff}
+.lblist{list-style:none;margin:0;padding:2px;width:100%;display:grid;gap:5px;overflow:auto;max-height:46vh}
+.lblist li{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:14px;background:#f7f0ff;font:800 15px/1.2 var(--ui);color:var(--ink)}
+.lblist li b{width:28px;text-align:center;flex:none}
+.lblist li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lblist li em{font-style:normal;color:var(--pd);font-weight:900;white-space:nowrap}
+.lblist li.me{background:#ffe3f0;box-shadow:0 0 0 2px var(--p)}
+.lblist li i{font-style:normal;font-size:11px;background:var(--p);color:#fff;border-radius:99px;padding:1px 6px;vertical-align:2px}
+.lblist li small{font-size:11px;color:#7a5fa6}
+.lblist li.gap{background:none;justify-content:center;padding:0}
+.lblist li.none{justify-content:center;color:#7a5fa6;white-space:normal;text-align:center}
+#lbInput{width:100%;padding:12px 14px;border-radius:14px;border:3px solid var(--ink);font:900 18px/1.2 var(--ui);color:var(--ink);text-align:center;-webkit-user-select:text;user-select:text;background:#fff;outline:none}
+#lbInput:focus{box-shadow:0 0 0 3px var(--p)}
+.lberr{margin:0;min-height:18px;color:#e3124a;font:800 13px/1.3 var(--ui);text-align:center}
+.lbjoin{margin-top:6px;width:100%;padding:8px;border-radius:14px;border:2px solid var(--ink);background:linear-gradient(#fff6c2,#ffd84d);font:900 14px/1.2 var(--ui);color:var(--ink)}
+.lbline{margin-top:6px;text-align:center;font:900 13.5px/1.3 var(--ui);color:var(--pd)}
 #pickLv{z-index:30}
 .gem.lvopt{height:auto!important;min-height:62px;flex-direction:column;gap:3px;padding:9px 14px;line-height:1.2}
 .lvopt b{font-size:18px}.lvopt small{font-size:12.5px;font-weight:900;white-space:normal;text-shadow:0 1px 1px rgba(0,0,0,.35)}.gem.lav.lvopt small{text-shadow:none;color:#5a3f86}#pickLv .card{gap:12px}
@@ -76,8 +114,10 @@ const one = (s, a, b) => { if (s.split(a).length !== 2) throw new Error('anchor 
 page = one(page, '<div id="vig"></div>', EXTRA_HTML + '<div id="vig"></div>');
 page = one(page, '<div class="crowdbox"><canvas id="crowd"></canvas>', '<div class="crowdbox"><canvas id="crowd"></canvas><button class="tskip" id="tutSkip" type="button">跳过教学</button>');
 page = one(page, '</style>', EXTRA_CSS + '</style>');
+page = one(page, '<div class="tstage" id="tStageBox"><canvas id="tStage"></canvas>', '<div class="tstage" id="tStageBox"><canvas id="tStage"></canvas><button class="pill tlb" id="lbBtn" type="button" style="display:none"></button>');
+page = one(page, '<div id="wX"></div>', '<div id="wX"></div><div id="wLB"></div>');
 // the tutorial goes inside the page script, right before its boot code
-const tut = fs.readFileSync(path.join(here, 'cn_tutorial.js'), 'utf8')
+const tut = fs.readFileSync(path.join(here, 'cn_tutorial.js'), 'utf8') + '\n' + fs.readFileSync(path.join(here, 'cn_board.js'), 'utf8')
   + "\nfunction tutFaces() { drawMiniFace($('#tutR'), 'roxor'); drawMiniFace($('#tutJ'), 'jasmin'); }\n"
   + "const tutIntroOrig = tutIntro; tutIntro = function () { tutFaces(); tutIntroOrig(); };\n";
 page = one(page, '\n// ---------------------------------------------------------------------------------------------------------- boot\n', '\n' + tut + '\n// ---- boot\n');
