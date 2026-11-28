@@ -13,24 +13,31 @@ const TUTT = {
   rulesP: '每一关只有一个答案，只靠逻辑就能解开，不用猜。',             // one answer per board, logic only, no guessing
   go: '开始教学', skip: '跳过教学',                                   // start tutorial, skip tutorial
   step: (a, b) => a + ' / ' + b,
-  s1: '点一下发光的格子，打一个叉。叉的意思是：这里不会有表演者。',       // tap the glowing square to put an X: no performer here
-  s2: '按住并在这一行上滑动，可以一口气打好几个叉。',                   // hold and slide along this row to paint several X's
-  s3: '这个颜色区域只有一个格子，表演者一定在这里！快速点两下放置。',     // this zone has one square, so the performer must be here: double-tap
-  s3bad: '放错会失去一个麦克风 🎤！再找找只有一个格子的颜色区域。',      // a wrong one costs a mic! look for the one-square zone
-  s4: '表演者会排除同一行、同一列、同一区域和周围八格。点这个箭头，整行打叉！', // a performer rules out its row, column, zone and the 8 around it: tap the arrow
-  s5: '卡住了？点「问 Jasmin」，我来帮你！',                          // stuck? tap Ask Jasmin and I help
-  s6: '现在靠你自己完成这一关！也可以按住格子不放来放置表演者。',         // now finish it yourself! press and hold also places a performer
+  // the tutorial reasons forward: a zone with one square must hold a performer, and every X after that has a reason
+  s1: '先找只有一个格子的颜色区域：表演者一定在这里！快速点两下，放上表演者。',  // find a zone with one square: the performer must be there! double-tap to place
+  s1bad: '放错会失去一个麦克风 🎤！找找只有一个格子的颜色区域。',              // a wrong one costs a mic! look for a zone with one square
+  s2: '同一行不能再有别的表演者。按住并在这一行上滑动，把它们都打叉。',          // nobody else fits in this row: hold and slide along it to cross them all
+  s3: '同一列也一样！点这一列上面的箭头，整列一次打叉。',                     // same for the column: tap the arrow above it to cross the whole column
+  s4: '表演者也不能挨在一起，斜角也不行。点一下发光的格子，打个叉。',            // performers never touch, not even at a corner: tap the glowing square to cross it
+  s5: '还有一个只有一个格子的颜色区域，放上第二位表演者！',                    // there is another zone with one square: place the second performer
+  s6: '卡住了？点「问 Jasmin」，我来帮你！',                                // stuck? tap Ask Jasmin and I help
+  s7: '现在靠你自己完成这一关！也可以按住格子不放来放置表演者。',               // now finish it yourself! press and hold also places a performer
 };
 LD.loop.LAYER_NAMES = ['底鼓', '踩镲', '军鼓', '贝斯', '和声', '沙锤', '旋律', '拍手', '切片'];  // Kick Hats Snare Bass Pad Shaker Hook Claps Chops
 
-const TUT = { on: false, step: 0, gm: null, timer: 0, ring: 0, row: 4 };
+const TUT = { on: false, step: 0, gm: null, timer: 0, ring: 0, first: -1 };
+// squares that are a colour zone of their own (on the tutorial board: two of them)
+const singles = (g) => { const cnt = {}; for (const k of g.region) cnt[k] = (cnt[k] || 0) + 1; const out = []; for (let i = 0; i < g.N; i++) if (cnt[g.region[i]] === 1) out.push(i); return out; };
+const firstRC = () => game.rc(TUT.first);
 const TUT_STEPS = [
-  { txt: 's1', cell: (g) => g.idx(0, 0), done: (ev, d) => ev === 'mark' && d.on && (d.source === 'tap' || d.source === 'drag') },
-  { txt: 's2', row: 3, cells: (g) => [0, 1, 2, 3].map((c) => g.idx(3, c)), done: (ev, d) => ev === 'stroke' && d.count >= 2 },
-  { txt: 's3', cell: (g) => g.idx(4, 2), done: (ev) => ev === 'place' },
-  { txt: 's4', arrow: () => ['row', TUT.row], done: (ev) => ev === 'line' },  // the row of the performer just placed
-  { txt: 's5', btn: '#hintBtn', done: (ev) => ev === 'hint' },
-  { txt: 's6', done: () => false },
+  { txt: 's1', cell: (g) => singles(g)[0], done: (ev) => ev === 'place' },
+  { txt: 's2', cells: (g) => g.rowCells(firstRC().r).filter((i) => g.cells[i] === LD.CELL.EMPTY), done: (ev, d) => ev === 'stroke' && d.mode === 'mark' && d.count >= 2 },
+  { txt: 's3', arrow: () => ['col', firstRC().c], done: (ev) => ev === 'line' },
+  { txt: 's4', cells: (g) => { const { r, c } = firstRC(), o = []; for (const [dr, dc] of [[-1, -1], [-1, 1], [1, -1], [1, 1]]) { const rr = r + dr, cc = c + dc; if (rr >= 0 && rr < g.n && cc >= 0 && cc < g.n && g.cells[g.idx(rr, cc)] === LD.CELL.EMPTY) o.push(g.idx(rr, cc)); } return o; },
+    done: (ev, d) => ev === 'mark' && d.on && (d.source === 'tap' || d.source === 'drag') },
+  { txt: 's5', cell: (g) => singles(g).find((i) => g.cells[i] !== LD.CELL.PIECE), done: (ev) => ev === 'place' },
+  { txt: 's6', btn: '#hintBtn', done: (ev) => ev === 'hint' },
+  { txt: 's7', done: () => false },
 ];
 function tutSay(text) {
   const el = $('#say');
@@ -66,6 +73,7 @@ function tutGo(k) {
   tutClear();
   TUT.step = k;
   const st = TUT_STEPS[k]; if (!st) return;
+  if ((st.cells && !st.cells(game).length) || (st.cell && st.cell(game) == null)) { tutGo(k + 1); return; }
   tutSay(TUTT[st.txt]);
   if (st.arrow) { const a = st.arrow(), el = arrowEl(a[0], a[1]); if (el) el.classList.add('tglow'); }
   if (st.btn) $(st.btn).classList.add('tglow');
@@ -84,7 +92,7 @@ function tutFit() {
   const box = $('#scr-game .crowdbox'), el = $('#say'), t = $('#sayT'), keep = t.innerHTML;
   box.style.height = '';
   let h = 0;
-  for (const k of ['s1', 's2', 's3', 's3bad', 's4', 's5', 's6']) { t.innerHTML = '<small class="tstep">1 / 6</small>' + TUTT[k]; h = Math.max(h, el.offsetHeight); }
+  for (const k of ['s1', 's1bad', 's2', 's3', 's4', 's5', 's6', 's7']) { t.innerHTML = '<small class="tstep">1 / 7</small>' + TUTT[k]; h = Math.max(h, el.offsetHeight); }
   t.innerHTML = keep;
   box.style.height = Math.ceil(h + 4 + 6 + $('#tutSkip').offsetHeight + 4) + 'px';
 }
@@ -95,16 +103,16 @@ function startTutorial() {
   show('game');
   const P = LD.meta.level('easy-1');
   setupGame(new LD.Game(P), true);
-  TUT.on = true; TUT.gm = game; TUT.step = 0;
+  TUT.on = true; TUT.gm = game; TUT.step = 0; TUT.first = -1;
   $('#scr-game').classList.add('tut');
   tutFit();
   layoutGame(true);
   const gm = game;
   gm.on('*', (ev, d) => {
     if (!TUT.on || game !== gm) return;
-    if (ev === 'mistake' && TUT.step === 2) { tutSay(TUTT.s3bad); return; }
+    if (ev === 'mistake' && (TUT.step === 0 || TUT.step === 4)) { tutSay(TUTT.s1bad); return; }
     if (ev === 'win') { tutDone(); setTimeout(tutEnd, 300); return; }
-    if (ev === 'place') TUT.row = d.r;
+    if (ev === 'place' && TUT.first < 0) TUT.first = d.i;
     const st = TUT_STEPS[TUT.step];
     if (st && st.done(ev, d)) { const nx = TUT.step + 1; TUT.step = -1; setTimeout(() => tutGo(nx), ev === 'place' || ev === 'line' ? 700 : 300); }
   });

@@ -43,6 +43,7 @@ async function session(vw, vh, oldSave) {
     cellXY: (i) => page.evaluate((i) => { const g = LDSKIN.game(), r = document.getElementById('host').getBoundingClientRect(), n = g.n, m = Math.round(Math.min(20, Math.max(11, r.width * 0.042))), c = (r.width - 2 * m) / n; return { x: r.left + m + (i % n + 0.5) * c, y: r.top + m + (((i / n) | 0) + 0.5) * c }; }, i),
     async tap(i) { const p = await S.cellXY(i); await page.touchscreen.tap(p.x, p.y); },
     async dbl(i) { await S.tap(i); await S.wait(80); await S.tap(i); },
+    async slide(i, j) { const a = await S.cellXY(i), b = await S.cellXY(j); await page.mouse.move(a.x, a.y); await page.mouse.down(); for (let k = 1; k <= 10; k++) await page.mouse.move(a.x + (b.x - a.x) * k / 10, a.y + (b.y - a.y) * k / 10, { steps: 2 }); await page.mouse.up(); await S.wait(700); },
     async solve() { const sol = await page.evaluate(() => { const g = LDSKIN.game(); return g.p.sol.map((c, r) => r * g.n + c).filter((i) => g.cells[i] !== LD.CELL.PIECE); }); for (const i of sol) { await S.dbl(i); await S.wait(420); } },
     async english(where) {
       const words = await page.evaluate(() => {
@@ -74,18 +75,26 @@ const tut = (S) => S.page.evaluate(() => LDCN.tut());
   await page.click('[data-tut=go]'); await S.wait(900);
   check(await tut(S) === 0, 'tutorial at step 1');
   await S.shot('2-tut1');
-  await S.tap(0); await S.wait(600);
-  check(await tut(S) === 1, 'tap: step 2, got ' + await tut(S));
-  { const a = await S.cellXY(15), b = await S.cellXY(18); await page.mouse.move(a.x, a.y); await page.mouse.down(); for (let k = 1; k <= 8; k++) await page.mouse.move(a.x + (b.x - a.x) * k / 8, a.y, { steps: 2 }); await page.mouse.up(); await S.wait(700); }
-  check(await tut(S) === 2, 'slide: step 3, got ' + await tut(S));
-  await S.shot('3-tut3');
-  await S.dbl(22); await S.wait(1200);
-  check(await tut(S) === 3, 'double-tap on the one-square zone: step 4, got ' + await tut(S));
+  // 1: the zone with one square (row 2, column 0) gets the first performer
+  await S.dbl(10); await S.wait(1200);
+  check(await tut(S) === 1, 'double-tap on the one-square zone: step 2, got ' + await tut(S));
+  await S.shot('3-tut2');
+  // 2: slide along its row
+  await S.slide(11, 14);
+  check(await tut(S) === 2, 'slide along the row: step 3, got ' + await tut(S));
+  // 3: its column's arrow
+  await page.locator('#arws .arw[data-k=col][data-i="0"]').dispatchEvent('pointerdown'); await S.wait(1100);
+  check(await tut(S) === 3, 'column arrow: step 4, got ' + await tut(S));
   await S.shot('4-tut4');
-  await page.locator('#arws .arw[data-k=row][data-i="4"]').dispatchEvent('pointerdown'); await S.wait(1100);
-  check(await tut(S) === 4, 'row arrow: step 5, got ' + await tut(S));
+  // 4: a diagonal neighbour
+  await S.tap(6); await S.wait(700);
+  check(await tut(S) === 4, 'tap a diagonal: step 5, got ' + await tut(S));
+  // 5: the other one-square zone
+  await S.dbl(22); await S.wait(1200);
+  check(await tut(S) === 5, 'second one-square zone: step 6, got ' + await tut(S));
   await page.click('#hintBtn'); await S.wait(900);
-  check(await tut(S) === 5, 'hint: step 6, got ' + await tut(S));
+  check(await tut(S) === 6, 'hint: step 7, got ' + await tut(S));
+  check(await page.evaluate(() => !LDSKIN.game().mistakes), 'the tutorial path makes no mistake');
   await S.shot('5-tut6'); await S.english('tutorial');
   await S.solve(); await S.wait(3800);
   check(await page.evaluate(() => LDCN.screen()) === 'win', 'tutorial ends on the win screen');
@@ -154,17 +163,21 @@ for (const [w, h] of [[360, 640], [390, 720], [412, 900]]) {
     check(r.inBox && !r.overlap && r.onScreen, `360x640 tutorial step ${k}: bubble ${JSON.stringify(r)}`);
   };
   await page.click('[data-tut=go]'); await S.wait(900); await bubble(1);
-  await S.tap(0); await S.wait(600); await bubble(2);
-  { const a = await S.cellXY(15), b = await S.cellXY(18); await page.mouse.move(a.x, a.y); await page.mouse.down(); for (let k = 1; k <= 8; k++) await page.mouse.move(a.x + (b.x - a.x) * k / 8, a.y, { steps: 2 }); await page.mouse.up(); await S.wait(700); }
-  await bubble(3);
+  // the other one-square zone first (row 4, column 2): the steps follow that performer
+  await S.dbl(22); await S.wait(1200); await bubble(2);
+  check(await tut(S) === 1, '360x640: the other one-square zone also starts it, got ' + await tut(S));
+  await S.slide(20, 24); await bubble(3);
+  check(await tut(S) === 2, '360x640: slide across the row (past the performer) advances, got ' + await tut(S));
+  check(await page.evaluate(() => { const el = document.querySelector('#arws .arw.tglow'); return el && el.dataset.k === 'col' && el.dataset.i === '2'; }), 'step 3 points at the column of the first performer');
+  await S.shot('tut3-alt');
+  await page.locator('#arws .arw[data-k=col][data-i="2"]').dispatchEvent('pointerdown'); await S.wait(1100); await bubble(4);
+  check(await tut(S) === 3, '360x640: column arrow advances, got ' + await tut(S));
+  await S.tap(16); await S.wait(700); await bubble(5);
+  check(await tut(S) === 4, '360x640: diagonal advances, got ' + await tut(S));
   await S.dbl(10); await S.wait(1200);
-  check(await tut(S) === 3, '360x640: the other one-square zone also advances, got ' + await tut(S));
-  check(await page.evaluate(() => { const el = document.querySelector('#arws .arw.tglow'); return el && el.dataset.k === 'row' && el.dataset.i === '2'; }), 'step 4 points at the row of the performer just placed');
-  await bubble(4); await S.shot('tut4-alt');
-  await page.locator('#arws .arw[data-k=row][data-i="2"]').dispatchEvent('pointerdown'); await S.wait(1100);
-  check(await tut(S) === 4, '360x640: row arrow advances, got ' + await tut(S));
+  check(await tut(S) === 5, '360x640: second one-square zone advances, got ' + await tut(S));
   check(await page.evaluate(() => !LDSKIN.game().mistakes), 'the alternative path made no mistake');
-  await bubble(5); await page.click('#hintBtn'); await S.wait(900); await bubble(6);
+  await bubble(6); await page.click('#hintBtn'); await S.wait(900); await bubble(7);
   await S.shot('tut6'); await S.english('tutorial');
   await S.solve(); await S.wait(3800);
   check(await page.evaluate(() => LDCN.screen()) === 'win', '360x640 tutorial ends on the win screen');
